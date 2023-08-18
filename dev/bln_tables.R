@@ -36,6 +36,9 @@
   # select only selected categories
   bln_crops <- bln_crops[,.(crop_code,crop_name,crop_cat1 = crop_category)]
 
+  # replace löss with loess
+  bln_crops[grepl('löss',crop_name), crop_name := gsub('löss','loess',crop_name)]
+
   # switch to english categories
   bln_crops[crop_cat1=='akkerbouw', crop_cat1 := 'arable']
   bln_crops[crop_cat1=='mais', crop_cat1 := 'maize']

@@ -17,9 +17,9 @@ Depends:
 Imports: 
     checkmate,
     data.table,
-    OBIC,
+    OBIC
 License: 
-    GPL-3
+    GPL-3 + file LICENSE
 URL: https://github.com/AgroCares/BLN
 BugReports: https://github.com/AgroCares/BLN/issues
 Encoding: UTF-8
