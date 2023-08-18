@@ -1,0 +1,10 @@
+﻿bln_soil_id;bln_country;bln_soil_cat1;bln_soil_cat2
+1;NL;duinzand;sand
+2;NL;dekzand;sand
+3;NL;zeeklei;clay
+4;NL;rivierklei;clay
+5;NL;maasklei;clay
+6;NL;dalgrond;sand
+7;NL;moerige_klei;clay
+8;NL;veen;peat
+9;NL;loess;loess
