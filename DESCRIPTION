@@ -1,0 +1,33 @@
+Package: BLN
+Type: Package
+Title: Calculate the Soil Quality Assessment Score using the Dutch BLN framework
+Version: 0.0.1
+Authors@R: c(
+    person("Gerard", "Ros", email = "gerard.ros@nmi-agro.nl", role = c("aut","cre")),
+    person("Sven", "Verweij", email = "sven.verweij@nmi-agro.nl", role = "aut"),
+    person("Yuki", "Fujita", email = "yuki.fujita@nmi-agro.nl", role = "aut"),
+    person("Brent", "Riechelman", email = 'brent.riechelman@nmi-agro.nl', role = "aut"),
+    person("Nutriënten Managment Instituut", email = "nmi@nmi-agro.nl", role = "cph"))
+Description: The Dutch Soil Quality Assessment Framework (BLN) is a method to evaluate the quality of soils of agricultural fields in The Netherlands.
+    The soil quality score is based on various criteria: chemical, physical, biological soil functions are defined and evaluated in view of five ecosystem services.
+    By providing results of a soil analysis and field data the 'BLN' package can be use to calculate the scores, indicators and derivatives for soil quality assessment.
+    For agricultural functions it extends on the Open Soil Index R-package.
+Depends:
+    R (>= 3.5.0)
+Imports: 
+    checkmate,
+    data.table,
+    OBIC,
+License: 
+    GPL-3
+URL: https://github.com/AgroCares/BLN
+BugReports: https://github.com/AgroCares/BLN/issues
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.3
+Suggests: 
+    testthat (>= 2.1.0),
+    knitr,
+    rmarkdown,
+    covr
+VignetteBuilder: knitr
