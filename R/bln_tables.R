@@ -66,3 +66,40 @@
 #'   \item{bln_country}{the country name where the crop codes are applicable}
 #' }
 "bln_crops"
+
+#'Local Surface Water properties needed for BBWP functions
+#'
+#'This table gives the mean soil properties per LSW needed for the BBWP risk indicators in view of the soils contribution to water quality
+#'
+#'
+#' @format A data.frame with x rows and x columns:
+#' \describe{
+#'   \item{B_LSW_ID}{The LSW ID}
+#'   \item{B_SOM_LOI}{}
+#'   \item{B_CLAY_MI}{}
+#'   \item{B_SAND_MI}{}
+#'   \item{B_SILT_MI}{}
+#'   \item{B_N_RT}{}
+#'   \item{B_P_AL}{}
+#'   \item{B_P_CC}{}
+#'   \item{B_P_WA}{}
+#'   \item{B_P_SG}{}
+#'   \item{B_FE_OX}{}
+#'   \item{B_AL_OX}{}
+#'   \item{B_RO_R}{}
+#'   \item{B_SA_W}{}
+#'   \item{B_SOM_LOI_SD}{}
+#'   \item{B_CLAY_MI_SD}{}
+#'   \item{B_SAND_MI_SD}{}
+#'   \item{B_SILT_MI_SD}{}
+#'   \item{B_N_RT_SD}{}
+#'   \item{B_P_AL_SD}{}
+#'   \item{B_P_CC_SD}{}
+#'   \item{B_P_WA_SD}{}
+#'   \item{B_P_SG_SD}{}
+#'   \item{B_FE_OX_SD}{}
+#'   \item{B_AL_OX_SD}{}
+#'   \item{B_RO_R_SD}{}
+#'   \item{B_SA_W_SD}{}
+#' }
+"bln_lsw"
