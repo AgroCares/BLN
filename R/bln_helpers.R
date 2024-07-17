@@ -307,5 +307,29 @@ pFpara_class <- function(Pklei, Pleem, Psom, M50){
   return(dt[, list(ThetaR = thres, ThetaS = thsat, alfa = alpha, n, ksat = Ks)])
 }
 
+#' Helper function to weight and correct the risk and scores
+#'
+#' @param x The risk or score value to be weighted
+#' @param type Use the weighing function for indicators or score
+#' @param penalty (boolean) the option to apply a penalty for high risk BBWP field indicators
+#'
+#' @export
+wf <- function(x, type = "indicators", penalty = TRUE) {
+
+  if (type == "indicators" & penalty == TRUE) {
+
+    y <- 1 / (1 - x + 0.2)
+
+  } else if (type == "score" & penalty == TRUE) {
+
+    y <- 1 / (x * 0.01 + 0.2)
+
+  } else if(penalty == FALSE){
+
+    y = 1
+  }
+
+  return(y)
+}
 
 
