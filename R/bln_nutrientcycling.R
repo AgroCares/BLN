@@ -2,7 +2,7 @@
 #'
 #' This is the NUE calculation as being used in the BBWP framework
 #'
-#' @param B_LU_BBWP (character) The BBWP category used for allocation of measures to BBWP crop categories
+#' @param B_LU_BRP (numeric) The crop code
 #' @param B_GWL_CLASS (character) The groundwater table class
 #' @param B_HELP_WENR (character) The soil type abbreviation, derived from 1:50.000 soil map
 #' @param A_P_AL (numeric) The P-AL content of the soil
@@ -78,7 +78,7 @@ bln_nut_nue <- function(B_LU_BRP,B_HELP_WENR,B_GWL_CLASS,A_P_AL,A_P_CC,A_P_WA,
     # calculate the drought stress, as factor controlling N-efficiency on grassland
     dt[, npe_wdri := 1] # When B_HELP_WENR is `unknown`
     if (nrow(dt[B_HELP_WENR != 'unknown',]) > 0) {
-      dt[B_HELP_WENR != 'unknown', npe_wdri := calc_waterstressindex(
+      dt[B_HELP_WENR != 'unknown', npe_wdri := OBIC::calc_waterstressindex(
         B_HELP_WENR = B_HELP_WENR,
         B_LU_BRP = B_LU_BRP,
         B_GWL_CLASS = B_GWL_CLASS,
@@ -140,7 +140,7 @@ bln_nut_nue <- function(B_LU_BRP,B_HELP_WENR,B_GWL_CLASS,A_P_AL,A_P_CC,A_P_WA,
 
 #' Function to calculate and evaluate the nitrogen use efficiency in view of the soils' function to improve nutrient recycling
 #'
-#' @param B_LU_BBWP (character) The BBWP category used for allocation of measures to BBWP crop categories
+#' @param B_LU_BRP (numeric) The crop code
 #' @param B_SOILTYPE_AGR (character) The type of soil
 #' @param A_SOM_LOI (numeric) The organic matter content of the soil (\%)
 #' @param A_N_RT (numeric) The organic nitrogen content of the soil (mg N / kg)

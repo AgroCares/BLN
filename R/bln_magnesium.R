@@ -1,4 +1,4 @@
-#' Calculate the capacity of soils to supply Magnesium
+#' Calculate the capacity of soils to supply Magnesium for the BLN production function
 #'
 #' This function calculates an index for the availability of Magnesium in soil
 #'
@@ -13,6 +13,7 @@
 #' @param A_K_CC (numeric) The plant available potassium, extracted with 0.01M CaCl2 (mg per kg),
 #'
 #' @import data.table
+#' @import OBIC
 #'
 #' @return
 #' An index representing the availability of Magnesium in a soil. A numeric value.
@@ -57,9 +58,9 @@ bln_c_magnesium <- function(B_LU_BRP,B_SOILTYPE_AGR,A_SOM_LOI,A_CLAY_MI,
                                            A_K_CO_PO, A_MG_CC, A_K_CC)]
 
   # calculate the Mg supply indicator
-  dt[,i_c_mg := ind_magnesium(D_MG = D_MG,
-                              B_LU_BRP = B_LU_BRP,
-                              B_SOILTYPE_AGR = B_SOILTYPE_AGR)]
+  dt[,i_c_mg := OBIC::ind_magnesium(D_MG = D_MG,
+                                    B_LU_BRP = B_LU_BRP,
+                                    B_SOILTYPE_AGR = B_SOILTYPE_AGR)]
 
   # extract Mg indicator
   value <- dt[,i_c_mg]
