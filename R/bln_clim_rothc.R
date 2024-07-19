@@ -1,76 +1,3 @@
-#' Function to calculate and evaluate a default SOM balance
-#'
-#' @param B_LU_BRP (numeric) value of the BRP crop code
-#' @param A_SOM_LOI (numeric) value for the soil organic matter content of the soil
-#' @param A_P_AL (numeric) The P-AL content of the soil
-#' @param A_P_WA (numeric) The P-content of the soil extracted with water (mg P2O5 / 100 ml soil)
-#' @param M_COMPOST (numeric) The frequency that compost is applied (optional, every x years)
-#' @param M_GREEN (boolean) A soil measure. Are catch crops sown after main crop (optional)
-#
-#' @import data.table
-#' @import carboncastr
-#'
-#' @export
-bln_clim_cbalance <- function(B_LU_BRP,A_SOM_LOI,A_P_AL,A_P_WA,M_COMPOST = 0,M_GREEN = FALSE){
-
-  # make internal table
-  dt <- data.table(B_LU_BRP = B_LU_BRP,
-                   A_SOM_LOI = A_SOM_LOI,
-                   A_P_AL= A_P_AL,
-                   A_P_WA = A_P_WA,
-                   M_COMPOST = M_COMPOST,
-                   M_GREEN = M_GREEN
-                   )
-
-  # calculate the SOM balance using OBIC
-  dt[, D_SOM_BAL := OBIC::calc_sombalance(B_LU_BRP,A_SOM_LOI, A_P_AL, A_P_WA, M_COMPOST, M_GREEN)]
-
-  # calculate the distance to target
-  dt.cs[,i_clim_osb := OBIC::evaluate_logistic(x = D_SOM_BAL,  b = 0.0008144, x0 = 0, v = 0.9077174, increasing = TRUE)]
-
-  # return value
-  value <- dt[, i_clim_osb]
-
-  return(value)
-
-}
-
-#' Function to evaluate the carbon saturation via max C saturation potential estimated via ML modelling
-#'
-#' @param B_LU_BRP (numeric) value of the BRP crop code
-#' @param A_SOM_LOI (numeric) value for the soil organic matter content of the soil
-#' @param A_SOM_LOI_MLMAX (numeric) maximum value for the soil organic matter content of the soil estimated with ML model of Ros et al. (2024)
-#
-#' @import data.table
-#'
-#' @export
-bln_clim_csat <- function(B_LU_BRP,A_SOM_LOI,A_SOM_LOI_MLMAX = NA_real_){
-
-  # make internal table
-  dt <- data.table(B_LU_BRP = B_LU_BRP,
-                   A_SOM_LOI = A_SOM_LOI,
-                   A_SOM_LOI_MLMAX= A_SOM_LOI_MLMAX
-                   )
-
-  # merge with crop category
-  dt <- merge(dt,bln_crops[,.(crop_code,crop_cat1)],by.x = 'B_LU_BRP',by.y='crop_code',all.x=TRUE)
-
-  # make a very rough estimate via a linear regression model trained on C-saturation data in case that C-max unknown
-  dt[crop_cat1 %in% c('arable','maize'), cfcrop := 0.13569913]
-  dt[crop_cat1 == 'grassland', cfcrop := 0.01793042]
-  dt[crop_cat1 == 'nature', cfcrop := 0.05885480 ]
-  dt[is.na(A_SOM_LOI_MLMAX), A_SOM_LOI_MLMAX := 2.6018 + 0.8525 * A_SOM_LOI + 0.003067 * A_SOM_LOI^2 + A_CLAY_MI * cfcrop]
-
-  # calculate the distance to target
-  dt.cs[,i_clim_csat := pmin(1,A_SOM_LOI/A_SOM_LOI_MLMAX)]
-
-  # return value
-  value <- dt[, i_clim_csat]
-
-  return(value)
-
-}
-
 #' Function to evaluate the carbon saturation via RothC simulation
 #'
 #' @param ID (character) A field id
@@ -89,7 +16,7 @@ bln_clim_rothc <- function(ID,B_LU_BRP,A_SOM_LOI,A_CLAY_MI,quiet = FALSE){
                    B_LU_BRP = B_LU_BRP,
                    A_SOM_LOI = A_SOM_LOI,
                    A_CLAY_MI= A_CLAY_MI
-                   )
+  )
 
   # add progress bar, and initial settings
   pb = txtProgressBar(min = 0, max = length(unique(dt$ID)), initial = 0)
@@ -176,16 +103,16 @@ bln_rothc_field <- function(B_LU_BRP, A_SOM_LOI, A_CLAY_MI, simyears = 50, init 
 
     # Run simulation
     result <- carboncastr::cc_rothc_sim(crops = rotation,
-                           A_SOM_LOI = A_SOM_LOI[1],
-                           A_CLAY_MI = A_CLAY_MI[1],
-                           A_DEPTH = 0.3,
-                           cf_yield = if(i=='BAU') {1} else {1.05},
-                           M_TILLAGE_SYSTEM = "CT",
-                           weather = NULL,
-                           rothc_amendment = amendment,
-                           rothc_parms = list(simyears = simyears + spinup,
-                                              c_fractions = pool_fractions,
-                                              initialize = init))
+                                        A_SOM_LOI = A_SOM_LOI[1],
+                                        A_CLAY_MI = A_CLAY_MI[1],
+                                        A_DEPTH = 0.3,
+                                        cf_yield = if(i=='BAU') {1} else {1.05},
+                                        M_TILLAGE_SYSTEM = "CT",
+                                        weather = NULL,
+                                        rothc_amendment = amendment,
+                                        rothc_parms = list(simyears = simyears + spinup,
+                                                           c_fractions = pool_fractions,
+                                                           initialize = init))
     # set startyear to zero
     result[,year := year - min(year)]
 
@@ -462,11 +389,11 @@ rothc_parallel <- function(this.xs, dt.c, p = NULL, sdir = NULL){
 
     # run RothC
     out <- bln_rothc_field(B_LU_BRP = sim.dt$B_LU_BRP,
-                          A_SOM_LOI = sim.dt$A_SOM_LOI[1],
-                          A_CLAY_MI = sim.dt$A_CLAY_MI[1],
-                          simyears = 100,
-                          init = FALSE,
-                          scen = c('BAU','ALL'))
+                           A_SOM_LOI = sim.dt$A_SOM_LOI[1],
+                           A_CLAY_MI = sim.dt$A_CLAY_MI[1],
+                           simyears = 100,
+                           init = FALSE,
+                           scen = c('BAU','ALL'))
     out[,xs := this.xs]
 
     # show progress
