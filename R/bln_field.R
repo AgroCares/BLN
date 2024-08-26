@@ -257,13 +257,13 @@ bln_field <- function(B_LU_BRP,B_LU_BBWP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_
                                         A_SOM_LOI, M_GREEN, M_MECHWEEDS, M_PESTICIDES_DST)]
 
     # groundwater quantity and qality: nitrogen retention (I_E_NGW, from OBI)
-    dt[, i_gw_nret := bln_wat_nretention_gw(B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS, B_GWL_CLASS, A_SOM_LOI, A_N_RT)]
+    dt[, i_gw_nret := bln_wat_nretention_gw(ID, B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS, B_GWL_CLASS, A_SOM_LOI, A_N_RT)]
 
     # groundwater quantity and quality: nitrogen leaching (I_H_NGW, from OBI). M_GREEN FALSE (YF: otherwise too strong impact)
-    dt[, i_gw_nlea := bln_wat_nrisk_gw(B_LU_BRP, B_SC_WENR, B_GWL_CLASS, B_AER_CBS, B_DRAIN,
-                                     B_FERT_NORM_FR = 1, A_CLAY_MI, A_SAND_MI, A_SILT_MI, A_SOM_LOI,
-                                     A_P_AL, A_P_WA, A_P_CC, A_PH_CC, A_CEC_CO, A_K_CO_PO, A_K_CC,
-                                     M_GREEN = FALSE)]
+    dt[, i_gw_nlea := bln_wat_nrisk_gw(ID, B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS, B_DRAIN,B_GWL_CLASS,B_SC_WENR,B_FERT_NORM_FR = 1,
+                                       A_CLAY_MI,A_SAND_MI, A_SILT_MI, A_SOM_LOI,A_P_AL, A_P_WA, A_P_CC,
+                                       A_PH_CC, A_CEC_CO,A_K_CO_PO, A_K_CC,
+                                       M_GREEN = FALSE)]
 
   # calculate BLN regulation and purification of water (surface water)
 
