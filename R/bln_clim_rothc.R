@@ -12,13 +12,22 @@
 #' @export
 bln_clim_rothc <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI,quiet = FALSE){
 
-  # make internal table
+  # Check inputs
+  arg.length <- max(length(B_LU_BRP), length(A_SOM_LOI), length(A_CLAY_MI))
+  checkmate::assert_numeric(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)
+  checkmate::assert_subset(B_LU_BRP, choices = unique(bln_crops$crop_code), empty.ok = FALSE)
+  checkmate::assert_numeric(A_CLAY_MI, lower = 0, upper = 100, any.missing = FALSE, min.len = 1)
+  checkmate::assert_numeric(A_SOM_LOI, lower = 0.1, upper = 100, any.missing = FALSE, min.len = 1, len = arg.length)
+  checkmate::assert_numeric(B_GWL_GLG, lower = 0, any.missing = FALSE, len = arg.length)
+  if(length(ID)>1){checkmate::assert_true(length(ID) == arg.length)}
+  checkmate::assert_logical(quiet)
+
+  # make internal table (set clay to 75 max given checkmate in carboncastr)
   dt <- data.table(ID = ID,
                    B_LU_BRP = B_LU_BRP,
                    B_GWL_GLG = B_GWL_GLG,
                    A_SOM_LOI = A_SOM_LOI,
-                   A_CLAY_MI= A_CLAY_MI
-  )
+                   A_CLAY_MI= pmin(75,A_CLAY_MI))
 
   # add progress bar
   if(!quiet) {pb = txtProgressBar(min = 0, max = length(unique(dt$ID)), initial = 0)}

@@ -14,14 +14,25 @@
 #' @export
 bln_clim_cbalance <- function(ID,B_LU_BRP,A_SOM_LOI,A_P_AL,A_P_WA,M_COMPOST = 0,M_GREEN = FALSE){
 
+  # Check inputs
+  arg.length <- max(length(B_LU_BRP), length(A_SOM_LOI), length(A_P_AL), length(A_P_WA))
+  checkmate::assert_integerish(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)
+  checkmate::assert_subset(B_LU_BRP, choices = unique(bln_crops$crop_code), empty.ok = FALSE)
+  checkmate::assert_numeric(A_SOM_LOI, lower = 0.1, upper = 100, any.missing = FALSE, min.len = 1, len = arg.length)
+  checkmate::assert_numeric(A_P_AL, lower = 1, upper = 250, any.missing = FALSE, len = arg.length)
+  checkmate::assert_numeric(A_P_WA, lower = 1, upper = 250, any.missing = FALSE, len = arg.length)
+  checkmate::assert_numeric(M_COMPOST, lower = 0, upper = 100, any.missing = FALSE, len = arg.length)
+  checkmate::assert_logical(M_GREEN,any.missing = FALSE, len = arg.length)
+
   # make internal table
   dt <- data.table(ID = ID,
                    B_LU_BRP = B_LU_BRP,
-                   A_SOM_LOI = A_SOM_LOI,
-                   A_P_AL= A_P_AL,
-                   A_P_WA = A_P_WA,
+                   A_SOM_LOI = as.numeric(A_SOM_LOI),
+                   A_P_AL= as.numeric(A_P_AL),
+                   A_P_WA = as.numeric(A_P_WA),
                    M_COMPOST = M_COMPOST,
-                   M_GREEN = M_GREEN
+                   M_GREEN = M_GREEN,
+                   value = NA_real_
                    )
 
   # set compost to zero if NA
@@ -41,10 +52,10 @@ bln_clim_cbalance <- function(ID,B_LU_BRP,A_SOM_LOI,A_P_AL,A_P_WA,M_COMPOST = 0,
                                           M_COMPOST,M_GREEN),by=ID]
 
   # calculate the distance to target
-  dt[,i_clim_osb := OBIC::evaluate_logistic(x = D_SOM_BAL,  b = 0.0008144, x0 = 0, v = 0.9077174, increasing = TRUE)]
+  dt[,value := OBIC::evaluate_logistic(x = D_SOM_BAL,  b = 0.0008144, x0 = 0, v = 0.9077174, increasing = TRUE)]
 
-  # return value
-  value <- dt[, i_clim_osb]
+  # return value i_clim_osb
+  value <- dt[, value]
 
   return(value)
 
