@@ -9,6 +9,20 @@
   # loaddata
   bln_parms <- fread('dev/bln_parameters.csv',encoding = 'UTF-8')
 
+  # remove prefix
+  setnames(bln_parms,gsub('bln_parm_','',colnames(bln_parms)))
+
+  # Unpack options
+  for(this.code in bln_parms[enum == TRUE, code]){
+    if(grepl('_HELP$',this.code)){
+      bln_parms[code == this.code, choices := list(pandex::enum_opts('B_HELP_WENR'))]
+    } else {
+      bln_parms[code == this.code, choices := list(pandex::enum_opts(this.code))]
+    }
+
+  }
+  bln_parms[code == 'B_GWL_CLASS', choices := list(paste0('Gt',pandex::enum_opts("B_GWL_CLASS")))]
+
   # save updated BLN parameter table
   usethis::use_data(bln_parms,overwrite = TRUE)
 
