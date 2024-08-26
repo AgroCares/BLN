@@ -1,9 +1,9 @@
 #' Function to calculate and evaluate the N leaching risks in soils in view of water purification for groundwater quality
 #'
+#' @param ID (character) A field id
 #' @param B_LU_BRP (numeric) The crop code
 #' @param B_SOILTYPE_AGR (character) The agricultural type of soil
 #' @param B_AER_CBS (character) The agricultural economic region in the Netherlands (CBS, 2016)
-#' @param B_DRAIN (boolean) Are drains installed to drain the field (options: yes or no)
 #' @param B_GWL_CLASS (character) The groundwater table class
 #' @param B_SC_WENR (character) The risk for subsoil compaction as derived from risk assessment study of Van den Akker (2006).
 #' @param B_FERT_NORM_FR (numeric) The fraction of the application norm utilized
@@ -24,18 +24,54 @@
 #' @import OBIC
 #'
 #' @export
-bln_wat_nrisk_gw <- function(B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_AER_CBS,B_DRAIN,B_FERT_NORM_FR = 1,
+bln_wat_nrisk_gw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLASS,B_SC_WENR,B_FERT_NORM_FR = 1,
                              A_CLAY_MI,A_SAND_MI, A_SILT_MI, A_SOM_LOI,A_P_AL, A_P_WA, A_P_CC,
                              A_PH_CC, A_CEC_CO,A_K_CO_PO, A_K_CC,
                              M_GREEN){
 
+  # make internal copy
+  blnp <- BLN::bln_parms
+
+  # Check input
+  arg.length <- max(length(B_LU_BRP),length(B_SOILTYPE_AGR), length(B_AER_CBS),
+                    length(B_GWL_CLASS),length(B_SC_WENR),length(B_FERT_NORM_FR),
+                    length(A_CLAY_MI),length(A_SAND_MI),length(A_SILT_MI),length(A_SOM_LOI),
+                    length(A_P_AL),length(A_P_WA),length(A_P_CC),length(A_PH_CC),
+                    length(A_CEC_CO),length(A_K_CO_PO),length(A_K_CC),length(M_GREEN))
+
+  checkmate::assert_integerish(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)
+  checkmate::assert_subset(B_LU_BRP, choices = unique(bln_crops$crop_code), empty.ok = FALSE)
+  checkmate::assert_subset(B_SOILTYPE_AGR, choices = unlist(blnp[code == "B_SOILTYPE_AGR", choices]))
+  checkmate::assert_character(B_SOILTYPE_AGR, len = arg.length)
+  checkmate::assert_subset(B_AER_CBS, choices = unlist(blnp[code == "B_AER_CBS", choices]))
+  checkmate::assert_character(B_AER_CBS, len = arg.length)
+  checkmate::assert_subset(B_GWL_CLASS, choices = unlist(blnp[code == "B_GWL_CLASS", choices]))
+  checkmate::assert_character(B_GWL_CLASS, len = arg.length)
+  checkmate::assert_subset(B_SC_WENR, choices = unlist(blnp[code == "B_SC_WENR", choices]))
+  checkmate::assert_integerish(B_SC_WENR, len = arg.length)
+  checkmate::assert_numeric(B_FERT_NORM_FR, lower = 0, upper = 1, any.missing = FALSE, len = arg.length)
+  checkmate::assert_logical(M_GREEN,min.len = 1)
+
+  # check inputs A parameters
+  checkmate::assert_numeric(A_CLAY_MI, lower = blnp[code == "A_CLAY_MI", value_min], upper = blnp[code == "A_CLAY_MI", value_max],len = arg.length)
+  checkmate::assert_numeric(A_SAND_MI, lower = blnp[code == "A_SAND_MI", value_min], upper = blnp[code == "A_SAND_MI", value_max],len = arg.length)
+  checkmate::assert_numeric(A_SILT_MI, lower = blnp[code == "A_SILT_MI", value_min], upper = blnp[code == "A_SILT_MI", value_max],len = arg.length)
+  checkmate::assert_numeric(A_SOM_LOI, lower = blnp[code == "A_SOM_LOI", value_min], upper = blnp[code == "A_SOM_LOI", value_max],len = arg.length)
+  checkmate::assert_numeric(A_P_AL, lower = blnp[code == "A_P_AL", value_min], upper = blnp[code == "A_P_AL", value_max],len = arg.length)
+  checkmate::assert_numeric(A_P_WA, lower = blnp[code == "A_P_WA", value_min], upper = blnp[code == "A_P_WA", value_max],len = arg.length)
+  checkmate::assert_numeric(A_P_CC, lower = blnp[code == "A_P_CC", value_min], upper = blnp[code == "A_P_CC", value_max],len = arg.length)
+  checkmate::assert_numeric(A_PH_CC, lower = blnp[code == "A_PH_CC", value_min], upper = blnp[code == "A_PH_CC", value_max],len = arg.length)
+  checkmate::assert_numeric(A_CEC_CO, lower = blnp[code == "A_CEC_CO", value_min], upper = blnp[code == "A_CEC_CO", value_max],len = arg.length)
+  checkmate::assert_numeric(A_K_CO_PO, lower = blnp[code == "A_K_CO_PO", value_min], upper = blnp[code == "A_K_CO_PO", value_max],len = arg.length)
+  checkmate::assert_numeric(A_K_CC, lower = blnp[code == "A_K_CC", value_min], upper = blnp[code == "A_K_CC", value_max],len = arg.length)
+
   # make internal table
-  dt <- data.table(id = 1:length(B_LU_BRP),
+  dt <- data.table(FIELD_ID = ID,
+                   CROP_ID = 1:length(B_LU_BRP),
                    B_LU_BRP = B_LU_BRP,
                    B_SC_WENR=as.character(B_SC_WENR),
                    B_GWL_CLASS=B_GWL_CLASS,
                    B_AER_CBS=B_AER_CBS,
-                   B_DRAIN=B_DRAIN,
                    B_FERT_NORM_FR=B_FERT_NORM_FR,
                    A_CLAY_MI=A_CLAY_MI,
                    A_SAND_MI=A_SAND_MI,
@@ -48,7 +84,8 @@ bln_wat_nrisk_gw <- function(B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_AER_CBS,B_DRAIN,B_
                    A_CEC_CO = A_CEC_CO,
                    A_K_CO_PO = A_K_CO_PO,
                    A_K_CC = A_K_CC,
-                   M_GREEN = M_GREEN)
+                   M_GREEN = M_GREEN,
+                   value = NA_real_)
 
   ### format inputs for OBIC
   dt[, B_SC_WENR := OBIC::format_soilcompaction(B_SC_WENR)]
@@ -56,14 +93,14 @@ bln_wat_nrisk_gw <- function(B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_AER_CBS,B_DRAIN,B_
   dt[, B_AER_CBS := OBIC::format_aer(B_AER_CBS)]
 
   # Calculate the crop rotation fraction
-  dt[, D_CP_STARCH := OBIC::calc_rotation_fraction(ID=id, B_LU_BRP, crop = "starch")]
-  dt[, D_CP_POTATO := OBIC::calc_rotation_fraction(ID=id, B_LU_BRP, crop = "potato")]
-  dt[, D_CP_SUGARBEET := OBIC::calc_rotation_fraction(ID=id, B_LU_BRP, crop = "sugarbeet")]
-  dt[, D_CP_GRASS := OBIC::calc_rotation_fraction(ID=id, B_LU_BRP, crop = "grass")]
-  dt[, D_CP_MAIS := OBIC::calc_rotation_fraction(ID=id, B_LU_BRP, crop = "mais")]
-  dt[, D_CP_OTHER := OBIC::calc_rotation_fraction(ID=id, B_LU_BRP, crop = "other")]
-  dt[, D_CP_RUST := OBIC::calc_rotation_fraction(ID=id, B_LU_BRP, crop = "rustgewas")]
-  dt[, D_CP_RUSTDEEP := OBIC::calc_rotation_fraction(ID=id, B_LU_BRP, crop = "rustgewasdiep")]
+  dt[, D_CP_STARCH := OBIC::calc_rotation_fraction(ID=FIELD_ID, B_LU_BRP, crop = "starch")]
+  dt[, D_CP_POTATO := OBIC::calc_rotation_fraction(ID=FIELD_ID, B_LU_BRP, crop = "potato")]
+  dt[, D_CP_SUGARBEET := OBIC::calc_rotation_fraction(ID=FIELD_ID, B_LU_BRP, crop = "sugarbeet")]
+  dt[, D_CP_GRASS := OBIC::calc_rotation_fraction(ID=FIELD_ID, B_LU_BRP, crop = "grass")]
+  dt[, D_CP_MAIS := OBIC::calc_rotation_fraction(ID=FIELD_ID, B_LU_BRP, crop = "mais")]
+  dt[, D_CP_OTHER := OBIC::calc_rotation_fraction(ID=FIELD_ID, B_LU_BRP, crop = "other")]
+  dt[, D_CP_RUST := OBIC::calc_rotation_fraction(ID=FIELD_ID, B_LU_BRP, crop = "rustgewas")]
+  dt[, D_CP_RUSTDEEP := OBIC::calc_rotation_fraction(ID=FIELD_ID, B_LU_BRP, crop = "rustgewasdiep")]
 
   # estimate derivates for availability P, K and acidity
   dt[, D_PBI := OBIC::calc_phosphate_availability(B_LU_BRP, A_P_AL, A_P_CC, A_P_WA)]
@@ -87,10 +124,10 @@ bln_wat_nrisk_gw <- function(B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_AER_CBS,B_DRAIN,B_
                                               B_FERT_NORM_FR = B_FERT_NORM_FR)]
 
   # calculate indicator for N retention in view of groundwater quality
-  dt[, I_H_NGW := OBIC::ind_n_efficiency(D_NLEACH_GW,'gw')]
+  dt[, value := OBIC::ind_n_efficiency(D_NLEACH_GW,'gw')]
 
-  # extract value
-  value <- dt[, I_H_NGW]
+  # extract value I_H_NGW
+  value <- dt[, value]
 
   # return value
   return(value)

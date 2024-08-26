@@ -27,6 +27,31 @@ bln_bbwp_ngw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GWP,B_
   dt.crop <- BLN::bln_crops[bln_country=='NL']
   dt.soil <- BLN::bln_soiltype[bln_country=='NL']
 
+  # make internal copy
+  blnp <- BLN::bln_parms
+
+  # check inputs B parameters
+  arg.length <- max(length(B_LU_BRP),length(B_SOILTYPE_AGR), length(B_SC_WENR),length(B_AER_CBS),
+                    length(B_GWP),length(B_GWL_CLASS),length(A_SOM_LOI),length(A_N_RT))
+  checkmate::assert_subset(B_LU_BRP, choices = unlist(bln_crops$crop_code))
+  checkmate::assert_integerish(B_LU_BRP, len = arg.length)
+  checkmate::assert_subset(B_SOILTYPE_AGR, choices = unlist(blnp[code == "B_SOILTYPE_AGR", choices]))
+  checkmate::assert_character(B_SOILTYPE_AGR, len = arg.length)
+  checkmate::assert_subset(B_SC_WENR, choices = unlist(blnp[code == "B_SC_WENR", choices]))
+  checkmate::assert_integerish(B_SC_WENR, len = arg.length)
+  checkmate::assert_subset(B_AER_CBS, choices = unlist(blnp[code == "B_AER_CBS", choices]))
+  checkmate::assert_character(B_AER_CBS, len = arg.length)
+  checkmate::assert_logical(B_GWP,len = arg.length)
+  checkmate::assert_subset(B_GWL_CLASS, choices = unlist(blnp[code == "B_GWL_CLASS", choices]))
+  checkmate::assert_character(B_GWL_CLASS, len = arg.length)
+  checkmate::assert_logical(penalty,len = 1)
+  if(length(B_N_RT)>1){checkmate::assert_numeric(B_N_RT,lower =blnp[code == "A_N_RT", value_min], upper = blnp[code == "A_N_RT", value_max],len = arg.length)}
+  if(length(B_N_RT_SD)>1){checkmate::assert_numeric(B_N_RT,lower = 0, upper = blnp[code == "A_N_RT", value_max],len = arg.length)}
+
+  # check inputs A parameters
+  checkmate::assert_numeric(A_SOM_LOI, lower = blnp[code == "A_SOM_LOI", value_min], upper = blnp[code == "A_SOM_LOI", value_max],len = arg.length)
+  checkmate::assert_numeric(A_N_RT, lower = blnp[code == "A_N_RT", value_min], upper = blnp[code == "A_N_RT", value_max],len = arg.length)
+
   # make internal table
   dt <- data.table(FIELD_ID = ID,
                    CROP_ID = 1:length(B_LU_BRP),

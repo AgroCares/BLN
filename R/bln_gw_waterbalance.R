@@ -22,6 +22,29 @@ bln_bbwp_bw <- function(ID,B_LU_BRP,B_HELP_WENR,B_GWL_CLASS,B_AREA_DROUGHT,A_CLA
   # load internal table
   dt.crop <- BLN::bln_crops[bln_country=='NL']
 
+
+  # make internal copy
+  blnp <- BLN::bln_parms
+
+  # check inputs B parameters
+  arg.length <- max(length(B_LU_BRP),length(B_HELP_WENR), length(B_GWL_CLASS),length(B_AREA_DROUGHT),
+                    length(A_CLAY_MI),length(A_SAND_MI),length(A_SILT_MI),
+                    length(A_SOM_LOI))
+  checkmate::assert_subset(B_LU_BRP, choices = unlist(bln_crops$crop_code))
+  checkmate::assert_integerish(B_LU_BRP, len = arg.length)
+  checkmate::assert_subset(B_HELP_WENR, choices = unlist(blnp[code == "B_HELP_WENR", choices]))
+  checkmate::assert_character(B_HELP_WENR, len = arg.length)
+  checkmate::assert_subset(B_GWL_CLASS, choices = unlist(blnp[code == "B_GWL_CLASS", choices]))
+  checkmate::assert_character(B_GWL_CLASS, len = arg.length)
+  checkmate::assert_logical(B_AREA_DROUGHT,len = arg.length)
+  checkmate::assert_logical(penalty,len = 1)
+
+  # check inputs A parameters
+  checkmate::assert_numeric(A_CLAY_MI, lower = blnp[code == "A_CLAY_MI", value_min], upper = blnp[code == "A_CLAY_MI", value_max],len = arg.length)
+  checkmate::assert_numeric(A_SAND_MI, lower = blnp[code == "A_SAND_MI", value_min], upper = blnp[code == "A_SAND_MI", value_max],len = arg.length)
+  checkmate::assert_numeric(A_SILT_MI, lower = blnp[code == "A_SILT_MI", value_min], upper = blnp[code == "A_SILT_MI", value_max],len = arg.length)
+  checkmate::assert_numeric(A_SOM_LOI, lower = blnp[code == "A_SOM_LOI", value_min], upper = blnp[code == "A_SOM_LOI", value_max],len = arg.length)
+
   # make internal table
   dt <- data.table(FIELD_ID = ID,
                    CROP_ID = 1:length(B_LU_BRP),
@@ -32,7 +55,8 @@ bln_bbwp_bw <- function(ID,B_LU_BRP,B_HELP_WENR,B_GWL_CLASS,B_AREA_DROUGHT,A_CLA
                    A_CLAY_MI = A_CLAY_MI,
                    A_SAND_MI = A_SAND_MI,
                    A_SILT_MI = A_SILT_MI,
-                   A_SOM_LOI = A_SOM_LOI
+                   A_SOM_LOI = A_SOM_LOI,
+                   value = NA_real_
                    )
 
   # merge with crop category

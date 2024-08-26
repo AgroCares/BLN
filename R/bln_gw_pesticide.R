@@ -20,6 +20,29 @@ bln_wat_pesticide <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,
                               A_CLAY_MI,A_SAND_MI, A_SILT_MI, A_SOM_LOI,
                               M_GREEN,M_MECHWEEDS,M_PESTICIDES_DST){
 
+
+  # make internal copy
+  blnp <- BLN::bln_parms
+
+  # length of inpurt arguments
+  arg.length <- max(length(B_LU_BRP),length(B_SOILTYPE_AGR),
+                    length(A_CLAY_MI),length(A_SAND_MI),length(A_SILT_MI),
+                    length(A_SOM_LOI),length(M_GREEN),length(M_MECHWEEDS),length(M_PESTICIDES_DST))
+
+  checkmate::assert_integerish(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)
+  checkmate::assert_subset(B_LU_BRP, choices = unique(bln_crops$crop_code), empty.ok = FALSE)
+  checkmate::assert_subset(B_SOILTYPE_AGR, choices = unlist(blnp[code == "B_SOILTYPE_AGR", choices]))
+  checkmate::assert_character(B_SOILTYPE_AGR, len = arg.length)
+
+  # check inputs A parameters
+  checkmate::assert_numeric(A_CLAY_MI, lower = blnp[code == "A_CLAY_MI", value_min], upper = blnp[code == "A_CLAY_MI", value_max],len = arg.length)
+  checkmate::assert_numeric(A_SAND_MI, lower = blnp[code == "A_SAND_MI", value_min], upper = blnp[code == "A_SAND_MI", value_max],len = arg.length)
+  checkmate::assert_numeric(A_SILT_MI, lower = blnp[code == "A_SILT_MI", value_min], upper = blnp[code == "A_SILT_MI", value_max],len = arg.length)
+  checkmate::assert_numeric(A_SOM_LOI, lower = blnp[code == "A_SOM_LOI", value_min], upper = blnp[code == "A_SOM_LOI", value_max],len = arg.length)
+  checkmate::assert_logical(M_GREEN, any.missing = FALSE, len = arg.length)
+  checkmate::assert_logical(M_MECHWEEDS, any.missing = FALSE, len = arg.length)
+  checkmate::assert_logical(M_PESTICIDES_DST, any.missing = FALSE, len = arg.length)
+
   # make internal table
   dt <- data.table(FIELD_ID = ID,
                    id = 1:length(B_LU_BRP),
@@ -31,8 +54,8 @@ bln_wat_pesticide <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,
                    A_SOM_LOI = A_SOM_LOI,
                    M_GREEN = M_GREEN,
                    M_MECHWEEDS=M_MECHWEEDS,
-                   M_PESTICIDES_DST = M_PESTICIDES_DST
-  )
+                   M_PESTICIDES_DST = M_PESTICIDES_DST,
+                   value = NA_real_)
 
   # estimate derivatives for precipidation surplus
   dt[, D_PSP := OBIC::calc_psp(B_LU_BRP,M_GREEN), by = FIELD_ID]
@@ -48,10 +71,10 @@ bln_wat_pesticide <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,
                                                     M_MECHWEEDS)]
 
   # calculate indicator for pesticide retention in view of surface water quality
-  dt[, I_H_PEST := OBIC::ind_n_efficiency(D_PESTICIDE,'sw')]
+  dt[, value := OBIC::ind_pesticide_leaching(D_PESTICIDE)]
 
-  # extract value
-  value <- dt[, I_H_PEST]
+  # extract value I_H_PEST
+  value <- dt[, value]
 
   # return value
   return(value)
