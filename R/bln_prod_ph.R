@@ -2,6 +2,7 @@
 #'
 #' This functions evaluates the difference between the measured pH and the optimal pH according to the Bemestingsadvies
 #'
+#' @param ID (character) A field id
 #' @param B_LU_BRP (numeric) The crop code from the BRP
 #' @param B_SOILTYPE_AGR (character) The agricultural type of soil
 #' @param A_SOM_LOI (numeric) The organic matter content of soil in percentage
@@ -17,7 +18,7 @@
 #' The bln indicator for the soil pH
 #'
 #' @export
-bln_c_ph <- function(B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI, A_CLAY_MI, A_PH_CC) {
+bln_c_ph <- function(ID,B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI, A_CLAY_MI, A_PH_CC) {
 
   # Check inputs
   arg.length <- max(length(A_PH_CC), length(B_SOILTYPE_AGR), length(A_SOM_LOI), length(A_CLAY_MI),
@@ -31,7 +32,8 @@ bln_c_ph <- function(B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI, A_CLAY_MI, A_PH_CC) {
   checkmate::assert_subset(B_LU_BRP, choices = unique(BLN::bln_crops$crop_code), empty.ok = FALSE)
 
   # Collect information in table
-  dt <- data.table(ID = 1:arg.length,
+  dt <- data.table(FIELD_ID = ID,
+                   oid = 1:arg.length,
                    B_LU_BRP = B_LU_BRP,
                    B_SOILTYPE_AGR = B_SOILTYPE_AGR,
                    A_SOM_LOI = A_SOM_LOI,
@@ -40,14 +42,14 @@ bln_c_ph <- function(B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI, A_CLAY_MI, A_PH_CC) {
                   )
 
   # Calculate the crop rotation fraction
-  dt[, D_CP_STARCH := calc_rotation_fraction(ID, B_LU_BRP, crop = "starch")]
-  dt[, D_CP_POTATO := calc_rotation_fraction(ID, B_LU_BRP, crop = "potato")]
-  dt[, D_CP_SUGARBEET := calc_rotation_fraction(ID, B_LU_BRP, crop = "sugarbeet")]
-  dt[, D_CP_GRASS := calc_rotation_fraction(ID, B_LU_BRP, crop = "grass")]
-  dt[, D_CP_MAIS := calc_rotation_fraction(ID, B_LU_BRP, crop = "mais")]
-  dt[, D_CP_OTHER := calc_rotation_fraction(ID, B_LU_BRP, crop = "other")]
-  dt[, D_CP_RUST := calc_rotation_fraction(ID, B_LU_BRP, crop = "rustgewas")]
-  dt[, D_CP_RUSTDEEP := calc_rotation_fraction(ID, B_LU_BRP, crop = "rustgewasdiep")]
+  dt[, D_CP_STARCH := calc_rotation_fraction(FIELD_ID, B_LU_BRP, crop = "starch")]
+  dt[, D_CP_POTATO := calc_rotation_fraction(FIELD_ID, B_LU_BRP, crop = "potato")]
+  dt[, D_CP_SUGARBEET := calc_rotation_fraction(FIELD_ID, B_LU_BRP, crop = "sugarbeet")]
+  dt[, D_CP_GRASS := calc_rotation_fraction(FIELD_ID, B_LU_BRP, crop = "grass")]
+  dt[, D_CP_MAIS := calc_rotation_fraction(FIELD_ID, B_LU_BRP, crop = "mais")]
+  dt[, D_CP_OTHER := calc_rotation_fraction(FIELD_ID, B_LU_BRP, crop = "other")]
+  dt[, D_CP_RUST := calc_rotation_fraction(FIELD_ID, B_LU_BRP, crop = "rustgewas")]
+  dt[, D_CP_RUSTDEEP := calc_rotation_fraction(FIELD_ID, B_LU_BRP, crop = "rustgewasdiep")]
 
   # calculate the distance to optimum pH
   dt[, D_PH_DELTA := OBIC::calc_ph_delta(B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI,

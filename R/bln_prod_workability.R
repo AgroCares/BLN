@@ -41,7 +41,7 @@ bln_p_workability <- function(A_CLAY_MI, A_SILT_MI, B_LU_BRP, B_SOILTYPE_AGR,
   checkmate::assert_numeric(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)
   checkmate::assert_subset(B_LU_BRP, choices = unique(BLN::bln_crops$crop_code), empty.ok = FALSE)
   checkmate::assert_character(B_SOILTYPE_AGR, any.missing = FALSE, min.len = 1, len = arg.length)
-  checkmate::assert_subset(B_SOILTYPE_AGR, choices = unique(BLN::bln_soiltype$soiltype), empty.ok = FALSE)
+  checkmate::assert_subset(B_SOILTYPE_AGR, choices = unique(BLN::bln_soiltype$bln_soil_cat1), empty.ok = FALSE)
   checkmate::assert_numeric(B_GWL_GLG, lower = 0, any.missing = FALSE, len = arg.length)
   checkmate::assert_numeric(B_GWL_GHG, lower = 0, any.missing = FALSE, len = arg.length)
   checkmate::assert_true(all(B_GWL_GHG < B_GWL_GLG))

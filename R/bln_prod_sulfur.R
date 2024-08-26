@@ -19,7 +19,7 @@ bln_c_sulfur <- function(B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS,A_SOM_LOI,A_S_RT) {
 
   # Check input
   arg.length <- max(length(A_S_RT), length(A_SOM_LOI), length(B_LU_BRP),
-                    length(B_SOILTYPE_AGR), length(B_AER_CBS),length(D_BDS))
+                    length(B_SOILTYPE_AGR), length(B_AER_CBS))
   checkmate::assert_numeric(A_S_RT, lower = 0, upper = 10000, any.missing = FALSE, len = arg.length)
   checkmate::assert_numeric(A_SOM_LOI, lower = 0, upper = 100, any.missing = FALSE, len = arg.length)
   checkmate::assert_numeric(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)
@@ -32,7 +32,6 @@ bln_c_sulfur <- function(B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS,A_SOM_LOI,A_S_RT) {
                                                   'Waterland en Droogmakerijen','Westelijk Holland','IJsselmeerpolders',
                                                   'Centraal Veehouderijgebied','Oostelijk Veehouderijgebied','Noordelijk Weidegebied',
                                                   'Veenkolonien en Oldambt', 'Veenkoloni\xebn en Oldambt','Bouwhoek en Hogeland'), empty.ok = FALSE)
-  checkmate::assert_numeric(D_BDS, lower = 100, upper = 1900, any.missing = FALSE, len = arg.length)
 
   # Collect data in a table
   dt <- data.table(id = 1:arg.length,

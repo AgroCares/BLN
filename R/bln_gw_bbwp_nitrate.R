@@ -2,6 +2,7 @@
 #'
 #' This function gives the NGW score of the BBWP framework
 #'
+#' @param ID (character) A field id
 #' @param B_LU_BRP (numeric) The crop code
 #' @param B_SOILTYPE_AGR (character) The agricultural type of soil
 #' @param B_AER_CBS (character) The agricultural economic region in the Netherlands (CBS, 2016)
@@ -18,7 +19,7 @@
 #' @import OBIC
 #'
 #' @export
-bln_bbwp_ngw <- function(B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GW,B_GWL_CLASS,A_SOM_LOI,A_N_RT,
+bln_bbwp_ngw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GWP,B_GWL_CLASS,A_SOM_LOI,A_N_RT,
                          B_N_RT = NA_real_,B_N_RT_SD = NA_real_, penalty = TRUE){
 
   # load internal table
@@ -27,7 +28,8 @@ bln_bbwp_ngw <- function(B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GW,B_GWL_
   dt.soil <- BLN::bln_soiltype[bln_country=='NL']
 
   # make internal table
-  dt <- data.table(id = 1:length(B_LU_BRP),
+  dt <- data.table(FIELD_ID = ID,
+                   CROP_ID = 1:length(B_LU_BRP),
                    B_LU_BRP = B_LU_BRP,
                    B_SC_WENR = B_SC_WENR,
                    B_SOILTYPE_AGR = B_SOILTYPE_AGR,
@@ -56,12 +58,13 @@ bln_bbwp_ngw <- function(B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GW,B_GWL_
 
   # reclassify soil compaction risk (scr) into a numeric value
   # a high value is indicative of high risk of leaching of nitrogen to groundwater
-  dt[B_SC_WENR %in% c(902, 901, 401),ngw_scr := 1]
-  dt[B_SC_WENR == 1, ngw_scr := 1]
-  dt[B_SC_WENR %in% c(2, 10), ngw_scr := 0.8]
-  dt[B_SC_WENR == 3, ngw_scr := 0.6]
-  dt[B_SC_WENR == 4, ngw_scr := 0.4]
-  dt[B_SC_WENR %in% c(5, 11), ngw_scr := 0.2]
+  dt[,B_SC_WENR := tolower(B_SC_WENR)]
+  dt[grepl('bebouwing|water|glastuinbouw|^401$|^901$|^902$',B_SC_WENR),ngw_scr := 1]
+  dt[grepl('zeer beperkt|^1$',B_SC_WENR), ngw_scr := 1]
+  dt[grepl('^beperkt|^2$|^10$',B_SC_WENR), ngw_scr := 0.8]
+  dt[grepl('matig|^3$',B_SC_WENR),ngw_scr := 0.6]
+  dt[grepl('^groot|^4$',B_SC_WENR), ngw_scr := 0.4]
+  dt[grepl('zeer groot|nature|^5$|^11$', B_SC_WENR), ngw_scr := 0.2]
 
   # Re-categorize crop and soil types to match OBIC table
   dt[crop_cat1 == 'arable',crop_cat1_nl := 'akkerbouw']
@@ -72,7 +75,7 @@ bln_bbwp_ngw <- function(B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GW,B_GWL_
   dt[bln_soil_cat2 == 'peat', bln_soil_cat2_nl := 'veen']
 
   # merge fraction of N leaching into 'dt', based on soil type x crop type x grondwatertrap
-  dt <- merge(dt, OBIC::nleach_table[, list(bln_soil_cat2_nl = bodem, crop_cat1_nl = gewas, B_GWL_CLASS = B_GT, nf)],
+  dt <- merge(dt, OBIC::nleach_table[leaching_to_set=='gw', list(bln_soil_cat2_nl = bodem, crop_cat1_nl = gewas, B_GWL_CLASS = B_GT, nf)],
               by = c("bln_soil_cat2_nl", "crop_cat1_nl", "B_GWL_CLASS"), all.x = TRUE)
 
   # for situations that nf is unknown
@@ -88,10 +91,10 @@ bln_bbwp_ngw <- function(B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GW,B_GWL_
   # estimate field indicators
 
   # columns to be selected
-  cols <- colnames(dt)[grepl('ngw_|id',colnames(dt))]
+  cols <- colnames(dt)[grepl('ngw_|ID',colnames(dt))]
 
   # melt the data.table to simplify corrections
-  dt.melt <- data.table::melt(dt[,mget(cols)], id.vars = 'id',variable.name = 'risk')
+  dt.melt <- data.table::melt(dt[,mget(cols)], id.vars = c('FIELD_ID','CROP_ID'),variable.name = 'risk')
 
   # add correction factor based on risk itself
   dt.melt[,risk_cor := wf(value,type = "indicators",penalty = penalty)]
@@ -105,14 +108,14 @@ bln_bbwp_ngw <- function(B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GW,B_GWL_
   dt.melt[group=='ngw' & grepl('_nlv$',risk), mcf := 2]
 
   # calculate the mean aggregated risk indicators
-  dt.ind <- dt.melt[,list(risk = sum(risk_cor * value * mcf)/sum(risk_cor * mcf)),by=c('id','group')]
-  dt.ind <- dcast(dt.ind,id~group,value.var='risk')
+  dt.ind <- dt.melt[,list(risk = sum(risk_cor * value * mcf)/sum(risk_cor * mcf)),by=c('FIELD_ID','CROP_ID','group')]
+  dt.ind <- dcast(dt.ind,FIELD_ID+CROP_ID~group,value.var='risk')
 
-  # sort output based on id
-  setorder(dt.ind,id)
+  # sort output based on crop-id, being equal to length input variables
+  setorder(dt.ind,CROP_ID)
 
   # add field indicator to the dt
-  dt <- merge(dt,dt.ind,by='id')
+  dt <- merge(dt,dt.ind,by='CROP_ID')
 
   # estimate field score
 
@@ -130,10 +133,10 @@ bln_bbwp_ngw <- function(B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GW,B_GWL_
   dt[,d_opi_ngw := pmax(0,1 - pmax(0, d_opi_ngw - 0))]
 
   # # set bbwp ngw score
-  dt[,s_bbwp_ngw := d_opi_ngw]
+  dt[,value := d_opi_ngw]
 
-  # extract value
-  value <- dt[, round(s_bbwp_ngw,2)]
+  # extract value s_bbwp_ngw
+  value <- dt[, round(value,2)]
 
   # return value
   return(value)

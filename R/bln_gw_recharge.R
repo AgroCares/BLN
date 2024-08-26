@@ -1,5 +1,6 @@
 #' Function to calculate and evaluate the groundwater recharche in view of the soils' function to retain water
 #'
+#' @param ID (character) A field id
 #' @param B_LU_BRP (numeric) The crop code
 #' @param B_DRAIN (boolean) Are drains installed to drain the field (options: yes or no)
 #' @param B_GWL_CLASS (character) The groundwater table class
@@ -14,11 +15,12 @@
 #' @import OBIC
 #'
 #' @export
-bln_wat_groundwater_recharge <- function(B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_DRAIN,
+bln_wat_groundwater_recharge <- function(ID,B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_DRAIN,
                                          A_CLAY_MI,A_SAND_MI, A_SILT_MI, A_SOM_LOI,M_GREEN){
 
   # make internal table
-  dt <- data.table(id = 1:length(B_LU_BRP),
+  dt <- data.table(FIELD_ID = ID,
+                   id = 1:length(B_LU_BRP),
                    B_LU_BRP = B_LU_BRP,
                    B_SC_WENR=as.character(B_SC_WENR),
                    B_GWL_CLASS=B_GWL_CLASS,
@@ -35,7 +37,7 @@ bln_wat_groundwater_recharge <- function(B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_DRAIN,
 
   # estimate derivatives: sealing risk, precipitaiton surplus and saturated permeability
   dt[, D_SE := OBIC::calc_sealing_risk(A_SOM_LOI, A_CLAY_MI)]
-  dt[, D_PSP := OBIC::calc_psp(B_LU_BRP,M_GREEN), by = id]
+  dt[, D_PSP := OBIC::calc_psp(B_LU_BRP,M_GREEN), by = FIELD_ID]
   dt[, D_WRI_K := OBIC::calc_permeability(A_CLAY_MI,A_SAND_MI,A_SILT_MI,A_SOM_LOI)]
 
   # estimate distance to target for soil compaction and seasling

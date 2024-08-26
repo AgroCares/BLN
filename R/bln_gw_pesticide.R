@@ -1,5 +1,6 @@
 #' Function to calculate and evaluate the pesticide retention in soils in view of water purification for surface water quality
 #'
+#' @param ID (character) A field id
 #' @param B_LU_BRP (numeric) The crop code
 #' @param B_SOILTYPE_AGR (character) The agricultural type of soil
 #' @param A_CLAY_MI (numeric) The clay content of the soil (\%)
@@ -15,12 +16,13 @@
 #' @import OBIC
 #'
 #' @export
-bln_wat_pesticide <- function(B_LU_BRP,B_SOILTYPE_AGR,
+bln_wat_pesticide <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,
                               A_CLAY_MI,A_SAND_MI, A_SILT_MI, A_SOM_LOI,
                               M_GREEN,M_MECHWEEDS,M_PESTICIDES_DST){
 
   # make internal table
-  dt <- data.table(id = 1:length(B_LU_BRP),
+  dt <- data.table(FIELD_ID = ID,
+                   id = 1:length(B_LU_BRP),
                    B_LU_BRP = B_LU_BRP,
                    B_SOILTYPE_AGR = B_SOILTYPE_AGR,
                    A_CLAY_MI=A_CLAY_MI,
@@ -33,7 +35,7 @@ bln_wat_pesticide <- function(B_LU_BRP,B_SOILTYPE_AGR,
   )
 
   # estimate derivatives for precipidation surplus
-  dt[, D_PSP := OBIC::calc_psp(B_LU_BRP,M_GREEN), by = id]
+  dt[, D_PSP := OBIC::calc_psp(B_LU_BRP,M_GREEN), by = FIELD_ID]
 
   # estimate the pesticide leaching to surface water
   dt[, D_PESTICIDE := OBIC::calc_pesticide_leaching(B_SOILTYPE_AGR,

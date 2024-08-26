@@ -24,7 +24,9 @@ bln_p_compaction <- function(B_SC_WENR) {
   checkmate::assert_character(B_SC_WENR, any.missing = FALSE, min.len = 1)
   checkmate::assert_subset(B_SC_WENR, choices = c("Bebouwing en infrastructuur","Groot","Zeer groot","Matig","Water",
                                                   "Glastuinbouw, niet beoordeeld","Beperkt door veenlagen","Van nature dicht" ,
-                                                  "Beperkt", "Zeer beperkt"), empty.ok = FALSE)
+                                                  "Beperkt", "Zeer beperkt",
+                                                  "1", "2", "3", "4", "5", "10", "11", "401",
+                                                  "901", "902"), empty.ok = FALSE)
 
   # make data.table
   dt <- data.table(id = 1:length(B_SC_WENR),
@@ -33,14 +35,14 @@ bln_p_compaction <- function(B_SC_WENR) {
                   )
 
   # reclassify non arable or non grassland soils (no risk)
-  dt[grepl('bebouwing|water|glastuinbouw',B_SC_WENR),value := 1]
+  dt[grepl('bebouwing|water|glastuinbouw|^401$|^901$|^902$',B_SC_WENR),value := 1]
 
   # reclassify arable soils
-  dt[grepl('zeer beperkt',B_SC_WENR), value := 1]
-  dt[grepl('^beperkt',B_SC_WENR), value := 0.8]
-  dt[grepl('matig',B_SC_WENR),value := 0.6]
-  dt[grepl('^groot',B_SC_WENR), value := 0.4]
-  dt[grepl('zeer groot|nature', B_SC_WENR), value := 0.2]
+  dt[grepl('zeer beperkt|^1$',B_SC_WENR), value := 1]
+  dt[grepl('^beperkt|^2$|^10$',B_SC_WENR), value := 0.8]
+  dt[grepl('matig|^3$',B_SC_WENR),value := 0.6]
+  dt[grepl('^groot|^4$',B_SC_WENR), value := 0.4]
+  dt[grepl('zeer groot|nature|^5$|^11$', B_SC_WENR), value := 0.2]
 
   # Evaluate the risk on soil compaction
   value <- dt[,value]

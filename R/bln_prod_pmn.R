@@ -42,9 +42,9 @@ bln_b_pmn <- function(B_LU_BRP, B_SOILTYPE_AGR,A_N_PMN) {
 
   # convert to OSI score
   value <- bln_evaluate_logistic(x = value,
-                                 b = dt.thresholds$osi_st_c1,
-                                 x0 = dt.thresholds$osi_st_c2,
-                                 v = dt.thresholds$osi_st_c3)
+                                 b = dt.thresholds$bln_st_c1,
+                                 x0 = dt.thresholds$bln_st_c2,
+                                 v = dt.thresholds$bln_st_c3)
   # return value
   return(value)
 }

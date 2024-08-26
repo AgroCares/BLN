@@ -1,22 +1,8 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#' Function to calculate and evaluate the water buffering capacity of soils in view of water retention in soil
+#'Function to calculate and evaluate the water buffering capacity of soils in view of water retention in soil
 #'
 #' This function gives the WB score of the BBWP framework
 #'
+#' @param ID (character) A field id
 #' @param B_LU_BRP (numeric) The crop code
 #' @param B_GWL_CLASS (character) The groundwater table class
 #' @param B_HELP_WENR (character) The soil type abbreviation, derived from 1:50.000 soil map
@@ -31,13 +17,14 @@
 #' @import OBIC
 #'
 #' @export
-bln_bbwp_bw <- function(B_LU_BRP,B_HELP_WENR,B_GWL_CLASS,B_AREA_DROUGHT,A_CLAY_MI, A_SAND_MI, A_SILT_MI, A_SOM_LOI,penalty = TRUE){
+bln_bbwp_bw <- function(ID,B_LU_BRP,B_HELP_WENR,B_GWL_CLASS,B_AREA_DROUGHT,A_CLAY_MI, A_SAND_MI, A_SILT_MI, A_SOM_LOI,penalty = TRUE){
 
   # load internal table
   dt.crop <- BLN::bln_crops[bln_country=='NL']
 
   # make internal table
-  dt <- data.table(id = 1:length(B_LU_BRP),
+  dt <- data.table(FIELD_ID = ID,
+                   CROP_ID = 1:length(B_LU_BRP),
                    B_LU_BRP = B_LU_BRP,
                    B_HELP_WENR = B_HELP_WENR,
                    B_GWL_CLASS = B_GWL_CLASS,
@@ -49,7 +36,7 @@ bln_bbwp_bw <- function(B_LU_BRP,B_HELP_WENR,B_GWL_CLASS,B_AREA_DROUGHT,A_CLAY_M
                    )
 
   # merge with crop category
-  dt <- merge(dt,dt.crop[,.(crop_code,crop_cat1)],by.x='B_LU_BRP',by.y='crop_code')
+  dt <- merge(dt,dt.crop[,.(crop_code,crop_cat1)],by.x='B_LU_BRP',by.y='crop_code',all.x = TRUE)
 
   # Replace '-' with 'unknown'
   dt[! B_GWL_CLASS %in% c('GtI','GtII','GtIII','GtIV','GtV', 'GtVI','GtVII','GtVIII'), B_GWL_CLASS := '-']
@@ -89,10 +76,10 @@ bln_bbwp_bw <- function(B_LU_BRP,B_HELP_WENR,B_GWL_CLASS,B_AREA_DROUGHT,A_CLAY_M
   # estimate field indicator
 
     # columns to be selected
-    cols <- colnames(dt)[grepl('wue_|id',colnames(dt))]
+    cols <- colnames(dt)[grepl('wue_|ID',colnames(dt))]
 
     # melt the data.table to simplify corrections
-    dt.melt <- data.table::melt(dt[,mget(cols)], id.vars = 'id',variable.name = 'risk')
+    dt.melt <- data.table::melt(dt[,mget(cols)], id.vars = c('FIELD_ID','CROP_ID'),variable.name = 'risk')
 
     # add correction factor based on risk itself
     dt.melt[,risk_cor := wf(value,type = "indicators",penalty = penalty)]
@@ -105,14 +92,14 @@ bln_bbwp_bw <- function(B_LU_BRP,B_HELP_WENR,B_GWL_CLASS,B_AREA_DROUGHT,A_CLAY_M
     dt.melt[group=='wue' & grepl('_whc$',risk), mcf := 2]
 
     # calculate the mean aggregated risk indicators
-    dt.ind <- dt.melt[,list(risk = sum(risk_cor * value * mcf)/sum(risk_cor * mcf)),by=c('id','group')]
-    dt.ind <- dcast(dt.ind,id~group,value.var='risk')
+    dt.ind <- dt.melt[,list(risk = sum(risk_cor * value * mcf)/sum(risk_cor * mcf)),by=c('FIELD_ID','CROP_ID','group')]
+    dt.ind <- dcast(dt.ind,FIELD_ID+CROP_ID~group,value.var='risk')
 
-    # sort output based on id
-    setorder(dt.ind,id)
+    # sort output based on crop_id, being equal to length of input variables
+    setorder(dt.ind,CROP_ID)
 
     # add field indicator to the dt
-    dt <- merge(dt,dt.ind,by='id')
+    dt <- merge(dt,dt.ind,by='CROP_ID')
 
   # estimate field score
 
@@ -126,10 +113,10 @@ bln_bbwp_bw <- function(B_LU_BRP,B_HELP_WENR,B_GWL_CLASS,B_AREA_DROUGHT,A_CLAY_M
     dt[,d_opi_wb := pmax(0,1 - pmax(0, d_opi_wb - 0))]
 
     # Convert form 0-1 to 0-100
-    dt[,s_bbwp_wb := 100 * d_opi_wb]
+    dt[,value := d_opi_wb]
 
-  # return value
-  value <- dt[, round(s_bbwp_wb,0)]
+  # return value s_bbwp_wb
+  value <- dt[, value]
 
   return(value)
 

@@ -25,7 +25,7 @@ bln_clim_csat <- function(B_LU_BRP,A_SOM_LOI,A_SOM_LOI_MLMAX = NA_real_){
   dt[is.na(A_SOM_LOI_MLMAX), A_SOM_LOI_MLMAX := 2.6018 + 0.8525 * A_SOM_LOI + 0.003067 * A_SOM_LOI^2 + A_CLAY_MI * cfcrop]
 
   # calculate the distance to target
-  dt.cs[,i_clim_csat := pmin(1,A_SOM_LOI/A_SOM_LOI_MLMAX)]
+  dt[,i_clim_csat := pmin(1,A_SOM_LOI/A_SOM_LOI_MLMAX)]
 
   # return value
   value <- dt[, i_clim_csat]

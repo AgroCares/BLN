@@ -4,6 +4,7 @@
 #'
 #' @param A_SOM_LOI (numeric) The percentage organic matter in the soil (\%)
 #' @param A_CLAY_MI (numeric) The clay content of the soil (\%)
+#' @param A_DENSITY_SA (numeric) The bulk density of the soil (kg/m3)
 #'
 #' @import data.table
 #'
@@ -16,7 +17,7 @@
 #' The bulk density of an arable soil (kg / m3) evaluated given the maximum density that limit the root penetration.
 #'
 #' @export
-bln_p_density <- function(A_SOM_LOI, A_CLAY_MI) {
+bln_p_density <- function(A_SOM_LOI, A_CLAY_MI,A_DENSITY_SA = NA_real_) {
 
   # set visual bindings
   dens.sand = dens.clay = cf = density = crit1 = NULL
@@ -35,6 +36,7 @@ bln_p_density <- function(A_SOM_LOI, A_CLAY_MI) {
   # Collect data into a table
   dt <- data.table(A_SOM_LOI = A_SOM_LOI,
                    A_CLAY_MI = A_CLAY_MI,
+                   A_DENSITY_SA = A_DENSITY_SA,
                    value = NA_real_
                    )
 
@@ -46,16 +48,16 @@ bln_p_density <- function(A_SOM_LOI, A_CLAY_MI) {
   dt[, cf := pmin(1, A_CLAY_MI/25)]
 
   # clay dependent density
-  dt[, density := cf * dens.clay + (1-cf) * dens.sand]
+  dt[, density := fifelse(is.na(A_DENSITY_SA),cf * dens.clay + (1-cf) * dens.sand,A_DENSITY_SA)]
 
   # calculate critical soil density limiting root penetration (Van den Akker et al., 2020)
   dt[,crit1 := pmin(1.6,1.75 - 0.009 * A_CLAY_MI)*1000]
 
   # calculate the open soil index socre
   dt[,value := bln_evaluate_logistic(x = density,
-                                     b = dt.thresholds$osi_st_c1,
+                                     b = dt.thresholds$bln_st_c1,
                                      x0 = crit1,
-                                     v = dt.thresholds$osi_st_c3,
+                                     v = dt.thresholds$bln_st_c3,
                                      increasing = FALSE)]
 
   # return value

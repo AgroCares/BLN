@@ -2,6 +2,7 @@
 #'
 #' @param ID (character) A field id
 #' @param B_LU_BRP (numeric) value of the BRP crop code
+#' @param B_GWL_GLG (numeric) The lowest groundwater level averaged over the most dry periods in 8 years in cm below ground level
 #' @param A_SOM_LOI (numeric) value for the soil organic matter content of the soil
 #' @param A_CLAY_MI (numeric) value for the clay content of the soil
 #' @param quiet (boolean) showing progress bar for calculation RothC C-saturation for each field
@@ -9,17 +10,20 @@
 #' @import data.table
 #'
 #' @export
-bln_clim_rothc <- function(ID,B_LU_BRP,A_SOM_LOI,A_CLAY_MI,quiet = FALSE){
+bln_clim_rothc <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI,quiet = FALSE){
 
   # make internal table
   dt <- data.table(ID = ID,
                    B_LU_BRP = B_LU_BRP,
+                   B_GWL_GLG = B_GWL_GLG,
                    A_SOM_LOI = A_SOM_LOI,
                    A_CLAY_MI= A_CLAY_MI
   )
 
-  # add progress bar, and initial settings
-  pb = txtProgressBar(min = 0, max = length(unique(dt$ID)), initial = 0)
+  # add progress bar
+  if(!quiet) {pb = txtProgressBar(min = 0, max = length(unique(dt$ID)), initial = 0)}
+
+  # set initial settings
   stepi <- 0 ; out <- list()
 
   # run RothC to simulate current and potential SOC
@@ -29,22 +33,47 @@ bln_clim_rothc <- function(ID,B_LU_BRP,A_SOM_LOI,A_CLAY_MI,quiet = FALSE){
     this.brp <- dt[ID==i,B_LU_BRP]
     this.som <- dt[ID==i,A_SOM_LOI]
     this.clay <- dt[ID==i,A_CLAY_MI]
+    this.glg <- dt[ID==i,B_GWL_GLG]
 
-    dt.rothc <- bln_rothc_field(this.brp, this.som, this.clay)
+    # calculate decomposition rate via INITIATOR approach (de Vries et al., 2022)
+    if(this.som[1]>20){
 
-    # take the mean of the last 10 years
-    dt.prc <- dt.rothc[year > max(year) - 10,lapply(.SD,mean)]
+      # lowering surface due to oxidation (Beuving and van den Akker, 1996)
+      fsmv <- stats::approxfun(x = seq(0,130,10),
+                               y = c(0,0.008,0.017,0.026,0.038,0.051,0.074,0.098,
+                                     0.122,0.145,0.169,0.192,0.216,0.239),
+                               rule = 2)
+
+
+      # estimate SOC decline based on groundwater level given an optimum where GLG is 45 cm below surface
+      fr_smv <- pmin(1,(fsmv(this.glg[1])-fsmv(pmax(0,this.glg[1]-45)))/fsmv(this.glg[1]),na.rm=T)
+
+      # bring distance to target in same output style as for rothc
+      dt.prc <- data.table(A_SOM_LOI_BAU = this.som[1]*fr_smv,
+                           A_SOM_LOI_ALL = this.som[1])
+
+
+    } else {
+
+      # run the RothC model for mineral soils
+      dt.rothc <- bln_rothc_field(this.brp, this.som, this.clay)
+
+      # take the mean of the last 10 years
+      dt.prc <- dt.rothc[year > max(year) - 10,lapply(.SD,mean)]
+
+    }
+
 
     # save in list
     out[[stepi]] <- data.table(ID=i,
                                A_SOM_LOI_ROTHC_BAU = dt.prc$A_SOM_LOI_BAU,
                                A_SOM_LOI_ROTHC_ALL = dt.prc$A_SOM_LOI_ALL)
     # show progressbar
-    if(quiet) {setTxtProgressBar(pb,stepi)}
+    if(!quiet) {setTxtProgressBar(pb,stepi)}
   }
 
   # close progress bar
-  close(pb)
+  if(!quiet) {close(pb)}
 
   # combine all sites in a data.table again
   dt.cs <- rbindlist(out)
@@ -52,8 +81,11 @@ bln_clim_rothc <- function(ID,B_LU_BRP,A_SOM_LOI,A_CLAY_MI,quiet = FALSE){
   # calculate the distance to target
   dt.cs[,i_clim_rothc := pmin(1,A_SOM_LOI_ROTHC_BAU/A_SOM_LOI_ROTHC_ALL)]
 
+  # merge with the internal dt
+  dt <- merge(dt,dt.cs,by='ID',all.x=TRUE)
+
   # return value
-  value <- dt.cs[, i_clim_rothc]
+  value <- dt[, i_clim_rothc]
 
   return(value)
 

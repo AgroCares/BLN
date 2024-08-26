@@ -2,6 +2,7 @@
 #'
 #' This function gives the PSW score of the BBWP framework
 #'
+#' @param ID (character) A field id
 #' @param B_LU_BRP (numeric) The crop code
 #' @param B_AER_CBS (character) The agricultural economic region in the Netherlands (CBS, 2016)
 #' @param B_GWL_CLASS (character) The groundwater table class
@@ -23,7 +24,7 @@
 #' @import OBIC
 #'
 #' @export
-bln_bbwp_psw <- function(B_LU_BRP,B_SC_WENR,B_AER_CBS,B_GWL_CLASS,B_SLOPE_DEGREE,
+bln_bbwp_psw <- function(ID,B_LU_BRP,B_SC_WENR,B_AER_CBS,B_GWL_CLASS,B_SLOPE_DEGREE,
                          A_P_CC, A_P_SG, A_AL_OX, A_FE_OX,
                          D_RO_R, D_SA_W,
                          B_RO_R = NA_real_,B_RO_R_SD = NA_real_,
@@ -36,7 +37,8 @@ bln_bbwp_psw <- function(B_LU_BRP,B_SC_WENR,B_AER_CBS,B_GWL_CLASS,B_SLOPE_DEGREE
   dt.crop <- BLN::bln_crops[bln_country=='NL']
 
   # make internal table
-  dt <- data.table(id = 1:length(B_LU_BRP),
+  dt <- data.table(ID_FIELD = ID,
+                   ID_CROP = 1:length(B_LU_BRP),
                    B_LU_BRP = B_LU_BRP,
                    B_SC_WENR = B_SC_WENR,
                    B_GWL_CLASS=B_GWL_CLASS,
@@ -84,12 +86,13 @@ bln_bbwp_psw <- function(B_LU_BRP,B_SC_WENR,B_AER_CBS,B_GWL_CLASS,B_SLOPE_DEGREE
 
   # reclassify soil compaction risk (scr) into a numeric value
   # a high value is indicative of high risk of leaching of nitrogen to groundwater
-  dt[B_SC_WENR %in% c(902, 901, 401),ngw_scr := 1]
-  dt[B_SC_WENR == 1, ngw_scr := 1]
-  dt[B_SC_WENR %in% c(2, 10), ngw_scr := 0.8]
-  dt[B_SC_WENR == 3, ngw_scr := 0.6]
-  dt[B_SC_WENR == 4, ngw_scr := 0.4]
-  dt[B_SC_WENR %in% c(5, 11), ngw_scr := 0.2]
+  dt[,B_SC_WENR := tolower(B_SC_WENR)]
+  dt[grepl('bebouwing|water|glastuinbouw|^401$|^901$|^902$',B_SC_WENR),ngw_scr := 1]
+  dt[grepl('zeer beperkt|^1$',B_SC_WENR), ngw_scr := 1]
+  dt[grepl('^beperkt|^2$|^10$',B_SC_WENR), ngw_scr := 0.8]
+  dt[grepl('matig|^3$',B_SC_WENR),ngw_scr := 0.6]
+  dt[grepl('^groot|^4$',B_SC_WENR), ngw_scr := 0.4]
+  dt[grepl('zeer groot|nature|^5$|^11$', B_SC_WENR), ngw_scr := 0.2]
 
   # reclassify soil compaction risk (scr) into a numeric value
   dt[,psw_scr := 1 - ngw_scr]
@@ -128,10 +131,10 @@ bln_bbwp_psw <- function(B_LU_BRP,B_SC_WENR,B_AER_CBS,B_GWL_CLASS,B_SLOPE_DEGREE
   # estimate field indicators
 
   # columns to be selected
-  cols <- colnames(dt)[grepl('psw_|id',colnames(dt))]
+  cols <- colnames(dt)[grepl('psw_|ID',colnames(dt))]
 
   # melt the data.table to simplify corrections
-  dt.melt <- data.table::melt(dt[,mget(cols)], id.vars = 'id',variable.name = 'risk')
+  dt.melt <- data.table::melt(dt[,mget(cols)], id.vars = c('ID_FIELD','ID_CROP'),variable.name = 'risk')
 
   # add correction factor based on risk itself
   dt.melt[,risk_cor := wf(value,type = "indicators",penalty = penalty)]
@@ -144,8 +147,8 @@ bln_bbwp_psw <- function(B_LU_BRP,B_SC_WENR,B_AER_CBS,B_GWL_CLASS,B_SLOPE_DEGREE
   dt.melt[group=='psw' & grepl('_scr$|_ro$|_ws$',risk), mcf := 2]
 
   # add criteria properties as column (to use as filter)
-  dt.melt[,ws := value[risk=='psw_ws'],by='id']
-  dt.melt[,slope := value[risk=='psw_slope'],by='id']
+  dt.melt[,ws := value[risk=='psw_ws'],by=c('ID_FIELD','ID_CROP')]
+  dt.melt[,slope := value[risk=='psw_slope'],by=c('ID_FIELD','ID_CROP')]
 
   # ensure that the final risk after aggregation gets the value 0.1 or 0.01
   dt.melt[ws <= 0.2 & slope < 1 & group %in% c('psw'), c('mcf','risk_cor','value') :=  list(1,1000,0.1)]
@@ -153,14 +156,14 @@ bln_bbwp_psw <- function(B_LU_BRP,B_SC_WENR,B_AER_CBS,B_GWL_CLASS,B_SLOPE_DEGREE
   dt.melt[,c('ws','slope') := NULL]
 
   # calculate the mean aggregated risk indicators
-  dt.ind <- dt.melt[,list(risk = sum(risk_cor * value * mcf)/sum(risk_cor * mcf)),by=c('id','group')]
-  dt.ind <- dcast(dt.ind,id~group,value.var='risk')
+  dt.ind <- dt.melt[,list(risk = sum(risk_cor * value * mcf)/sum(risk_cor * mcf)),by=c('ID_FIELD','ID_CROP','group')]
+  dt.ind <- dcast(dt.ind,ID_FIELD + ID_CROP~group,value.var='risk')
 
-  # sort output based on id
-  setorder(dt.ind,id)
+  # sort output based on crop_id, being also the order of input variables
+  setorder(dt.ind,ID_CROP)
 
   # add field indicator to the dt
-  dt <- merge(dt,dt.ind,by='id')
+  dt <- merge(dt,dt.ind,by='ID_CROP',all.x = TRUE)
 
   # estimate field score
 
@@ -171,16 +174,16 @@ bln_bbwp_psw <- function(B_LU_BRP,B_SC_WENR,B_AER_CBS,B_GWL_CLASS,B_SLOPE_DEGREE
   dt[is.na(cfpsw), cfpsw := 1]
 
   # calculate the individual opportunity indexes
-  dt[,d_opi_psw := (0.5 + cfpsw/2) * bln_evaluate_logistic(ngw, b=6, x0=0.4, v=.7)]
+  dt[,d_opi_psw := (0.5 + cfpsw/2) * bln_evaluate_logistic(psw, b=6, x0=0.4, v=.7)]
 
   # update the field score with measures (assuming no measures to be taken)
   dt[,d_opi_psw := pmax(0,1 - pmax(0, d_opi_psw - 0))]
 
   # set bbwp psw score
-  dt[,s_bbwp_psw := d_opi_psw]
+  dt[,value := d_opi_psw]
 
   # extract value
-  value <- dt[, round(s_bbwp_psw,2)]
+  value <- dt[, value]
 
   # return value
   return(value)

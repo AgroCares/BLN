@@ -42,7 +42,7 @@ bln_wat_nretention_sw <- function(B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLASS,
   dt[, D_NLV := OBIC::calc_nlv(B_LU_BRP, B_SOILTYPE_AGR, A_N_RT, A_CN_FR, D_OC, D_BDS, D_GA)]
 
   # estimate the N leaching to groundwater
-  dt[, D_NGW := OBIC::calc_nleach(B_LU_BRP = B_LU_BRP,
+  dt[, D_NSW := OBIC::calc_nleach(B_LU_BRP = B_LU_BRP,
                                   B_SOILTYPE_AGR = B_SOILTYPE_AGR,
                                   B_GWL_CLASS = B_GWL_CLASS,
                                   D_NLV = D_NLV,
@@ -50,7 +50,7 @@ bln_wat_nretention_sw <- function(B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLASS,
                                   leaching_to = "ow")]
 
   # calculate indicator for N retention in view of surface water quality
-  dt[, I_E_NSW := ind_nretention(D_NSW, leaching_to = "sw")]
+  dt[, I_E_NSW := OBIC::ind_nretention(D_NSW, leaching_to = "ow")]
 
   # extract value
   value <- dt[, I_E_NSW]

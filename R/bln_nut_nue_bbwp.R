@@ -42,7 +42,7 @@ bln_nut_nue <- function(B_LU_BRP,B_HELP_WENR,B_GWL_CLASS,A_P_AL,A_P_CC,A_P_WA,
   dt[is.na(B_N_RT_SD), B_N_RT_SD := dt.lsw$B_N_RT_SD]
 
   # merge with crop category
-  dt <- merge(dt,dt.crop[,.(crop_code,crop_cat1)],by.x='B_LU_BRP',by.y='crop_code')
+  dt <- merge(dt,dt.crop[,.(crop_code,crop_cat1)],by.x='B_LU_BRP',by.y='crop_code',all.x = TRUE)
 
   # Replace '-' with 'unknown'
   dt[! B_GWL_CLASS %in% c('GtI','GtII','GtIII','GtIV','GtV', 'GtVI','GtVII','GtVIII'), B_GWL_CLASS := '-']
@@ -128,11 +128,11 @@ bln_nut_nue <- function(B_LU_BRP,B_HELP_WENR,B_GWL_CLASS,A_P_AL,A_P_CC,A_P_WA,
   # update the field score with measures (assume no measures to be taken)
   dt[,d_opi_nue := pmax(0,1 - pmax(0, d_opi_nue - 0))]
 
-  # Convert form 0-1 to 0-100
-  dt[,s_bbwp_nue := 100 * d_opi_nue]
+  # Set BBWP score
+  dt[,s_bbwp_nue := d_opi_nue]
 
   # return value
-  value <- dt[, round(s_bbwp_nue,0)]
+  value <- dt[, s_bbwp_nue]
 
   return(value)
 

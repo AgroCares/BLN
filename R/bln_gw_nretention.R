@@ -50,7 +50,7 @@ bln_wat_nretention_gw <- function(B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLASS,
                                   leaching_to = "gw")]
 
   # calculate indicator for N retention in view of groundwater quality
-  dt[, I_E_NGW := ind_nretention(D_NGW, leaching_to = "gw")]
+  dt[, I_E_NGW := OBIC::ind_nretention(D_NGW, leaching_to = "gw")]
 
   # extract value
   value <- dt[, I_E_NGW]

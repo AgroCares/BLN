@@ -1,5 +1,6 @@
 #' Function to calculate and evaluate the N leaching risk in soils in view of water purification for surface water quality
 #'
+#' @param ID (character) A field id
 #' @param B_LU_BRP (numeric) The crop code
 #' @param B_SOILTYPE_AGR (character) The agricultural type of soil
 #' @param B_AER_CBS (character) The agricultural economic region in the Netherlands (CBS, 2016)
@@ -24,13 +25,14 @@
 #' @import OBIC
 #'
 #' @export
-bln_wat_nrunoff <- function(B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_AER_CBS,B_DRAIN,B_FERT_NORM_FR = 1,
+bln_wat_nrunoff <- function(ID,B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_AER_CBS,B_DRAIN,B_FERT_NORM_FR = 1,
                             A_CLAY_MI,A_SAND_MI, A_SILT_MI, A_SOM_LOI,A_P_AL, A_P_WA, A_P_CC,
                             A_PH_CC, A_CEC_CO,A_K_CO_PO, A_K_CC,
                             M_GREEN){
 
   # make internal table
-  dt <- data.table(id = 1:length(B_LU_BRP),
+  dt <- data.table(FIELD_ID = ID,
+                   id = 1:length(B_LU_BRP),
                    B_LU_BRP = B_LU_BRP,
                    B_SC_WENR=as.character(B_SC_WENR),
                    B_GWL_CLASS=B_GWL_CLASS,
@@ -56,14 +58,14 @@ bln_wat_nrunoff <- function(B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_AER_CBS,B_DRAIN,B_F
   dt[, B_AER_CBS := OBIC::format_aer(B_AER_CBS)]
 
   # Calculate the crop rotation fraction
-  dt[, D_CP_STARCH := OBIC::calc_rotation_fraction(ID=id, B_LU_BRP, crop = "starch")]
-  dt[, D_CP_POTATO := OBIC::calc_rotation_fraction(ID=id, B_LU_BRP, crop = "potato")]
-  dt[, D_CP_SUGARBEET := OBIC::calc_rotation_fraction(ID=id, B_LU_BRP, crop = "sugarbeet")]
-  dt[, D_CP_GRASS := OBIC::calc_rotation_fraction(ID=id, B_LU_BRP, crop = "grass")]
-  dt[, D_CP_MAIS := OBIC::calc_rotation_fraction(ID=id, B_LU_BRP, crop = "mais")]
-  dt[, D_CP_OTHER := OBIC::calc_rotation_fraction(ID=id, B_LU_BRP, crop = "other")]
-  dt[, D_CP_RUST := OBIC::calc_rotation_fraction(ID=id, B_LU_BRP, crop = "rustgewas")]
-  dt[, D_CP_RUSTDEEP := OBIC::calc_rotation_fraction(ID=id, B_LU_BRP, crop = "rustgewasdiep")]
+  dt[, D_CP_STARCH := OBIC::calc_rotation_fraction(ID=FIELD_ID, B_LU_BRP, crop = "starch")]
+  dt[, D_CP_POTATO := OBIC::calc_rotation_fraction(ID=FIELD_ID, B_LU_BRP, crop = "potato")]
+  dt[, D_CP_SUGARBEET := OBIC::calc_rotation_fraction(ID=FIELD_ID, B_LU_BRP, crop = "sugarbeet")]
+  dt[, D_CP_GRASS := OBIC::calc_rotation_fraction(ID=FIELD_ID, B_LU_BRP, crop = "grass")]
+  dt[, D_CP_MAIS := OBIC::calc_rotation_fraction(ID=FIELD_ID, B_LU_BRP, crop = "mais")]
+  dt[, D_CP_OTHER := OBIC::calc_rotation_fraction(ID=FIELD_ID, B_LU_BRP, crop = "other")]
+  dt[, D_CP_RUST := OBIC::calc_rotation_fraction(ID=FIELD_ID, B_LU_BRP, crop = "rustgewas")]
+  dt[, D_CP_RUSTDEEP := OBIC::calc_rotation_fraction(ID=FIELD_ID, B_LU_BRP, crop = "rustgewasdiep")]
 
   # estimate derivates for availability P, K and acidity
   dt[, D_PBI := OBIC::calc_phosphate_availability(B_LU_BRP, A_P_AL, A_P_CC, A_P_WA)]
