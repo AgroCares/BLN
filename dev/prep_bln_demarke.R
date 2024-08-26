@@ -13,7 +13,7 @@ nmi.proj<- Sys.getenv('NMI-PROJ')
 nmi.site<- Sys.getenv('NMI_SITE')
 
 # shape file to extract data for
-s1.sel <- st_read('02 data/bbwp_farms.gpkg')
+s1.sel <- st_read('dev/bln_demarke.gpkg')
 
 # add unique id
 s1.sel$fid <- s1.sel$id
@@ -214,6 +214,8 @@ readBRP <- function(years,sf.sel){
     tmp1 <- sf::st_set_crs(tmp1,28992)
     brp <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = st_nearest_feature)
     brp <- as.data.table(brp)
+
+    # extract with buffer works with spatial points
     brp <- extractwithbuffer(dtte = brp,spo = sf.sel,dt.sf = tmp1, dbn = paste0('brp',i),parm='ref_id')
 
     # ensure that names are identical
@@ -246,18 +248,18 @@ readBRP <- function(years,sf.sel){
 }
 
 # read in all the BRP files
-dt.brp <- readBRP(2009:2022,sf.sel = sf.sel)
+dt.brp <- readBRP(2012:2022,sf.sel = sf.sel)
 
 # do this only for latest year
-tmp1 <- st_read(paste0(nmi.dat, 'landgebruik/brp/products/brpgewaspercelen_',2024,'_concept.gpkg'))
-brp <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = st_nearest_feature)
-brp <- as.data.table(brp)
-brp[is.na(gewascode),gewascode := 266]
-rm(tmp1)
-brp$B_LU_BRP <- brp$gewascode
+# tmp1 <- st_read(paste0(nmi.dat, 'landgebruik/brp/products/brpgewaspercelen_',2024,'_concept.gpkg'))
+# brp <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = st_nearest_feature)
+# brp <- as.data.table(brp)
+# brp[is.na(gewascode),gewascode := 266]
+# rm(tmp1)
+# brp$B_LU_BRP <- brp$gewascode
 
 # merge collected data and estimate derivates
-dt.out <- copy(brp)
+dt.out <- copy(dt.brp)
 ncols <- c('id', colnames(dt.bs)[grepl('^A_',colnames(dt.bs))])
 dt.out <- merge(dt.out,dt.bs[,mget(ncols)],by='id',all.x = TRUE)
 dt.out[, A_CA_CO_PO := A_CA_CO * 100 / A_CEC_CO]
@@ -321,14 +323,13 @@ dt.out[A_CA_CO_PO + A_MG_CO_PO + A_K_CO_PO + A_NA_CO_PO > 100,
        )]
 
 # estimate the orginal values
-dt.out <- dt.out[!is.na(ref_id)]
-
-dt.out$gewascode <- NULL
-dt.out$jaar <- NULL
+#dt.out <- dt.out[!is.na(ref_id)]
+# dt.out$gewascode <- NULL
+# dt.out$jaar <- NULL
 
 # what columns are numeric
 numeric_bb_cols <- colnames(dt.out[,.SD,.SDcols = is.numeric])
-numeric_bb_cols <- numeric_bb_cols[!grepl('B_LU|id|year|^a_som|^d_cs',numeric_bb_cols)]
+numeric_bb_cols <- numeric_bb_cols[!grepl('B_LU|B_LSW|id|year|^a_som|^d_cs',numeric_bb_cols)]
 
 # set values below minimum to minumum and values above max to max
 for(bb_param in numeric_bb_cols){
@@ -339,14 +340,16 @@ for(bb_param in numeric_bb_cols){
 # add oow_nl for missing LSW
 dt.out[is.na(B_LSW_ID),B_LSW_ID := 'lsw_nlmean']
 
-# save file
-saveRDS(dt.out,'02 data/bbwp_defaults.rds')
+bln_farm_hf <- copy(dt.out)
+
+# save measures as bbwp table
+usethis::use_data(bln_farm_hf, overwrite = TRUE)
 
 
 # prepare LSW datafile for calculations BLN
 
 # shape file to extract data for
-s1.sel <- st_read('02 data/bbwp_farms.gpkg')
+s1.sel <- st_read('dev/bln_demarke.gpkg')
 
 # add unique id
 s1.sel$fid <- s1.sel$id
@@ -418,5 +421,8 @@ lsw.nl <- data.table(B_LSW_ID = 'lsw_nlmean', B_SOM_LOI = 8.65,B_CLAY_MI = 15.8,
 dt.lsw.extr <- rbind(dt.lsw.extr,lsw.nl)
 
 # save LSW data
-saveRDS(dt.lsw.extr,'02 data/lsw_properties.rds')
+bln_lsw_farm_hf <- copy(dt.lsw.extr)
+
+# save measures as bbwp table
+usethis::use_data(bln_lsw_farm_hf, overwrite = TRUE)
 
