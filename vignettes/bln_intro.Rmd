@@ -1,0 +1,42 @@
+---
+title: "BLN introduction"
+author: 'Gerard H. Ros'
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{BLN introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+require(data.table)
+require(ggplot2)
+require(BLN)
+require(patchwork)
+knitr::opts_chunk$set(echo = FALSE,
+                      collapse = TRUE,
+                      comment = "#>")
+options(rmarkdown.html_vignette.check_title = FALSE)
+setDTthreads(1)
+```
+
+
+## BLN introduction
+
+This vignette will give you a short introduction on the BLN package.
+Text will follow later
+
+
+```{r make data}
+
+# make data table
+ 
+dt <- data.table(test= 1:3)
+
+```
+
+
+```{r show dt}
+#knitr::kable(dt, format = 'html')
+```
