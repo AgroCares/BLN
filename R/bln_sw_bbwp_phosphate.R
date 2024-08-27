@@ -35,6 +35,43 @@ bln_bbwp_psw <- function(ID,B_LU_BRP,B_SC_WENR,B_AER_CBS,B_GWL_CLASS,B_SLOPE_DEG
   # load internal table
   dt.lsw <- BLN::bln_lsw[B_LSW_ID == 'lsw_nlmean']
   dt.crop <- BLN::bln_crops[bln_country=='NL']
+  blnp <- BLN::bln_parms
+
+  # check inputs B parameters
+  arg.length <- max(length(B_LU_BRP), length(B_SC_WENR),length(B_AER_CBS),
+                    length(B_GWL_CLASS),length(B_SLOPE_DEGREE),length(A_P_CC),length(A_P_SG),
+                    length(A_AL_OX),length(A_FE_OX),
+                    length(D_RO_R),length(D_SA_W),length(B_CT_PSW))
+  checkmate::assert_subset(B_LU_BRP, choices = unlist(bln_crops$crop_code))
+  checkmate::assert_integerish(B_LU_BRP, len = arg.length)
+  checkmate::assert_subset(B_SC_WENR, choices = unlist(blnp[code == "B_SC_WENR", choices]))
+  checkmate::assert_integerish(B_SC_WENR, len = arg.length)
+  checkmate::assert_subset(B_AER_CBS, choices = unlist(blnp[code == "B_AER_CBS", choices]))
+  checkmate::assert_character(B_AER_CBS, len = arg.length)
+  checkmate::assert_subset(B_GWL_CLASS, choices = unlist(blnp[code == "B_GWL_CLASS", choices]))
+  checkmate::assert_character(B_GWL_CLASS, len = arg.length)
+  checkmate::assert_logical(penalty,len = 1)
+  checkmate::assert_numeric(B_CT_PSW, lower = 0, upper = 100, len = arg.length)
+
+  if(length(B_P_CC)>1){checkmate::assert_numeric(B_P_CC,lower =blnp[code == "A_P_CC", value_min], upper = blnp[code == "A_P_CC", value_max],len = arg.length)}
+  if(length(B_P_SG)>1){checkmate::assert_numeric(B_P_SG,lower =blnp[code == "A_P_SG", value_min], upper = blnp[code == "A_P_SG", value_max],len = arg.length)}
+  if(length(B_AL_OX)>1){checkmate::assert_numeric(B_AL_OX,lower =blnp[code == "A_AL_OX", value_min], upper = blnp[code == "A_AL_OX", value_max],len = arg.length)}
+  if(length(B_FE_OX)>1){checkmate::assert_numeric(B_FE_OX,lower =blnp[code == "A_FE_OX", value_min], upper = blnp[code == "A_FE_OX", value_max],len = arg.length)}
+  if(length(B_RO_R)>1){checkmate::assert_numeric(B_RO_R,lower =0, upper = 2,len = arg.length)}
+  if(length(B_P_CC_SD)>1){checkmate::assert_numeric(B_P_CC_SD,lower = 0, upper = blnp[code == "A_P_CC", value_max],len = arg.length)}
+  if(length(B_P_SG_SD)>1){checkmate::assert_numeric(B_P_SG_SD,lower = 0, upper = blnp[code == "A_P_SG", value_max],len = arg.length)}
+  if(length(B_AL_OX_SD)>1){checkmate::assert_numeric(B_AL_OX_SD,lower = 0, upper = blnp[code == "A_AL_OX", value_max],len = arg.length)}
+  if(length(B_FE_OX_SD)>1){checkmate::assert_numeric(B_FE_OX_SD,lower = 0, upper = blnp[code == "A_FE_OX", value_max],len = arg.length)}
+
+  # check inputs A parameters
+  checkmate::assert_numeric(B_SLOPE_DEGREE,lower = blnp[code == "B_SLOPE_DEGREE", value_min], upper = blnp[code == "B_SLOPE_DEGREE", value_max],len = arg.length)
+  checkmate::assert_numeric(A_P_CC, lower = blnp[code == "A_P_CC", value_min], upper = blnp[code == "A_P_CC", value_max],len = arg.length)
+  checkmate::assert_numeric(A_P_SG, lower = blnp[code == "A_P_SG", value_min], upper = blnp[code == "A_P_SG", value_max],len = arg.length)
+  checkmate::assert_numeric(A_AL_OX, lower = blnp[code == "A_AL_OX", value_min], upper = blnp[code == "A_AL_OX", value_max],len = arg.length)
+  checkmate::assert_numeric(A_FE_OX, lower = blnp[code == "A_FE_OX", value_min], upper = blnp[code == "A_FE_OX", value_max],len = arg.length)
+  checkmate::assert_numeric(D_RO_R, lower =0, upper = 1,len = arg.length)
+  checkmate::assert_numeric(D_SA_W, lower = 0, upper = 1, len = arg.length)
+
 
   # make internal table
   dt <- data.table(ID_FIELD = ID,
