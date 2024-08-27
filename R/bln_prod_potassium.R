@@ -33,13 +33,14 @@ bln_c_potassium <- function(B_LU_BRP, B_SOILTYPE_AGR,A_SOM_LOI, A_CLAY_MI,A_PH_C
   b = cF = kindex1 = kindex2 = A_PH_KCL = A_K_CO = NULL
   bln_country = bln_indicator = crop_cat1 = bln_soil_cat1 = bln_soil_cat2 = value = NULL
   bln_threshold_cropcat = bln_threshold_soilcat = i_c_k = bln_st_c1 = bln_st_c2 = bln_st_c3 = NULL
+  bln_crops = bln_soiltype = bln_threshold = NULL
 
   # Load in the datasets
-  dt.crops <- as.data.table(bln_crops[bln_country=='NL'])
-  dt.soils <- as.data.table(bln_soiltype[bln_country=='NL'])
+  dt.crops <- as.data.table(BLN::bln_crops[bln_country=='NL'])
+  dt.soils <- as.data.table(BLN::bln_soiltype[bln_country=='NL'])
 
   # Load in the thresholds
-  dt.thresholds <- as.data.table(bln_thresholds[bln_country=='NL'& bln_indicator == 'i_c_k'])
+  dt.thresholds <- as.data.table(BLN::bln_thresholds[bln_country=='NL'& bln_indicator == 'i_c_k'])
 
   # Check inputs
   arg.length <- max(length(A_PH_CC), length(A_SOM_LOI), length(A_CEC_CO), length(A_K_CO_PO),

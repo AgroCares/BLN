@@ -14,8 +14,16 @@
 #' @param A_P_SG (numeric) The P-saturation index (\%)
 #' @param D_SA_W (numeric) The wet perimeter index of the field, fraction that field is surrounded by water
 #' @param D_RO_R (numeric) The risk that surface water runs off the parcel
-#' @param D_RO_R (numeric) The mean D_RO_R of the soil in the LSW region. Optional.
-#' @param D_RO_R_SD (numeric) The variance in D_RO_R in the LSW region (standard deviation). Optional.
+#' @param B_RO_R (numeric) The mean D_RO_R of the soil in the LSW region. Optional.
+#' @param B_RO_R_SD (numeric) The variance in D_RO_R in the LSW region (standard deviation). Optional.
+#' @param B_P_CC (numeric) The mean P-CaCl2 content of the soil in the LSW region (mg P / kg). Optional.
+#' @param B_P_CC_SD (numeric) The variance in P-CaCl2 content  of the soil in the LSW region (standard deviation) (mg P / kg). Optional.
+#' @param B_P_SG (numeric) The mean P saturation degree of the soil in the LSW region (mg N / kg). Optional.
+#' @param B_P_SG_SD (numeric) The variance in P saturation degree of the soil in the LSW region (standard deviation) (\%). Optional.
+#' @param B_AL_OX (numeric) The mean Al-oxide content of the soil in the LSW region (\%). Optional.
+#' @param B_AL_OX_SD (numeric) The variance in Al-oxide content of the soil in the LSW region (standard deviation) (mmol+ / kg). Optional.
+#' @param B_FE_OX (numeric) The mean Fe-oxide content of the soil in the LSW region (mmol+ / kg). Optional.
+#' @param B_FE_OX_SD (numeric) The variance in Fe-oxide content of the soil in the LSW region (standard deviation) (mmol+ / kg). Optional.
 #' @param B_CT_PSW (numeric) the critical target for required reduction in P loss from agriculture (kg P / ha) to reach targets of KRW
 #' @param B_CT_PSW_MAX (numeric) the max critical target for P reduction loss (kg P / ha)
 #' @param penalty (boolean) the option to apply a penalty for high risk BBWP field indicators. Default is TRUE.
@@ -32,6 +40,11 @@ bln_bbwp_psw <- function(ID,B_LU_BRP,B_SC_WENR,B_AER_CBS,B_GWL_CLASS,B_SLOPE_DEG
                          B_AL_OX = NA_real_, B_AL_OX_SD = NA_real_, B_FE_OX = NA_real_, B_FE_OX_SD = NA_real_,
                          B_CT_PSW, B_CT_PSW_MAX = 0.5, penalty = TRUE){
 
+  # add visual bindings
+  bln_country = code = choices = value_min = value_max = . = crop_cat1 = crop_code = NULL
+  ngw_scr = psw_scr = psw_gwt = psw_ro = psw_slope = nsw_ws = psw_ws = psw_pcc = psw_psg = psw_pret = risk_cor = NULL
+  B_LSW_ID = group = risk = mcf= ID_CROP = ws = slope = cfpsw = d_opi_psw = psw = NULL
+
   # load internal table
   dt.lsw <- BLN::bln_lsw[B_LSW_ID == 'lsw_nlmean']
   dt.crop <- BLN::bln_crops[bln_country=='NL']
@@ -42,7 +55,7 @@ bln_bbwp_psw <- function(ID,B_LU_BRP,B_SC_WENR,B_AER_CBS,B_GWL_CLASS,B_SLOPE_DEG
                     length(B_GWL_CLASS),length(B_SLOPE_DEGREE),length(A_P_CC),length(A_P_SG),
                     length(A_AL_OX),length(A_FE_OX),
                     length(D_RO_R),length(D_SA_W),length(B_CT_PSW))
-  checkmate::assert_subset(B_LU_BRP, choices = unlist(bln_crops$crop_code))
+  checkmate::assert_subset(B_LU_BRP, choices = unlist(BLN::bln_crops$crop_code))
   checkmate::assert_integerish(B_LU_BRP, len = arg.length)
   checkmate::assert_subset(B_SC_WENR, choices = unlist(blnp[code == "B_SC_WENR", choices]))
   checkmate::assert_integerish(B_SC_WENR, len = arg.length)

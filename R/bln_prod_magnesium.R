@@ -22,6 +22,9 @@
 bln_c_magnesium <- function(B_LU_BRP,B_SOILTYPE_AGR,A_SOM_LOI,A_CLAY_MI,
                             A_PH_CC, A_CEC_CO,A_K_CO_PO,A_MG_CC,A_K_CC) {
 
+  # Add visual bindings
+  D_MG = i_c_mg = NULL
+
   # Check inputs
   arg.length <- max(length(A_MG_CC), length(A_PH_CC), length(A_SOM_LOI), length(A_CEC_CO),
                     length(A_K_CO_PO), length(A_CLAY_MI), length(B_SOILTYPE_AGR), length(B_LU_BRP))

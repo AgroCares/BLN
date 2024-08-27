@@ -14,10 +14,13 @@
 #' @export
 bln_clim_cbalance <- function(ID,B_LU_BRP,A_SOM_LOI,A_P_AL,A_P_WA,M_COMPOST = 0,M_GREEN = FALSE){
 
+  # add visual bindings
+  D_SOM_BAL = NULL
+
   # Check inputs
   arg.length <- max(length(B_LU_BRP), length(A_SOM_LOI), length(A_P_AL), length(A_P_WA))
   checkmate::assert_integerish(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)
-  checkmate::assert_subset(B_LU_BRP, choices = unique(bln_crops$crop_code), empty.ok = FALSE)
+  checkmate::assert_subset(B_LU_BRP, choices = unique(BLN::bln_crops$crop_code), empty.ok = FALSE)
   checkmate::assert_numeric(A_SOM_LOI, lower = 0.1, upper = 100, any.missing = FALSE, min.len = 1, len = arg.length)
   checkmate::assert_numeric(A_P_AL, lower = 1, upper = 250, any.missing = FALSE, len = arg.length)
   checkmate::assert_numeric(A_P_WA, lower = 1, upper = 250, any.missing = FALSE, len = arg.length)

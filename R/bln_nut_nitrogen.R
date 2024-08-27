@@ -12,12 +12,15 @@
 #' @export
 bln_nut_nitrogen <- function(ID, B_LU_BRP,B_SOILTYPE_AGR,A_SOM_LOI,A_N_RT){
 
+  # add visual bindings
+  code = choices = value_min = value_max = A_CN_FR = D_BDS = D_RD = D_OC = D_GA = FIELD_ID = D_NLV = NULL
+
   # make internal copy
   blnp <- BLN::bln_parms
 
   # check inputs B parameters
   arg.length <- max(length(B_LU_BRP),length(B_SOILTYPE_AGR), length(A_SOM_LOI),length(A_N_RT))
-  checkmate::assert_subset(B_LU_BRP, choices = unlist(bln_crops$crop_code))
+  checkmate::assert_subset(B_LU_BRP, choices = unlist(BLN::bln_crops$crop_code))
   checkmate::assert_integerish(B_LU_BRP, len = arg.length)
   checkmate::assert_subset(B_SOILTYPE_AGR, choices = unlist(blnp[code == "B_SOILTYPE_AGR", choices]))
   checkmate::assert_character(B_SOILTYPE_AGR, len = arg.length)

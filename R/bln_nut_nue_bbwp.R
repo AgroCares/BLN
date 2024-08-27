@@ -20,6 +20,12 @@
 bln_nut_nue <- function(B_LU_BRP,B_HELP_WENR,B_GWL_CLASS,A_P_AL,A_P_CC,A_P_WA,
                         A_N_RT,B_N_RT = NA_real_,B_N_RT_SD = NA_real_,penalty = TRUE){
 
+  # add visual bindings
+  B_LSW_ID = bln_country = code = choices = value_min = value_max = . = NULL
+  crop_code = crop_cat1 = ngw_nlv = nsw_nlv = npe_wri =npe_pbi = npe_wdri = npe_nlv = NULL
+  riskcor = group = risk = mcf = id = cfnue = d_op_nue = npe = NULL
+  s_bbwp_nue = risk_cor = d_opi_nue = NULL
+
   # load internal table
   dt.lsw <- BLN::bln_lsw[B_LSW_ID == 'lsw_nlmean']
   dt.crop <- BLN::bln_crops[bln_country=='NL']
@@ -28,7 +34,7 @@ bln_nut_nue <- function(B_LU_BRP,B_HELP_WENR,B_GWL_CLASS,A_P_AL,A_P_CC,A_P_WA,
   # check inputs B parameters
   arg.length <- max(length(B_LU_BRP),length(B_HELP_WENR), length(B_GWL_CLASS),
                     length(A_P_AL),length(A_P_CC),length(A_P_WA),length(A_N_RT))
-  checkmate::assert_subset(B_LU_BRP, choices = unlist(bln_crops$crop_code))
+  checkmate::assert_subset(B_LU_BRP, choices = unlist(BLN::bln_crops$crop_code))
   checkmate::assert_integerish(B_LU_BRP, len = arg.length)
   checkmate::assert_subset(B_HELP_WENR, choices = unlist(blnp[code == "B_HELP_WENR", choices]))
   checkmate::assert_character(B_HELP_WENR, len = arg.length)

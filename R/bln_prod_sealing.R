@@ -15,6 +15,9 @@
 #' @export
 bln_p_sealing <- function(B_LU_BRP,A_SOM_LOI, A_CLAY_MI) {
 
+  # add visual bindings
+  D_SE = i_p_se = NULL
+
   # Check input
   arg.length <- max(length(B_LU_BRP),length(A_CLAY_MI), length(A_SOM_LOI))
   checkmate::assert_numeric(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)

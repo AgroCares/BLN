@@ -15,7 +15,7 @@
 bln_nut_phosphorus <- function(B_LU_BRP, A_P_AL = NA_real_, A_P_CC = NA_real_, A_P_WA = NA_real_) {
 
   # set visual bindings
-  i_c_p = bln_country = bln_indicator = id = crop_cat1 = NULL
+  i_c_p = bln_country = bln_indicator = id = crop_cat1 = i_nut_p = NULL
 
   # Load in the crops data set and the parms dataset
   dt.crops <- as.data.table(BLN::bln_crops)

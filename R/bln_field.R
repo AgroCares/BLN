@@ -104,6 +104,15 @@ bln_field <- function(B_LU_BRP,B_LU_BBWP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_
 
 # --- step 1. preprocessing input data ----
 
+  # add visual bindings
+  i_c_n = i_c_p = i_c_k = i_c_mg = i_c_s = i_c_ph = NULL
+  i_p_cr = i_p_se = i_p_ds = i_p_ws = i_p_du = i_p_co = i_p_whc = i_p_as = i_p_wo = i_p_ro = d_p_co = d_p_cec = NULL
+  i_b_di = i_b_sf = i_gw_gwr = i_gw_wb = i_gw_ngw = i_clim_osb = i_clim_rothc = i_clim_csat = NULL
+  B_N_RT = B_N_RT_SD = i_gw_pest = i_gw_nret = i_gw_nlea = i_sw_nro = i_sw_nret = i_sw_nsw = i_sw_psw = NULL
+  B_RO_R = B_RO_R_SD = B_P_CC = B_P_CC_SD = B_P_SG = B_P_SG_SD = B_AL_OX = B_AL_OX_SD = B_FE_OX = B_FE_OX_SD = NULL
+  i_nut_n = i_nut_p = i_nut_k = i_nut_nue = . = crop_code = crop_category = value = indicator = NULL
+  cat1 = cat2 = crop_cat = weight = cf = value.w = ncat = cf_yr = NULL
+
   # make internal table
   dt <- data.table(B_LU_BRP = B_LU_BRP,
                    B_SC_WENR = B_SC_WENR,
@@ -260,10 +269,10 @@ bln_field <- function(B_LU_BRP,B_LU_BBWP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_
     dt[, i_gw_nret := bln_wat_nretention_gw(ID, B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS, B_GWL_CLASS, A_SOM_LOI, A_N_RT)]
 
     # groundwater quantity and quality: nitrogen leaching (I_H_NGW, from OBI). M_GREEN FALSE (YF: otherwise too strong impact)
-    dt[, i_gw_nlea := bln_wat_nrisk_gw(ID, B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS, B_DRAIN,B_GWL_CLASS,B_SC_WENR,B_FERT_NORM_FR = 1,
+    dt[, i_gw_nlea := bln_wat_nrisk_gw(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLASS,B_SC_WENR,B_FERT_NORM_FR = 1,
                                        A_CLAY_MI,A_SAND_MI, A_SILT_MI, A_SOM_LOI,A_P_AL, A_P_WA, A_P_CC,
                                        A_PH_CC, A_CEC_CO,A_K_CO_PO, A_K_CC,
-                                       M_GREEN = FALSE)]
+                                       M_GREEN)]
 
   # calculate BLN regulation and purification of water (surface water)
 

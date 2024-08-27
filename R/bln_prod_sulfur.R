@@ -17,6 +17,9 @@
 #' @export
 bln_c_sulfur <- function(B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS,A_SOM_LOI,A_S_RT) {
 
+  # Add visual bindings
+  D_BDS = D_SLV = i_c_s = NULL
+
   # Check input
   arg.length <- max(length(A_S_RT), length(A_SOM_LOI), length(B_LU_BRP),
                     length(B_SOILTYPE_AGR), length(B_AER_CBS))

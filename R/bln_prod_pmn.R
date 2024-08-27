@@ -20,7 +20,7 @@
 bln_b_pmn <- function(B_LU_BRP, B_SOILTYPE_AGR,A_N_PMN) {
 
   # add visual bindings
-  osi_country = osi_indicator = NULL
+  osi_country = osi_indicator = bln_country = bln_indicator = NULL
 
   # load and subset thresholds to Dutch situation for PMN
   dt.thresholds <- as.data.table(BLN::bln_thresholds)

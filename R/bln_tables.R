@@ -103,3 +103,31 @@
 #'   \item{B_SA_W_SD}{}
 #' }
 "bln_lsw"
+
+#' An example dataset with all BLN input prepared for de Marke farm
+#'
+#' This table containsall input data for an example farm to run the BLN
+#'
+#' \describe{
+#'   \item{c1}{}
+#'   \item{c2}{}
+#'   \item{c3}{}
+#'   \item{c4}{}
+#'   \item{c5}{}
+#'   \item{c6}{}
+#' }
+"bln_farm_hf"
+
+#' An example dataset with all LSW properties related to the fields of the Marke farm
+#'
+#' This table contains the LSW properties for the fields belonging to the Marke farm
+#'
+#' \describe{
+#'   \item{c1}{}
+#'   \item{c2}{}
+#'   \item{c3}{}
+#'   \item{c4}{}
+#'   \item{c5}{}
+#'   \item{c6}{}
+#' }
+"bln_lsw_farm_hf"

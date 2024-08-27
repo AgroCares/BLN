@@ -12,6 +12,9 @@
 #' @export
 bln_c_cec <- function(A_CEC_CO) {
 
+  # add visual bindings
+  i_c_cec = NULL
+
   # Check inputs
   arg.length <- max(length(A_CEC_CO))
   checkmate::assert_numeric(A_CEC_CO, lower = 0, upper = 1000, any.missing = FALSE, len = arg.length)

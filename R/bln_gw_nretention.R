@@ -16,6 +16,9 @@
 #' @export
 bln_wat_nretention_gw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLASS,A_SOM_LOI,A_N_RT){
 
+  # add visual bindigns
+  bln_crops = code = choices = value_min = value_max = A_CN_FR = D_BDS = D_RD = D_OC = D_GA = FIELD_ID = D_NLV = D_NGW = NULL
+
   # make internal copy
   blnp <- BLN::bln_parms
 
@@ -24,7 +27,7 @@ bln_wat_nretention_gw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLA
                     length(B_GWL_CLASS),length(A_SOM_LOI),length(A_N_RT))
 
   checkmate::assert_integerish(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)
-  checkmate::assert_subset(B_LU_BRP, choices = unique(bln_crops$crop_code), empty.ok = FALSE)
+  checkmate::assert_subset(B_LU_BRP, choices = unique(BLN::bln_crops$crop_code), empty.ok = FALSE)
   checkmate::assert_subset(B_SOILTYPE_AGR, choices = unlist(blnp[code == "B_SOILTYPE_AGR", choices]))
   checkmate::assert_character(B_SOILTYPE_AGR, len = arg.length)
   checkmate::assert_subset(B_AER_CBS, choices = unlist(blnp[code == "B_AER_CBS", choices]))

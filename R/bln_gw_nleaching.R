@@ -29,6 +29,11 @@ bln_wat_nrisk_gw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLASS,B_
                              A_PH_CC, A_CEC_CO,A_K_CO_PO, A_K_CC,
                              M_GREEN){
 
+  # add visual bindings
+  bln_crops = code = choices = value_min = value_max = FIELD_ID = NULL
+  D_CP_STARCH = FIELD_ID = D_CP_POTATO = D_CP_SUGARBEET = D_CP_GRASS = D_CP_MAIS = D_CP_OTHER = D_CP_RUST = D_CP_RUSTDEEP = NULL
+  D_PBI = D_K = D_PH_DELTA = D_NLEACH_GW = NULL
+
   # make internal copy
   blnp <- BLN::bln_parms
 
@@ -40,7 +45,7 @@ bln_wat_nrisk_gw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLASS,B_
                     length(A_CEC_CO),length(A_K_CO_PO),length(A_K_CC),length(M_GREEN))
 
   checkmate::assert_integerish(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)
-  checkmate::assert_subset(B_LU_BRP, choices = unique(bln_crops$crop_code), empty.ok = FALSE)
+  checkmate::assert_subset(B_LU_BRP, choices = unique(BLN::bln_crops$crop_code), empty.ok = FALSE)
   checkmate::assert_subset(B_SOILTYPE_AGR, choices = unlist(blnp[code == "B_SOILTYPE_AGR", choices]))
   checkmate::assert_character(B_SOILTYPE_AGR, len = arg.length)
   checkmate::assert_subset(B_AER_CBS, choices = unlist(blnp[code == "B_AER_CBS", choices]))

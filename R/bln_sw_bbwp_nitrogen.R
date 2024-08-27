@@ -15,20 +15,26 @@
 #' @param D_RO_R (numeric) The risk that surface water runs off the parcel
 #' @param B_N_RT (numeric) The mean organic nitrogen content of the soil in the LSW region (mg N / kg). Optional.
 #' @param B_N_RT_SD (numeric) The variance in organic nitrogen content of the soil in the LSW region (standard deviation) (mg N / kg). Optional.
-#' @param D_RO_R (numeric) The mean D_RO_R of the soil in the LSW region. Optional.
-#' @param D_RO_R_SD (numeric) The variance in D_RO_R in the LSW region (standard deviation). Optional.
+#' @param B_RO_R (numeric) The mean D_RO_R of the soil in the LSW region. Optional.
+#' @param B_RO_R_SD (numeric) The variance in D_RO_R in the LSW region (standard deviation). Optional.
 #' @param B_CT_NSW (numeric) the critical target for required reduction in N loss from agriculture (kg N / ha) to reach targets of KRW
 #' @param B_CT_NSW_MAX (numeric) the max critical target for N reduction loss (kg N / ha)
 #' @param penalty (boolean) the option to apply a penalty for high risk BBWP field indicators. Default is TRUE.
 #'
 #' @import data.table
 #' @import OBIC
+#' @importFrom stats pnorm
 #'
 #' @export
 bln_bbwp_nsw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GWL_CLASS,B_SLOPE_DEGREE,A_SOM_LOI,A_N_RT,
                          D_RO_R, D_SA_W,
                          B_N_RT = NA_real_,B_RO_R = NA_real_,B_RO_R_SD = NA_real_,B_N_RT_SD = NA_real_,
                          B_CT_NSW, B_CT_NSW_MAX = 5, penalty = TRUE){
+
+  # add visual bindings
+  bln_country = code = choices = value_min = value_max = . = crop_cat1 = crop_code = bln_soil_cat1 = bln_soil_cat2 = NULL
+  ngw_scr = nsw_scr = nsw_gwt = nsw_ro = nsw_slope = ngw_nlv = nsw_nlv = risk_cor = NULL
+  group = risk = mcf= CROP_ID = ws = slope = cfnsw = d_opi_nsw = nsw = nsw_ws = B_LSW_ID = NULL
 
   # load internal table
   dt.lsw <- BLN::bln_lsw[B_LSW_ID == 'lsw_nlmean']
@@ -40,7 +46,7 @@ bln_bbwp_nsw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GWL_CL
   arg.length <- max(length(B_LU_BRP),length(B_SOILTYPE_AGR), length(B_SC_WENR),length(B_AER_CBS),
                     length(B_GWL_CLASS),length(B_SLOPE_DEGREE),length(A_SOM_LOI),length(A_N_RT),length(D_RO_R),
                     length(D_SA_W),length(B_CT_NSW))
-  checkmate::assert_subset(B_LU_BRP, choices = unlist(bln_crops$crop_code))
+  checkmate::assert_subset(B_LU_BRP, choices = unlist(BLN::bln_crops$crop_code))
   checkmate::assert_integerish(B_LU_BRP, len = arg.length)
   checkmate::assert_subset(B_SOILTYPE_AGR, choices = unlist(blnp[code == "B_SOILTYPE_AGR", choices]))
   checkmate::assert_character(B_SOILTYPE_AGR, len = arg.length)

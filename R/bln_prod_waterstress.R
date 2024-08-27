@@ -18,6 +18,9 @@
 #' @export
 bln_p_waterstress <- function(B_HELP_WENR, B_LU_BRP, B_GWL_CLASS, WSI = 'waterstress') {
 
+  # add visual bindings
+  D_WSI = NULL
+
   # Check input
   arg.length <- max(length(B_HELP_WENR), length(B_LU_BRP), length(B_GWL_CLASS))
   checkmate::assert_numeric(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)
@@ -68,6 +71,9 @@ bln_p_waterstress <- function(B_HELP_WENR, B_LU_BRP, B_GWL_CLASS, WSI = 'waterst
 #' @export
 bln_p_droughtstress <- function(B_HELP_WENR, B_LU_BRP, B_GWL_CLASS, WSI = 'droughtstress') {
 
+  # add visual bindings
+  D_WSI = NULL
+
   # Check input
   arg.length <- max(length(B_HELP_WENR), length(B_LU_BRP), length(B_GWL_CLASS))
   checkmate::assert_numeric(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)
@@ -117,6 +123,9 @@ bln_p_droughtstress <- function(B_HELP_WENR, B_LU_BRP, B_GWL_CLASS, WSI = 'droug
 #'
 #' @export
 bln_p_wetnessstress <- function(B_HELP_WENR, B_LU_BRP, B_GWL_CLASS, WSI = 'wetnessstress') {
+
+  # add visual bindings
+  D_WSI = NULL
 
   # Check input
   arg.length <- max(length(B_HELP_WENR), length(B_LU_BRP), length(B_GWL_CLASS))

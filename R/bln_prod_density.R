@@ -21,7 +21,7 @@ bln_p_density <- function(A_SOM_LOI, A_CLAY_MI,A_DENSITY_SA = NA_real_) {
 
   # set visual bindings
   dens.sand = dens.clay = cf = density = crit1 = NULL
-  osi_indicator = osi_country = NULL
+  bln_indicator = bln_country = NULL
 
   # Load in the thresholds
   dt.thresholds <- as.data.table(BLN::bln_thresholds)

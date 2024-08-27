@@ -7,7 +7,6 @@
 #' @param A_SAND_MI (numeric) The sand content of the soil (\%)
 #' @param A_SILT_MI (numeric) The silt content of the soil (\%)
 #' @param A_SOM_LOI (numeric) The organic matter content of the soil (\%)
-#' @param A_K_CC (numeric) The plant available K content, extracted with 0.01M CaCl2 (mg / kg)
 #' @param M_GREEN (boolean) A soil measure. Are catch crops sown after main crop (optional, option: yes or no)
 #' @param M_MECHWEEDS (boolean) measure. Use of mechanical weed protection (option: yes or no)
 #' @param M_PESTICIDES_DST (boolean) measure. Use of DST for pesticides (option: yes or no)
@@ -20,6 +19,8 @@ bln_wat_pesticide <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,
                               A_CLAY_MI,A_SAND_MI, A_SILT_MI, A_SOM_LOI,
                               M_GREEN,M_MECHWEEDS,M_PESTICIDES_DST){
 
+  # add visual bindings
+  bln_crops = code = choices = value_min = value_max = FIELD_ID = D_PESTICIDE =D_PSP = NULL
 
   # make internal copy
   blnp <- BLN::bln_parms
@@ -30,7 +31,7 @@ bln_wat_pesticide <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,
                     length(A_SOM_LOI),length(M_GREEN),length(M_MECHWEEDS),length(M_PESTICIDES_DST))
 
   checkmate::assert_integerish(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)
-  checkmate::assert_subset(B_LU_BRP, choices = unique(bln_crops$crop_code), empty.ok = FALSE)
+  checkmate::assert_subset(B_LU_BRP, choices = unique(BLN::bln_crops$crop_code), empty.ok = FALSE)
   checkmate::assert_subset(B_SOILTYPE_AGR, choices = unlist(blnp[code == "B_SOILTYPE_AGR", choices]))
   checkmate::assert_character(B_SOILTYPE_AGR, len = arg.length)
 

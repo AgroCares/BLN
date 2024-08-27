@@ -8,14 +8,19 @@
 #' @param quiet (boolean) showing progress bar for calculation RothC C-saturation for each field
 #'
 #' @import data.table
+#' @importFrom utils setTxtProgressBar
+#' @importFrom utils txtProgressBar
 #'
 #' @export
 bln_clim_rothc <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI,quiet = FALSE){
 
+  # add visual bindings
+  i_clim_rothc =A_SOM_LOI_ROTHC_BAU = A_SOM_LOI_ROTHC_ALL = NULL
+
   # Check inputs
   arg.length <- max(length(B_LU_BRP), length(A_SOM_LOI), length(A_CLAY_MI))
   checkmate::assert_numeric(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)
-  checkmate::assert_subset(B_LU_BRP, choices = unique(bln_crops$crop_code), empty.ok = FALSE)
+  checkmate::assert_subset(B_LU_BRP, choices = unique(BLN::bln_crops$crop_code), empty.ok = FALSE)
   checkmate::assert_numeric(A_CLAY_MI, lower = 0, upper = 100, any.missing = FALSE, min.len = 1)
   checkmate::assert_numeric(A_SOM_LOI, lower = 0.1, upper = 100, any.missing = FALSE, min.len = 1, len = arg.length)
   checkmate::assert_numeric(B_GWL_GLG, lower = 0, any.missing = FALSE, len = arg.length)
@@ -193,6 +198,9 @@ bln_rothc_field <- function(B_LU_BRP, A_SOM_LOI, A_CLAY_MI, simyears = 50, init 
 #' @export
 rothc_initialise <- function(B_LU_BRP,A_SOM_LOI,A_CLAY_MI){
 
+  # add visual bindings
+  . = CIOM = CDPM = CRPM = CBIO = NULL
+
   # Prepare input for scenario Business As Usual
   scen.inp <- rothc_scenario(B_LU_BRP = B_LU_BRP, scen = 'BAU')
   rotation <- scen.inp$rotation
@@ -229,6 +237,11 @@ rothc_initialise <- function(B_LU_BRP,A_SOM_LOI,A_CLAY_MI){
 #'
 #' @export
 rothc_scenario <- function(B_LU_BRP, scen){
+
+  # add visual bindings
+  . = B_LU_NAME = B_LU_EOM = B_LU_EOM_RESIDUE = B_LU_HC = B_LU_WATERSTRESS_OBIC = NULL
+  B_LU = gld = cereal = nat = bld = M_GREEN_TIMING = M_CROPRESIDUE = man_name = NULL
+  P_OM = P_HC = P_p2o5 = P_DOSE = P_NAME = p_p2o5 = NULL
 
   # combine input data
   dt <- data.table(B_LU_BRP = B_LU_BRP,year = 1:length(B_LU_BRP))
@@ -417,43 +430,43 @@ rothc_scenario <- function(B_LU_BRP, scen){
 # function to run RothC parallel for a series of fields
 rothc_parallel <- function(this.xs, dt.c, p = NULL, sdir = NULL){
 
-  # get simulation data
-  sim.dt <- dt.c[xs == this.xs]
-
-  mc <- sim.dt$mc[1]
-
-  # do RothC simulation
-  result <- tryCatch({
-
-    # set seed
-    set.seed(mc)
-
-    # run RothC
-    out <- bln_rothc_field(B_LU_BRP = sim.dt$B_LU_BRP,
-                           A_SOM_LOI = sim.dt$A_SOM_LOI[1],
-                           A_CLAY_MI = sim.dt$A_CLAY_MI[1],
-                           simyears = 100,
-                           init = FALSE,
-                           scen = c('BAU','ALL'))
-    out[,xs := this.xs]
-
-    # show progress
-    if (! is.null(p)) {if (this.xs %% 10 == 0) p(sprintf('id = %g', this.xs))}
-
-    result <- copy(out)
-
-    return(result)
-
-  }, error = function (e) {
-
-    result <- data.table(year = 1:50,BAU = 0, ALL = 0,xs = this.xs)
-    result$error <- as.character(e)
-
-    if (! is.null(p)) {p(sprintf('id %g has error: %s', this.xs, as.character(e)))}
-
-    return(result)
-  })
-
+  # # get simulation data
+  # sim.dt <- dt.c[xs == this.xs]
+  #
+  # mc <- sim.dt$mc[1]
+  #
+  # # do RothC simulation
+  # result <- tryCatch({
+  #
+  #   # set seed
+  #   set.seed(mc)
+  #
+  #   # run RothC
+  #   out <- bln_rothc_field(B_LU_BRP = sim.dt$B_LU_BRP,
+  #                          A_SOM_LOI = sim.dt$A_SOM_LOI[1],
+  #                          A_CLAY_MI = sim.dt$A_CLAY_MI[1],
+  #                          simyears = 100,
+  #                          init = FALSE,
+  #                          scen = c('BAU','ALL'))
+  #   out[,xs := this.xs]
+  #
+  #   # show progress
+  #   if (! is.null(p)) {if (this.xs %% 10 == 0) p(sprintf('id = %g', this.xs))}
+  #
+  #   result <- copy(out)
+  #
+  #   return(result)
+  #
+  # }, error = function (e) {
+  #
+  #   result <- data.table(year = 1:50,BAU = 0, ALL = 0,xs = this.xs)
+  #   result$error <- as.character(e)
+  #
+  #   if (! is.null(p)) {p(sprintf('id %g has error: %s', this.xs, as.character(e)))}
+  #
+  #   return(result)
+  # })
+  result = NULL
 
   return(result)
 

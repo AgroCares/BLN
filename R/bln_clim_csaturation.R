@@ -10,10 +10,13 @@
 #' @export
 bln_clim_csat <- function(B_LU_BRP,A_SOM_LOI,A_CLAY_MI,A_SOM_LOI_MLMAX = NA_real_){
 
+  # add visual bindings
+  . = crop_code = crop_cat1 = cfcrop = NULL
+
   # Check inputs
   arg.length <- max(length(B_LU_BRP), length(A_SOM_LOI), length(A_CLAY_MI), length(A_SOM_LOI_MLMAX))
   checkmate::assert_numeric(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)
-  checkmate::assert_subset(B_LU_BRP, choices = unique(bln_crops$crop_code), empty.ok = FALSE)
+  checkmate::assert_subset(B_LU_BRP, choices = unique(BLN::bln_crops$crop_code), empty.ok = FALSE)
   checkmate::assert_numeric(A_CLAY_MI, lower = 0, upper = 100, any.missing = FALSE, min.len = 1)
   checkmate::assert_numeric(A_SOM_LOI, lower = 0.1, upper = 100, any.missing = FALSE, min.len = 1, len = arg.length)
   checkmate::assert_numeric(A_SOM_LOI_MLMAX, lower = 0.1, upper = 100, any.missing = TRUE, min.len = 1)

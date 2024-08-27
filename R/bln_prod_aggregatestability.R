@@ -17,6 +17,9 @@
 #' @export
 bln_p_aggstability <- function(B_SOILTYPE_AGR,A_SOM_LOI,A_K_CO_PO,A_CA_CO_PO,A_MG_CO_PO) {
 
+  # add visual bindings
+  D_AS = i_p_as = NULL
+
   # Check inputs
   arg.length <- max(length(B_SOILTYPE_AGR), length(A_SOM_LOI),length(A_K_CO_PO), length(A_CA_CO_PO), length(A_MG_CO_PO))
   checkmate::assert_numeric(A_K_CO_PO, lower = 0, upper = 50, any.missing = FALSE, len = arg.length)

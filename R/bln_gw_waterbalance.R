@@ -19,9 +19,12 @@
 #' @export
 bln_bbwp_bw <- function(ID,B_LU_BRP,B_HELP_WENR,B_GWL_CLASS,B_AREA_DROUGHT,A_CLAY_MI, A_SAND_MI, A_SILT_MI, A_SOM_LOI,penalty = TRUE){
 
+  # add visual bindings
+  bln_country = code = crop_code = choices = value_min = value_max = . = crop_cat1 = wue_wwri = wue_wdri = wue_whc = risk_cor = NULL
+  group = risk = mcf = CROP_ID = cfwb = d_opi_wb = wue = NULL
+
   # load internal table
   dt.crop <- BLN::bln_crops[bln_country=='NL']
-
 
   # make internal copy
   blnp <- BLN::bln_parms
@@ -30,7 +33,7 @@ bln_bbwp_bw <- function(ID,B_LU_BRP,B_HELP_WENR,B_GWL_CLASS,B_AREA_DROUGHT,A_CLA
   arg.length <- max(length(B_LU_BRP),length(B_HELP_WENR), length(B_GWL_CLASS),length(B_AREA_DROUGHT),
                     length(A_CLAY_MI),length(A_SAND_MI),length(A_SILT_MI),
                     length(A_SOM_LOI))
-  checkmate::assert_subset(B_LU_BRP, choices = unlist(bln_crops$crop_code))
+  checkmate::assert_subset(B_LU_BRP, choices = unlist(BLN::bln_crops$crop_code))
   checkmate::assert_integerish(B_LU_BRP, len = arg.length)
   checkmate::assert_subset(B_HELP_WENR, choices = unlist(blnp[code == "B_HELP_WENR", choices]))
   checkmate::assert_character(B_HELP_WENR, len = arg.length)

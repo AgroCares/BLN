@@ -33,6 +33,9 @@ bln_p_workability <- function(A_CLAY_MI, A_SILT_MI, B_LU_BRP, B_SOILTYPE_AGR,
                              B_GWL_GLG, B_GWL_GHG, B_GWL_ZCRIT,
                              calcyieldloss = FALSE) {
 
+  # add visual bindings
+  D_WO = i_p_wo = NULL
+
   # Check inputs
   arg.length <- max(length(A_CLAY_MI), length(A_SILT_MI), length(B_LU_BRP), length(B_SOILTYPE_AGR),
                     length(B_GWL_GLG), length(B_GWL_GHG), length(B_GWL_ZCRIT))
