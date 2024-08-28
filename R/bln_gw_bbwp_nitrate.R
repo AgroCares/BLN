@@ -35,6 +35,9 @@ bln_bbwp_ngw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GWP,B_
   # make internal copy
   blnp <- BLN::bln_parms
 
+  # adjust input
+  B_AER_CBS <- bln_format_aer(B_AER_CBS,type='code')
+
   # check inputs B parameters
   arg.length <- max(length(B_LU_BRP),length(B_SOILTYPE_AGR), length(B_SC_WENR),length(B_AER_CBS),
                     length(B_GWP),length(B_GWL_CLASS),length(A_SOM_LOI),length(A_N_RT))

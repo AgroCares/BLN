@@ -22,10 +22,14 @@ bln_wat_nretention_sw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLA
   # make internal copy
   blnp <- BLN::bln_parms
 
-  # Check input
+  # Check input length
   arg.length <- max(length(B_LU_BRP),length(B_SOILTYPE_AGR), length(B_AER_CBS),
                     length(B_GWL_CLASS),length(A_SOM_LOI),length(A_N_RT))
 
+  # adjust input format
+  B_AER_CBS <- bln_format_aer(B_AER_CBS,type='code')
+
+  # check input
   checkmate::assert_integerish(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)
   checkmate::assert_subset(B_LU_BRP, choices = unique(BLN::bln_crops$crop_code), empty.ok = FALSE)
   checkmate::assert_subset(B_SOILTYPE_AGR, choices = unlist(blnp[code == "B_SOILTYPE_AGR", choices]))

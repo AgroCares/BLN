@@ -71,6 +71,9 @@ bln_nut_potassium <- function(B_LU_BRP, B_SOILTYPE_AGR,A_SOM_LOI, A_CLAY_MI,A_PH
   dt[grepl('arabl',crop_cat1) & (grepl("loess",B_SOILTYPE_AGR)|grepl("klei",B_SOILTYPE_AGR) & A_SOM_LOI <= 10),i_nut_k := bln_evaluate_logistic_gaus_down(D_K, b = 0.5, x0 = 11.5, v = 1.1, optimum = 20, optimum_ofset = 1.5)]
   dt[is.na(i_nut_k),i_nut_k := bln_evaluate_logistic_gaus_down(D_K, b = 8, x0 = 2.5, v = 8, optimum = 20, optimum_ofset = 1.5)]
 
+  # set order
+  setorder(dt,id)
+
   # select the output variable
   out <- dt[,i_nut_k]
 

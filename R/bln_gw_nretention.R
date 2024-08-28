@@ -22,6 +22,9 @@ bln_wat_nretention_gw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLA
   # make internal copy
   blnp <- BLN::bln_parms
 
+  # adjust input
+  B_AER_CBS <- bln_format_aer(B_AER_CBS,type='code')
+
   # Check input
   arg.length <- max(length(B_LU_BRP),length(B_SOILTYPE_AGR), length(B_AER_CBS),
                     length(B_GWL_CLASS),length(A_SOM_LOI),length(A_N_RT))

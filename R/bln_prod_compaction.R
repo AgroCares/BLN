@@ -20,6 +20,9 @@
 #' @export
 bln_p_compaction <- function(B_SC_WENR) {
 
+  # convert to character
+  B_SC_WENR <- as.character(B_SC_WENR)
+
   # Check inputs
   checkmate::assert_character(B_SC_WENR, any.missing = FALSE, min.len = 1)
   checkmate::assert_subset(B_SC_WENR, choices = c("Bebouwing en infrastructuur","Groot","Zeer groot","Matig","Water",

@@ -37,13 +37,18 @@ bln_wat_nrisk_gw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLASS,B_
   # make internal copy
   blnp <- BLN::bln_parms
 
-  # Check input
+  # length of input
   arg.length <- max(length(B_LU_BRP),length(B_SOILTYPE_AGR), length(B_AER_CBS),
                     length(B_GWL_CLASS),length(B_SC_WENR),length(B_FERT_NORM_FR),
                     length(A_CLAY_MI),length(A_SAND_MI),length(A_SILT_MI),length(A_SOM_LOI),
                     length(A_P_AL),length(A_P_WA),length(A_P_CC),length(A_PH_CC),
                     length(A_CEC_CO),length(A_K_CO_PO),length(A_K_CC),length(M_GREEN))
 
+  # adjust input
+  B_AER_CBS <- bln_format_aer(B_AER_CBS,type='code')
+  if(length(B_FERT_NORM_FR)==1){B_FERT_NORM_FR <- rep(B_FERT_NORM_FR,arg.length)}
+
+  # check inputs
   checkmate::assert_integerish(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)
   checkmate::assert_subset(B_LU_BRP, choices = unique(BLN::bln_crops$crop_code), empty.ok = FALSE)
   checkmate::assert_subset(B_SOILTYPE_AGR, choices = unlist(blnp[code == "B_SOILTYPE_AGR", choices]))

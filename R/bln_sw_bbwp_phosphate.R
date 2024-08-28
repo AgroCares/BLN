@@ -50,11 +50,16 @@ bln_bbwp_psw <- function(ID,B_LU_BRP,B_SC_WENR,B_AER_CBS,B_GWL_CLASS,B_SLOPE_DEG
   dt.crop <- BLN::bln_crops[bln_country=='NL']
   blnp <- BLN::bln_parms
 
-  # check inputs B parameters
+  # check input length
   arg.length <- max(length(B_LU_BRP), length(B_SC_WENR),length(B_AER_CBS),
                     length(B_GWL_CLASS),length(B_SLOPE_DEGREE),length(A_P_CC),length(A_P_SG),
                     length(A_AL_OX),length(A_FE_OX),
                     length(D_RO_R),length(D_SA_W),length(B_CT_PSW))
+
+  # adjust input format
+  B_AER_CBS <- bln_format_aer(B_AER_CBS,type='code')
+
+  # check input
   checkmate::assert_subset(B_LU_BRP, choices = unlist(BLN::bln_crops$crop_code))
   checkmate::assert_integerish(B_LU_BRP, len = arg.length)
   checkmate::assert_subset(B_SC_WENR, choices = unlist(blnp[code == "B_SC_WENR", choices]))

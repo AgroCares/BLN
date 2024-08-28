@@ -42,10 +42,15 @@ bln_bbwp_nsw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GWL_CL
   dt.soil <- BLN::bln_soiltype[bln_country=='NL']
   blnp <- BLN::bln_parms
 
-  # check inputs B parameters
+  # check inputs length
   arg.length <- max(length(B_LU_BRP),length(B_SOILTYPE_AGR), length(B_SC_WENR),length(B_AER_CBS),
                     length(B_GWL_CLASS),length(B_SLOPE_DEGREE),length(A_SOM_LOI),length(A_N_RT),length(D_RO_R),
                     length(D_SA_W),length(B_CT_NSW))
+
+  # adjust input format
+  B_AER_CBS <- bln_format_aer(B_AER_CBS,type='code')
+
+  # check input
   checkmate::assert_subset(B_LU_BRP, choices = unlist(BLN::bln_crops$crop_code))
   checkmate::assert_integerish(B_LU_BRP, len = arg.length)
   checkmate::assert_subset(B_SOILTYPE_AGR, choices = unlist(blnp[code == "B_SOILTYPE_AGR", choices]))
