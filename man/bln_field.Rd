@@ -5,8 +5,8 @@
 \title{Calculate the BLN score for one field}
 \usage{
 bln_field(
+  ID,
   B_LU_BRP,
-  B_LU_BBWP,
   B_SC_WENR,
   B_GWL_CLASS,
   B_SOILTYPE_AGR,
@@ -78,14 +78,15 @@ bln_field(
   M_PESTICIDES_DST = NA,
   B_LSW_ID = NA_character_,
   LSW = NULL,
-  ID,
-  output = "all"
+  output = "all",
+  runrothc = FALSE,
+  i_clim_rothc = NA_real_
 )
 }
 \arguments{
-\item{B_LU_BRP}{(numeric) a series with crop codes given the crop rotation plan (source: the BRP)}
+\item{ID}{(character) A field id}
 
-\item{B_LU_BBWP}{(character) The BBWP category used for allocation of measures to BBWP crop categories}
+\item{B_LU_BRP}{(numeric) a series with crop codes given the crop rotation plan (source: the BRP)}
 
 \item{B_SC_WENR}{(character) The risk for subsoil compaction as derived from risk assessment study of Van den Akker (2006).}
 
@@ -229,13 +230,16 @@ bln_field(
 
 \item{LSW}{(data.table) The averaged soil properties (mean and sd) per Local Surface Water. Can be derived from bbwp_lsw_properties.}
 
-\item{ID}{(character) A field id}
-
 \item{output}{(character) An optional argument to select output: scores, indicators, or all. (default = all)}
+
+\item{runrothc}{(boolean) An argument to switch off rothc calculations due to running time (default: FALSE)}
+
+\item{i_clim_rothc}{(numeric) the soil indicator for carbon saturation derived via rothc.}
 }
 \description{
 This functions wraps the functions of the BLN2 into one main function to calculate the soil quality score for a single field.
 }
 \details{
 It is assumed that the crop series is a continuous series in decreasing order of years. So most recent year first, oldest year last.
+The indicator i_clim_rothc can be calculated seperately and be inserted as optional argument (i_rothc_clim) in view of the calculation time to run rothc.
 }

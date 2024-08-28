@@ -2,8 +2,8 @@
 #'
 #' This functions wraps the functions of the BLN2 into one main function to calculate the soil quality score for a single field.
 #'
+#' @param ID (character) A field id
 #' @param B_LU_BRP (numeric) a series with crop codes given the crop rotation plan (source: the BRP)
-#' @param B_LU_BBWP (character) The BBWP category used for allocation of measures to BBWP crop categories
 #' @param B_SC_WENR (character) The risk for subsoil compaction as derived from risk assessment study of Van den Akker (2006).
 #' @param B_GWL_CLASS (character) The groundwater table class
 #' @param B_SOILTYPE_AGR (character) The agricultural type of soil
@@ -75,19 +75,22 @@
 #' @param M_PESTICIDES_DST (boolean) measure. Use of DST for pesticides (option: yes or no)
 #' @param B_LSW_ID (character) An unique identifier for each Local Surface Water per field
 #' @param LSW (data.table) The averaged soil properties (mean and sd) per Local Surface Water. Can be derived from bbwp_lsw_properties.
-#' @param ID (character) A field id
 #' @param output (character) An optional argument to select output: scores, indicators, or all. (default = all)
+#' @param runrothc (boolean) An argument to switch off rothc calculations due to running time (default: FALSE)
+#' @param i_clim_rothc (numeric) the soil indicator for carbon saturation derived via rothc.
 #'
 #' @import OBIC
+#' @import carboncastr
 #'
 #' @details
 #' It is assumed that the crop series is a continuous series in decreasing order of years. So most recent year first, oldest year last.
+#' The indicator i_clim_rothc can be calculated seperately and be inserted as optional argument (i_rothc_clim) in view of the calculation time to run rothc.
 #'
 #' @import data.table
 #'
 #'
 #' @export
-bln_field <- function(B_LU_BRP,B_LU_BBWP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_WENR,B_AER_CBS,
+bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_WENR,B_AER_CBS,
                       B_GWL_GLG,B_GWL_GHG,B_GWL_ZCRIT,B_DRAIN,B_FERT_NORM_FR,B_SLOPE_DEGREE,B_GWP,
                       B_AREA_DROUGHT,B_CT_PSW,B_CT_NSW,B_CT_PSW_MAX =0.5,B_CT_NSW_MAX = 5.0,
                       A_SOM_LOI,A_SOM_LOI_MLMAX = NA_real_, A_CLAY_MI,A_SAND_MI,A_SILT_MI,A_DENSITY_SA,A_FE_OX,A_AL_OX,A_PH_CC,A_N_RT,
@@ -100,21 +103,23 @@ bln_field <- function(B_LU_BRP,B_LU_BBWP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_
                       M_SLEEPHOSE = NA,M_DRAIN = NA,M_DITCH = NA,M_UNDERSEED = NA,
                       M_LIME = NA,M_NONINVTILL = NA,M_SSPM = NA,M_SOLIDMANURE = NA,
                       M_STRAWRESIDUE = NA,M_MECHWEEDS = NA,M_PESTICIDES_DST = NA,
-                      B_LSW_ID = NA_character_,LSW = NULL,ID, output ='all'){
+                      B_LSW_ID = NA_character_,LSW = NULL,output ='all',
+                      runrothc = FALSE, i_clim_rothc = NA_real_){
 
 # --- step 1. preprocessing input data ----
 
   # add visual bindings
   i_c_n = i_c_p = i_c_k = i_c_mg = i_c_s = i_c_ph = NULL
   i_p_cr = i_p_se = i_p_ds = i_p_ws = i_p_du = i_p_co = i_p_whc = i_p_as = i_p_wo = i_p_ro = d_p_co = d_p_cec = NULL
-  i_b_di = i_b_sf = i_gw_gwr = i_gw_wb = i_gw_ngw = i_clim_osb = i_clim_rothc = i_clim_csat = NULL
+  i_b_di = i_b_sf = i_gw_gwr = i_gw_wb = i_gw_ngw = i_clim_osb = i_clim_csat = NULL
   B_N_RT = B_N_RT_SD = i_gw_pest = i_gw_nret = i_gw_nlea = i_sw_nro = i_sw_nret = i_sw_nsw = i_sw_psw = NULL
   B_RO_R = B_RO_R_SD = B_P_CC = B_P_CC_SD = B_P_SG = B_P_SG_SD = B_AL_OX = B_AL_OX_SD = B_FE_OX = B_FE_OX_SD = NULL
   i_nut_n = i_nut_p = i_nut_k = i_nut_nue = . = crop_code = crop_category = value = indicator = NULL
   cat1 = cat2 = crop_cat = weight = cf = value.w = ncat = cf_yr = NULL
 
   # make internal table
-  dt <- data.table(B_LU_BRP = B_LU_BRP,
+  dt <- data.table(ID = ID,
+                   B_LU_BRP = B_LU_BRP,
                    B_SC_WENR = B_SC_WENR,
                    B_GWL_CLASS = B_GWL_CLASS,
                    B_SOILTYPE_AGR = B_SOILTYPE_AGR,
@@ -167,7 +172,8 @@ bln_field <- function(B_LU_BRP,B_LU_BBWP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_
                    M_SLEEPHOSE = M_SLEEPHOSE,M_DRAIN = M_DRAIN,M_DITCH = M_DITCH,M_UNDERSEED = M_UNDERSEED,
                    M_LIME = M_LIME,M_NONINVTILL = M_NONINVTILL,M_SSPM = M_SSPM,M_SOLIDMANURE = M_SOLIDMANURE,
                    M_STRAWRESIDUE = M_STRAWRESIDUE,M_MECHWEEDS = M_MECHWEEDS,M_PESTICIDES_DST = M_PESTICIDES_DST,
-                   B_LSW_ID = B_LSW_ID,LSW = LSW,ID = ID)
+                   B_LSW_ID = B_LSW_ID,LSW = LSW,
+                   i_clim_rothc = i_clim_rothc)
 
   # check formats B_SC_WENR and B_GWL_CLASS
   #dt[, B_SC_WENR := OBIC::format_soilcompaction(B_SC_WENR)]
@@ -175,14 +181,14 @@ bln_field <- function(B_LU_BRP,B_LU_BBWP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_
   dt[, B_AER_CBS := OBIC::format_aer(B_AER_CBS)]
 
   # estimate missing data
-  dt[is.na(A_DENSITY_SA), A_DENSITY_SA := calc_bulk_density(B_SOILTYPE_AGR, A_SOM_LOI, A_CLAY_MI)]
+  dt[is.na(A_DENSITY_SA), A_DENSITY_SA := OBIC::calc_bulk_density(B_SOILTYPE_AGR, A_SOM_LOI, A_CLAY_MI)]
 
   # add management when input is missing
   cols <- c('M_GREEN', 'M_NONBARE', 'M_EARLYCROP','M_COMPOST','M_SLEEPHOSE','M_DRAIN','M_DITCH','M_UNDERSEED',
             'M_LIME', 'M_NONINVTILL', 'M_SSPM', 'M_SOLIDMANURE','M_STRAWRESIDUE','M_MECHWEEDS','M_PESTICIDES_DST')
-  dt[, c(cols) := OBIC::add_management(ID,B_LU_BRP, B_SOILTYPE_AGR,
-                                 M_GREEN, M_NONBARE, M_EARLYCROP,M_COMPOST,M_SLEEPHOSE,M_DRAIN,M_DITCH,M_UNDERSEED,
-                                 M_LIME, M_NONINVTILL, M_SSPM, M_SOLIDMANURE,M_STRAWRESIDUE,M_MECHWEEDS,M_PESTICIDES_DST)]
+  dt[, c(cols) := bln_add_management(ID,B_LU_BRP, B_SOILTYPE_AGR,
+                                     M_GREEN, M_NONBARE, M_EARLYCROP,M_COMPOST,M_SLEEPHOSE,M_DRAIN,M_DITCH,M_UNDERSEED,
+                                     M_LIME, M_NONINVTILL, M_SSPM, M_SOLIDMANURE,M_STRAWRESIDUE,M_MECHWEEDS,M_PESTICIDES_DST)]
 
   # add year, assuming that first year is the most recent ones
   dt[,year := 1:.N,by=ID]
@@ -225,8 +231,8 @@ bln_field <- function(B_LU_BRP,B_LU_BBWP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_
     dt[, i_c_ph := bln_c_ph(ID,B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI, A_CLAY_MI, A_PH_CC),by=ID]
 
     # Calculate indicators for soil physical functions
-    dt[, i_p_cr := bln_p_crumbleability(A_SOM_LOI, A_CLAY_MI, A_PH_CC)]
-    dt[, i_p_se := bln_p_sealing(A_SOM_LOI, A_CLAY_MI)]
+    dt[, i_p_cr := bln_p_crumbleability(B_LU_BRP,A_SOM_LOI, A_CLAY_MI, A_PH_CC)]
+    dt[, i_p_se := bln_p_sealing(B_LU_BRP, A_SOM_LOI, A_CLAY_MI)]
     dt[, i_p_ds := bln_p_droughtstress(B_HELP_WENR, B_LU_BRP, B_GWL_CLASS, WSI = "droughtstress")]
     dt[, i_p_ws := bln_p_wetnessstress(B_HELP_WENR, B_LU_BRP, B_GWL_CLASS, WSI = "wetnessstress")]
     dt[, i_p_du := bln_p_windererosion(B_LU_BRP, A_CLAY_MI, A_SILT_MI)]
@@ -269,7 +275,7 @@ bln_field <- function(B_LU_BRP,B_LU_BBWP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_
     dt[, i_gw_nret := bln_wat_nretention_gw(ID, B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS, B_GWL_CLASS, A_SOM_LOI, A_N_RT)]
 
     # groundwater quantity and quality: nitrogen leaching (I_H_NGW, from OBI). M_GREEN FALSE (YF: otherwise too strong impact)
-    dt[, i_gw_nlea := bln_wat_nrisk_gw(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLASS,B_SC_WENR,B_FERT_NORM_FR = 1,
+    dt[, i_gw_nlea := bln_wat_nrisk_gw(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLASS,B_SC_WENR,B_FERT_NORM_FR = B_FERT_NORM_FR,
                                        A_CLAY_MI,A_SAND_MI, A_SILT_MI, A_SOM_LOI,A_P_AL, A_P_WA, A_P_CC,
                                        A_PH_CC, A_CEC_CO,A_K_CO_PO, A_K_CC,
                                        M_GREEN)]
@@ -277,14 +283,13 @@ bln_field <- function(B_LU_BRP,B_LU_BBWP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_
   # calculate BLN regulation and purification of water (surface water)
 
     # surface water quality: nitrogen runoff risk (I_H_NSW, from OBI) M_GREEN FALSE (YF: otherwise too strong impact)
-    dt[, i_sw_nro := bln_wat_nrunoff(ID,B_LU_BRP, B_SC_WENR, B_GWL_CLASS, B_AER_CBS, B_DRAIN,
-                                     B_FERT_NORM_FR = 1, A_CLAY_MI, A_SAND_MI, A_SILT_MI, A_SOM_LOI,
-                                     A_P_AL, A_P_WA, A_P_CC, A_PH_CC, A_CEC_CO, A_K_CO_PO, A_K_CC,
+    dt[, i_sw_nro := bln_wat_nrunoff(ID,B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_GWL_CLASS,B_AER_CBS,B_FERT_NORM_FR = B_FERT_NORM_FR,
+                                     A_CLAY_MI,A_SAND_MI, A_SILT_MI, A_SOM_LOI,A_P_AL, A_P_WA, A_P_CC,
+                                     A_PH_CC, A_CEC_CO,A_K_CO_PO, A_K_CC,
                                      M_GREEN = FALSE)]
 
     # surface water quality: nitrogen retention (I_E_NSW, from OBI)
-    dt[, i_sw_nret := bln_wat_nretention_sw(B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS, B_GWL_CLASS,
-                                            A_SOM_LOI, A_N_RT)]
+    dt[, i_sw_nret := bln_wat_nretention_sw(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLASS,A_SOM_LOI,A_N_RT)]
 
     # surface water quality: nitrogen buffering (S_BBWP_NSW, from BBWP)
     dt[, i_sw_nsw := bln_bbwp_nsw(ID,B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GWL_CLASS,B_SLOPE_DEGREE,
@@ -304,7 +309,9 @@ bln_field <- function(B_LU_BRP,B_LU_BBWP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_
     dt[,i_clim_osb := bln_clim_cbalance(ID,B_LU_BRP,A_SOM_LOI,A_P_AL,A_P_WA,M_COMPOST,M_GREEN)]
 
     # estimate the C saturation via RothC
-    dt[,i_clim_rothc := bln_clim_rothc(ID, B_LU_BRP, B_GWL_GLG,A_SOM_LOI, A_CLAY_MI,quiet = TRUE)]
+    if(runrothc == TRUE){
+      dt[,i_clim_rothc := bln_clim_rothc(ID, B_LU_BRP, B_GWL_GLG,A_SOM_LOI, A_CLAY_MI,quiet = TRUE)]
+    }
 
     # estimate the C saturation via ML model
     dt[,i_clim_csat := bln_clim_csat(B_LU_BRP,A_SOM_LOI,A_SOM_LOI_MLMAX)]
@@ -312,7 +319,7 @@ bln_field <- function(B_LU_BRP,B_LU_BBWP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_
 # calculate BLN indicators for nutrient clycing
 
     # nutrient use effiency for soil nitrogen (evalation soil N supply, OBIC)
-    dt[,i_nut_n := bln_nut_nitrogen(B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI, A_N_RT)]
+    dt[,i_nut_n := bln_nut_nitrogen(ID, B_LU_BRP,B_SOILTYPE_AGR,A_SOM_LOI,A_N_RT)]
 
     # nutrient use effiency for soil phosphorus
     dt[,i_nut_p := bln_nut_phosphorus(B_LU_BRP, A_P_AL, A_P_CC, A_P_WA)]
@@ -378,7 +385,7 @@ bln_field <- function(B_LU_BRP,B_LU_BBWP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_
 
     # calculate weighted value for crop category
     dt.melt[,value.w := value]
-    dt.melt[weight < 0,value.w := -999]
+    dt.melt[weight < 0 | is.na(value),value.w := -999]
 
     # subset dt.melt for relevant columns only
     out.score <-  dt.melt[,list(ID, cat1,cat2, year, cf, value = value.w)]
