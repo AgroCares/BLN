@@ -20,7 +20,7 @@ Imports:
     carboncastr,
     OBIC
 License: 
-    GPL-3 + file LICENSE
+    GPL-3
 URL: https://github.com/AgroCares/BLN
 BugReports: https://github.com/AgroCares/BLN/issues
 Encoding: UTF-8

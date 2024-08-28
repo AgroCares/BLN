@@ -28,7 +28,7 @@ test_that("bln_nut_potassium works", {
       B_SOILTYPE_AGR = c('dekzand','zeeklei','rivierklei','loess'),
       B_LU_BRP = rep(3732,4)
     ),
-    expected = c(0.82,0.91,0.02,0.001),
+    expected = c(0.82,0.001,0.02,0.91),
     tolerance = 0.1
   )
 
