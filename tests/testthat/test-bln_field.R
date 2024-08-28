@@ -140,7 +140,8 @@ test_that("bln_field works", {
                   M_LIME = NA,M_NONINVTILL = NA,M_SSPM = NA,M_SOLIDMANURE = NA,
                   M_STRAWRESIDUE = NA,M_MECHWEEDS = NA,M_PESTICIDES_DST = NA,
                   B_LSW_ID = NA_character_,LSW = NULL, output ='all',
-                  runrothc = TRUE)
+                  runrothc = TRUE,
+                  mc = FALSE)
 
   # test for dimensions dataset
   expect_equal(dim(d1), expected = c(5,41), tolerance = 0.1 )

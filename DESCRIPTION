@@ -18,7 +18,11 @@ Imports:
     checkmate,
     data.table,
     carboncastr,
-    OBIC
+    OBIC,
+    future.apply,
+    progressr,
+    future,
+    parallelly
 License: 
     GPL-3
 URL: https://github.com/AgroCares/BLN

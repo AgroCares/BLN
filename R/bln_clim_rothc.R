@@ -6,16 +6,18 @@
 #' @param A_SOM_LOI (numeric) value for the soil organic matter content of the soil
 #' @param A_CLAY_MI (numeric) value for the clay content of the soil
 #' @param quiet (boolean) showing progress bar for calculation RothC C-saturation for each field
+#' @param mc (boolean) option to run rothc in parallel on multicores
 #'
 #' @import data.table
 #' @importFrom utils setTxtProgressBar
 #' @importFrom utils txtProgressBar
 #'
 #' @export
-bln_clim_rothc <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI,quiet = FALSE){
+bln_clim_rothc <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI,quiet = FALSE, mc = TRUE){
 
   # add visual bindings
-  i_clim_rothc =A_SOM_LOI_ROTHC_BAU = A_SOM_LOI_ROTHC_ALL = NULL
+  i_clim_rothc =A_SOM_LOI_BAU = A_SOM_LOI_ALL = NULL
+  id = stype = fr_smv = . = NULL
 
   # Check inputs
   arg.length <- max(length(B_LU_BRP), length(A_SOM_LOI), length(A_CLAY_MI))
@@ -28,75 +30,111 @@ bln_clim_rothc <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI,quiet = FAL
   checkmate::assert_logical(quiet)
 
   # make internal table (set clay to 75 max given checkmate in carboncastr)
-  dt <- data.table(ID = ID,
+  dt <- data.table(id = 1:length(ID),
+                   ID = ID,
                    B_LU_BRP = B_LU_BRP,
                    B_GWL_GLG = B_GWL_GLG,
                    A_SOM_LOI = A_SOM_LOI,
                    A_CLAY_MI= pmin(75,A_CLAY_MI))
 
-  # add progress bar
-  if(!quiet) {pb = txtProgressBar(min = 0, max = length(unique(dt$ID)), initial = 0)}
+  # add variable to distinghuish peat from mineral soils
+  dt[, stype := fifelse(sum(A_SOM_LOI > 20) >= sum(A_SOM_LOI <= 20),'peat','mineral'),by='ID']
 
-  # set initial settings
-  stepi <- 0 ; out <- list()
+  # estimate BLN carbon pools for peat soils via INITIATOR approach (de Vries et al., 2022)
 
-  # run RothC to simulate current and potential SOC
-  for(i in unique(ID)){
+    # subset the input data
+    dt.peat <- dt[stype=='peat']
 
-    stepi = stepi + 1
-    this.brp <- dt[ID==i,B_LU_BRP]
-    this.som <- dt[ID==i,A_SOM_LOI]
-    this.clay <- dt[ID==i,A_CLAY_MI]
-    this.glg <- dt[ID==i,B_GWL_GLG]
+    # lowering surface due to oxidation (Beuving and van den Akker, 1996)
+    fsmv <- stats::approxfun(x = seq(0,130,10),
+                             y = c(0,0.008,0.017,0.026,0.038,0.051,0.074,0.098,
+                                   0.122,0.145,0.169,0.192,0.216,0.239),
+                             rule = 2)
 
-    # calculate decomposition rate via INITIATOR approach (de Vries et al., 2022)
-    if(this.som[1]>20){
+    # estimate relative carbon storage compared to GLG with 45 cm higher water level
+    dt.peat[, fr_smv := pmin(1,(fsmv(B_GWL_GLG) - pmax(0,fsmv(B_GWL_GLG-45)))/fsmv(B_GWL_GLG)),by=ID]
 
-      # lowering surface due to oxidation (Beuving and van den Akker, 1996)
-      fsmv <- stats::approxfun(x = seq(0,130,10),
-                               y = c(0,0.008,0.017,0.026,0.038,0.051,0.074,0.098,
-                                     0.122,0.145,0.169,0.192,0.216,0.239),
-                               rule = 2)
+    # estimate A_SOM_BAU and A_SOM_ALL
+    dt.peat[,A_SOM_LOI_BAU := A_SOM_LOI * fr_smv]
+    dt.peat[, A_SOM_LOI_ALL := A_SOM_LOI]
 
-
-      # estimate SOC decline based on groundwater level given an optimum where GLG is 45 cm below surface
-      fr_smv <- pmin(1,(fsmv(this.glg[1])-fsmv(pmax(0,this.glg[1]-45)))/fsmv(this.glg[1]),na.rm=T)
-
-      # bring distance to target in same output style as for rothc
-      dt.prc <- data.table(A_SOM_LOI_BAU = this.som[1]*fr_smv,
-                           A_SOM_LOI_ALL = this.som[1])
+    # estimate mean per ID
+    dt.peat <- dt.peat[,lapply(.SD,mean),.SDcols = c('A_SOM_LOI_ALL','A_SOM_LOI_BAU'),by=ID]
 
 
-    } else {
+  # subset the mineral soils
+  dt.min <- dt[stype == 'mineral']
+
+  # run RothC to estimate max carbon storage (averaged per field)
+  if(mc & nrow(dt.min) >0){
+
+    # calculation multicore
+    dt.cs <- BLN::bln_rothc_multicore(ID = dt.min$ID,
+                                       B_LU_BRP = dt.min$B_LU_BRP,
+                                       B_GWL_GLG = dt.min$B_GWL_GLG,
+                                       A_SOM_LOI = dt.min$A_SOM_LOI,
+                                       A_CLAY_MI = dt.min$A_CLAY_MI,
+                                       quiet = quiet)
+
+    # sink() to get back to console
+
+  } else if(mc == FALSE & nrow(dt.min) > 0){
+
+    # add progress bar
+    if(!quiet) {pb = txtProgressBar(min = 0, max = length(unique(dt$ID)), initial = 0)}
+
+    # set initial settings
+    stepi <- 0 ; out <- list()
+
+
+    # run RothC to simulate current and potential SOC per field
+    for(i in unique(dt.min$ID)){
+
+      # subset the dataset
+      stepi = stepi + 1
+      this.brp <- dt.min[ID==i,B_LU_BRP]
+      this.som <- dt.min[ID==i,A_SOM_LOI]
+      this.clay <- dt.min[ID==i,A_CLAY_MI]
 
       # run the RothC model for mineral soils
-      dt.rothc <- bln_rothc_field(this.brp, this.som, this.clay)
+      dt.rothc <- bln_rothc_field(this.brp, this.som, this.clay,
+                                  simyears = 100,init = FALSE,spinup = 10)
 
       # take the mean of the last 10 years
       dt.prc <- dt.rothc[year > max(year) - 10,lapply(.SD,mean)]
 
+      # save in list
+      out[[stepi]] <- data.table(ID=i,
+                                 A_SOM_LOI_BAU = round(dt.prc$A_SOM_LOI_BAU,4),
+                                 A_SOM_LOI_ALL = round(dt.prc$A_SOM_LOI_ALL,4))
+      # show progressbar
+      if(!quiet) {setTxtProgressBar(pb,stepi)}
     }
 
+    # close progress bar
+    if(!quiet) {close(pb)}
 
-    # save in list
-    out[[stepi]] <- data.table(ID=i,
-                               A_SOM_LOI_ROTHC_BAU = dt.prc$A_SOM_LOI_BAU,
-                               A_SOM_LOI_ROTHC_ALL = dt.prc$A_SOM_LOI_ALL)
-    # show progressbar
-    if(!quiet) {setTxtProgressBar(pb,stepi)}
+    # combine all sites in a data.table again
+    dt.cs <- rbindlist(out)
+
+  } else {
+
+    # if not mineral soils present
+    dt.cs <- data.table(ID=-999,A_SOM_LOI_ALL=0,A_SOM_LOI_BAU = 0)
   }
 
-  # close progress bar
-  if(!quiet) {close(pb)}
-
-  # combine all sites in a data.table again
-  dt.cs <- rbindlist(out)
+  # rbind the peat and mineral soils
+  dt.combi <- rbind(dt.cs[,.(ID,A_SOM_LOI_ALL, A_SOM_LOI_BAU)],
+                    dt.peat[,.(ID,A_SOM_LOI_ALL, A_SOM_LOI_BAU)])
 
   # calculate the distance to target
-  dt.cs[,i_clim_rothc := pmin(1,A_SOM_LOI_ROTHC_BAU/A_SOM_LOI_ROTHC_ALL)]
+  dt.combi[,i_clim_rothc := round(pmin(1,A_SOM_LOI_BAU/A_SOM_LOI_ALL),3)]
 
   # merge with the internal dt
-  dt <- merge(dt,dt.cs,by='ID',all.x=TRUE)
+  dt <- merge(dt[,.(id,ID,B_LU_BRP)],dt.combi,by='ID',all.x=TRUE)
+
+  # setorder
+  setorder(dt,id)
 
   # return value
   value <- dt[, i_clim_rothc]
@@ -123,10 +161,12 @@ bln_clim_rothc <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI,quiet = FAL
 #' @export
 bln_rothc_field <- function(B_LU_BRP, A_SOM_LOI, A_CLAY_MI, simyears = 50, init = FALSE,spinup = 10){
 
+  # a single field can only have one value for SOM and clay
+  this.som <- mean(A_SOM_LOI)
+  this.clay <- mean(A_CLAY_MI)
+
   # initialize RothC with BAU for 150 years
-  pool_fractions <- rothc_initialise(B_LU_BRP = B_LU_BRP,
-                                     A_SOM_LOI = A_SOM_LOI[1],
-                                     A_CLAY_MI = A_CLAY_MI[1])
+  pool_fractions <- rothc_initialise(B_LU_BRP = B_LU_BRP,A_SOM_LOI = this.som,A_CLAY_MI = this.clay)
 
   # run simulations for the desire scenarios
   sim <- list(); count <- 0
@@ -147,10 +187,13 @@ bln_rothc_field <- function(B_LU_BRP, A_SOM_LOI, A_CLAY_MI, simyears = 50, init 
     rotation <- scen.inp$rotation
     amendment <- scen.inp$amendment
 
+    # set seed
+    set.seed(123)
+
     # Run simulation
     result <- carboncastr::cc_rothc_sim(crops = rotation,
-                                        A_SOM_LOI = A_SOM_LOI[1],
-                                        A_CLAY_MI = A_CLAY_MI[1],
+                                        A_SOM_LOI = this.som,
+                                        A_CLAY_MI = this.clay,
                                         A_DEPTH = 0.3,
                                         cf_yield = if(i=='BAU') {1} else {1.05},
                                         M_TILLAGE_SYSTEM = "CT",
@@ -163,7 +206,7 @@ bln_rothc_field <- function(B_LU_BRP, A_SOM_LOI, A_CLAY_MI, simyears = 50, init 
     result[,year := year - min(year)]
 
     # do a manual scaling for the spin-up period
-    result[,A_SOM_LOI := A_SOM_LOI * A_SOM_LOI[1] / A_SOM_LOI[spinup]]
+    result[,A_SOM_LOI := A_SOM_LOI * this.som / A_SOM_LOI[spinup]]
 
     # remove the years before spinput
     result <- result[year >= spinup - 1]
@@ -427,48 +470,153 @@ rothc_scenario <- function(B_LU_BRP, scen){
 }
 
 
-# function to run RothC parallel for a series of fields
-rothc_parallel <- function(this.xs, dt.c, p = NULL, sdir = NULL){
+#' function to run RothC parallel for a series of fields
+#' @param this.xs (numeric) selected id for a single field
+#' @param dt.c (data.table) set will all fields
+#' @param p (progress bar) progress bar
+#' @param final (boolean) option to select only the last year
+#'
+#' @export
+rothc_parallel <- function(this.xs, dt.c, p = NULL,final = TRUE){
 
-  # # get simulation data
-  # sim.dt <- dt.c[xs == this.xs]
-  #
-  # mc <- sim.dt$mc[1]
-  #
-  # # do RothC simulation
-  # result <- tryCatch({
-  #
-  #   # set seed
-  #   set.seed(mc)
-  #
-  #   # run RothC
-  #   out <- bln_rothc_field(B_LU_BRP = sim.dt$B_LU_BRP,
-  #                          A_SOM_LOI = sim.dt$A_SOM_LOI[1],
-  #                          A_CLAY_MI = sim.dt$A_CLAY_MI[1],
-  #                          simyears = 100,
-  #                          init = FALSE,
-  #                          scen = c('BAU','ALL'))
-  #   out[,xs := this.xs]
-  #
-  #   # show progress
-  #   if (! is.null(p)) {if (this.xs %% 10 == 0) p(sprintf('id = %g', this.xs))}
-  #
-  #   result <- copy(out)
-  #
-  #   return(result)
-  #
-  # }, error = function (e) {
-  #
-  #   result <- data.table(year = 1:50,BAU = 0, ALL = 0,xs = this.xs)
-  #   result$error <- as.character(e)
-  #
-  #   if (! is.null(p)) {p(sprintf('id %g has error: %s', this.xs, as.character(e)))}
-  #
-  #   return(result)
-  # })
-  result = NULL
+  # set visual binding
+  xs = NULL
+
+  # get simulation data
+  sim.dt <- dt.c[xs == this.xs]
+
+  mc <- sim.dt$mc[1]
+
+  # do RothC simulation
+  result <- tryCatch({
+
+    # set seed
+    set.seed(mc)
+
+    # take average SOM and clay per field
+    this.som <- mean(sim.dt$A_SOM_LOI)
+    this.clay <- mean(sim.dt$A_CLAY_MI)
+
+    # run RothC
+    out <- BLN::bln_rothc_field(B_LU_BRP = sim.dt$B_LU_BRP,
+                                A_SOM_LOI = this.som,
+                                A_CLAY_MI =  this.clay,
+                                simyears = 100,
+                                init = FALSE,
+                                spinup = 10)
+    out[,xs := this.xs]
+
+    # if final is true select only last prediction
+    if(final){out <- out[year > max(year) - 10,lapply(.SD,mean)]}
+
+    # show progress
+    if (! is.null(p)) {if (this.xs %% 10 == 0) p(sprintf('id = %g', this.xs))}
+
+    result <- copy(out)
+
+    return(result)
+
+  }, error = function (e) {
+
+
+    if(final){
+      result <-data.table(year = 50,A_SOM_LOI_BAU = 0, A_SOM_LOI_ALL = 0,xs = this.xs)
+      } else{
+      result <- data.table(year = 1:50,A_SOM_LOI_BAU = 0, A_SOM_LOI_ALL = 0,xs = this.xs)
+    }
+    result$error <- as.character(e)
+
+    if (! is.null(p)) {p(sprintf('id %g has error: %s', this.xs, as.character(e)))}
+
+    return(result)
+  })
+
 
   return(result)
 
+}
 
+
+#' Function to evaluate the carbon saturation via RothC simulation on multiple fields using multicore processing
+#'
+#' @param ID (character) A field id
+#' @param B_LU_BRP (numeric) value of the BRP crop code
+#' @param B_GWL_GLG (numeric) The lowest groundwater level averaged over the most dry periods in 8 years in cm below ground level
+#' @param A_SOM_LOI (numeric) value for the soil organic matter content of the soil
+#' @param A_CLAY_MI (numeric) value for the clay content of the soil
+#' @param quiet (boolean) showing progress bar for calculation RothC C-saturation for each field
+#'
+#' @import data.table
+#' @import progressr
+#' @import future.apply
+#' @import future
+#' @import parallelly
+#'
+#' @export
+bln_rothc_multicore <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI, quiet = TRUE){
+
+  # add visual bindings
+  A_SOM_LOI_ALL = A_SOM_LOI_BAU = . = NULL
+
+  # Check inputs
+  arg.length <- max(length(B_LU_BRP), length(A_SOM_LOI), length(A_CLAY_MI))
+  checkmate::assert_numeric(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)
+  checkmate::assert_subset(B_LU_BRP, choices = unique(BLN::bln_crops$crop_code), empty.ok = FALSE)
+  checkmate::assert_numeric(A_CLAY_MI, lower = 0, upper = 100, any.missing = FALSE, min.len = 1)
+  checkmate::assert_numeric(A_SOM_LOI, lower = 0.1, upper = 100, any.missing = FALSE, min.len = 1, len = arg.length)
+  checkmate::assert_numeric(B_GWL_GLG, lower = 0, any.missing = FALSE, len = arg.length)
+  if(length(ID)>1){checkmate::assert_true(length(ID) == arg.length)}
+  checkmate::assert_logical(quiet)
+
+  #make internal table (set clay to 75 max given checkmate in carboncastr)
+  dt.c <- data.table(ID = ID,
+                     B_LU_BRP = B_LU_BRP,
+                     B_GWL_GLG = B_GWL_GLG,
+                     A_SOM_LOI = A_SOM_LOI,
+                     A_CLAY_MI= pmin(75,A_CLAY_MI))
+
+  # RothC
+  simulation_time <- 50L
+
+  # multithreading
+  cm.versions <- c('CM4')
+
+  # Run the simulations
+  future::plan(future::multisession, workers = parallelly::availableCores()-1)
+
+  # add seed
+  dt.c$mc <- 111
+
+  # add group
+  dt.c[,xs := .GRP,by = ID]
+
+  # run RothC function
+  progressr::with_progress({
+    xs <- sort(unique(dt.c$xs))
+    if(quiet){p = NULL} else {p <- progressr::progressor(along = xs)}
+
+    results <- future.apply::future_lapply(X = xs,
+                                           FUN = BLN::rothc_parallel,
+                                           dt.c = dt.c,
+                                           p = p,
+                                           future.seed = TRUE,
+                                           future.packages = c('BLN','carboncastr'))
+  })
+
+  # close cluster
+  future::plan(future::sequential)
+
+  # combine output
+  dt.res <- rbindlist(results, fill = TRUE)
+
+  # merge with dt.c
+  dt.c <- merge(dt.c,
+                dt.res[,.(xs,A_SOM_LOI_ALL, A_SOM_LOI_BAU)],
+                by='xs',all.x=TRUE)
+
+  # retreive unique value per ID
+  dt.c <- dt.c[,lapply(.SD,mean),.SDcols = c('A_SOM_LOI_ALL','A_SOM_LOI_BAU'),by=ID]
+
+  # return
+  return(dt.c)
 }

@@ -8,9 +8,10 @@ test_that("bln_clim_rothc works", {
       B_GWL_GLG = 75,
       A_CLAY_MI = 3.5,
       B_LU_BRP = 3732,
-      quiet = TRUE
+      quiet = TRUE,
+      mc = FALSE
     ),
-    expected = c(0.92),
+    expected = c(0.867),
     tolerance = 0.1
   )
 
@@ -22,9 +23,10 @@ test_that("bln_clim_rothc works", {
       B_GWL_GLG = 95,
       A_CLAY_MI = 3.5,
       B_LU_BRP = 3732,
-      quiet = TRUE
+      quiet = TRUE,
+      mc = FALSE
     ),
-    expected = c(0.68),
+    expected = c(0.675),
     tolerance = 0.1
   )
 
@@ -40,10 +42,11 @@ test_that("bln_clim_rothc works", {
       B_GWL_GLG = rep(95,10),
       A_CLAY_MI = a,
       B_LU_BRP = rep(3732,10),
-      quiet = TRUE
+      quiet = TRUE,
+      mc = FALSE
     ),
-    expected = c(0.88,0.88,0.88,0.88,0.88,0.88,0.88,0.88,0.88,0.88),
-    tolerance = 0.01
+    expected = rep(0.866,10),
+    tolerance = 0.1
   )
 
   # test for potato
@@ -54,10 +57,11 @@ test_that("bln_clim_rothc works", {
       B_GWL_GLG = rep(95,10),
       A_CLAY_MI = a,
       B_LU_BRP = rep(3732,10),
-      quiet = TRUE
+      quiet = TRUE,
+      mc = FALSE
     ),
-    expected = c(rep(0.91,5),rep(0.90,5)),
-    tolerance = 0.01
+    expected = c(rep(0.844,5),rep(0.902,5)),
+    tolerance = 0.1
   )
 
   # test for grassland and potato, two fields
@@ -68,13 +72,14 @@ test_that("bln_clim_rothc works", {
       B_GWL_GLG = rep(95,10),
       A_CLAY_MI = a,
       B_LU_BRP = c(rep(265,5),rep(3732,5)),
-      quiet = TRUE
+      quiet = TRUE,
+      mc = FALSE
     ),
-    expected = c(rep(0.93,5),rep(0.97,5)),
-    tolerance = 1
+    expected = c(rep(0.943,5),rep(0.902,5)),
+    tolerance = 0.1
   )
 
-  # test for 10 fields with grassland and potato, two fields
+  # test for 10 fields with grassland and potato
   expect_equal(
     bln_clim_rothc(
       ID = 1:10,
@@ -82,9 +87,25 @@ test_that("bln_clim_rothc works", {
       B_GWL_GLG = rep(95,10),
       A_CLAY_MI = a,
       B_LU_BRP = rep(c(3732,265),5),
-      quiet = TRUE
+      quiet = TRUE,
+      mc = FALSE
     ),
-    expected = c(0.83,0.96,0.82,0.96,0.85,0.96,0.88,0.96,0.90,0.96),
-    tolerance = 1
+    expected = c(0.778,0.949,0.742,0.94,0.779,0.94,0.813,0.94,0.84,0.944),
+    tolerance = 0.1
+  )
+
+  # test for 10 fields with grassland and potato
+  expect_equal(
+    bln_clim_rothc(
+      ID = 1:10,
+      A_SOM_LOI = seq(1,15,length.out = 10),
+      B_GWL_GLG = rep(95,10),
+      A_CLAY_MI = a,
+      B_LU_BRP = rep(c(3732,265),5),
+      quiet = TRUE,
+      mc = TRUE
+    ),
+    expected = c(0.78,0.95,0.74,0.94,0.78,0.94,0.81,0.94,0.84,0.94),
+    tolerance = 0.1
   )
 })

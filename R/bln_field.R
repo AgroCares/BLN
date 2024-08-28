@@ -78,6 +78,7 @@
 #' @param output (character) An optional argument to select output: scores, indicators, or all. (default = all)
 #' @param runrothc (boolean) An argument to switch off rothc calculations due to running time (default: FALSE)
 #' @param i_clim_rothc (numeric) the soil indicator for carbon saturation derived via rothc.
+#' @param mc (boolean) option to run rothc in parallel on multicores
 #'
 #' @import OBIC
 #' @import carboncastr
@@ -104,7 +105,7 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
                       M_LIME = NA,M_NONINVTILL = NA,M_SSPM = NA,M_SOLIDMANURE = NA,
                       M_STRAWRESIDUE = NA,M_MECHWEEDS = NA,M_PESTICIDES_DST = NA,
                       B_LSW_ID = NA_character_,LSW = NULL,output ='all',
-                      runrothc = FALSE, i_clim_rothc = NA_real_){
+                      runrothc = FALSE, i_clim_rothc = NA_real_, mc = FALSE){
 
 # --- step 1. preprocessing input data ----
 
