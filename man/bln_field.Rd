@@ -81,7 +81,8 @@ bln_field(
   output = "all",
   runrothc = FALSE,
   i_clim_rothc = NA_real_,
-  mc = FALSE
+  mc = FALSE,
+  quiet = TRUE
 )
 }
 \arguments{
@@ -238,6 +239,8 @@ bln_field(
 \item{i_clim_rothc}{(numeric) the soil indicator for carbon saturation derived via rothc.}
 
 \item{mc}{(boolean) option to run rothc in parallel on multicores}
+
+\item{quiet}{(boolean) showing progress bar for calculation RothC C-saturation for each field}
 }
 \description{
 This functions wraps the functions of the BLN2 into one main function to calculate the soil quality score for a single field.

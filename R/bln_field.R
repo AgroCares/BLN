@@ -79,6 +79,7 @@
 #' @param runrothc (boolean) An argument to switch off rothc calculations due to running time (default: FALSE)
 #' @param i_clim_rothc (numeric) the soil indicator for carbon saturation derived via rothc.
 #' @param mc (boolean) option to run rothc in parallel on multicores
+#' @param quiet (boolean) showing progress bar for calculation RothC C-saturation for each field
 #'
 #' @import OBIC
 #' @import carboncastr
@@ -105,7 +106,7 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
                       M_LIME = NA,M_NONINVTILL = NA,M_SSPM = NA,M_SOLIDMANURE = NA,
                       M_STRAWRESIDUE = NA,M_MECHWEEDS = NA,M_PESTICIDES_DST = NA,
                       B_LSW_ID = NA_character_,LSW = NULL,output ='all',
-                      runrothc = FALSE, i_clim_rothc = NA_real_, mc = FALSE){
+                      runrothc = FALSE, i_clim_rothc = NA_real_, mc = FALSE,quiet=TRUE){
 
 # --- step 1. preprocessing input data ----
 
@@ -173,7 +174,7 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
                    M_SLEEPHOSE = M_SLEEPHOSE,M_DRAIN = M_DRAIN,M_DITCH = M_DITCH,M_UNDERSEED = M_UNDERSEED,
                    M_LIME = M_LIME,M_NONINVTILL = M_NONINVTILL,M_SSPM = M_SSPM,M_SOLIDMANURE = M_SOLIDMANURE,
                    M_STRAWRESIDUE = M_STRAWRESIDUE,M_MECHWEEDS = M_MECHWEEDS,M_PESTICIDES_DST = M_PESTICIDES_DST,
-                   B_LSW_ID = B_LSW_ID,LSW = LSW,
+                   B_LSW_ID = B_LSW_ID,
                    i_clim_rothc = i_clim_rothc)
 
   # check formats B_SC_WENR and B_GWL_CLASS
@@ -207,12 +208,19 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
               "B_FE_OX","B_AL_OX","B_SA_W","B_RO_R","B_SOM_LOI_SD", "B_CLAY_MI_SD", "B_SAND_MI_SD", "B_SILT_MI_SD", "B_N_RT_SD","B_P_AL_SD","B_P_CC_SD",
               "B_P_WA_SD","B_P_SG_SD","B_FE_OX_SD","B_AL_OX_SD","B_SA_W_SD","B_RO_R_SD")
 
+    # get all B_LSW_ID
+    this.lsw <- B_LSW_ID
+
+    # remove all ids from LSW when not present in B_LSW_ID
+    LSW <- LSW[B_LSW_ID %in% this.lsw]
+
     # check LSW format and column names
     checkmate::assert_data_table(LSW,nrow = length(unique(B_LSW_ID)))
     checkmate::assert_subset(colnames(LSW),choices = cols)
 
     # check if all B_LSW_ID are in the LSW data.table
     checkmate::assert_subset(LSW$B_LSW_ID,choices = unique(B_LSW_ID))
+
 
   }
 
@@ -309,9 +317,13 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
     # estimate the C balance via simple mass balance (OBIC)
     dt[,i_clim_osb := bln_clim_cbalance(ID,B_LU_BRP,A_SOM_LOI,A_P_AL,A_P_WA,M_COMPOST,M_GREEN)]
 
+    # when using multicore, set progressbar to TRUE (for the moment)
+    if(mc==TRUE){quiet = FALSE}
+
     # estimate the C saturation via RothC
     if(runrothc == TRUE){
-      dt[,i_clim_rothc := bln_clim_rothc(ID, B_LU_BRP, B_GWL_GLG,A_SOM_LOI, A_CLAY_MI,quiet = TRUE)]
+
+      dt[,i_clim_rothc := bln_clim_rothc(ID, B_LU_BRP, B_GWL_GLG,A_SOM_LOI, A_CLAY_MI,quiet = quiet, mc=mc)]
     }
 
     # estimate the C saturation via ML model
@@ -441,13 +453,14 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
     out.ind[,cf_yr := log(12 - pmin(10,year))]
 
     # calculate weighted average per indicator category per year
-    out.ind <- out.ind[,list(value = sum(cf * cf_yr * pmax(0,value) / sum(cf[value >= 0] * cf_yr[value >= 0]))),by = list(ID, indicator)]
+    out.ind <- out.ind[,list(value = sum(cf * cf_yr * pmax(0,value) /sum(cf[value >= 0] * cf_yr[value >= 0]))),by = list(ID, indicator)]
 
     # round at two numbers
     out.ind[, value := round(value,3)]
 
     # reformat to one line per field
-    out.ind[value== -999, value := NA]
+    out.ind[value== -999, value := NA_real_]
+    out.ind[!is.finite(value), value := NA_real_]
     out.ind <- dcast(out.ind,ID~indicator,value.var='value')
 
   # prepare output, with default

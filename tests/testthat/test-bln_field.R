@@ -156,7 +156,7 @@ test_that("bln_field works", {
   expect_equal(d1$bln_total, expected = c(0.743,0.756,0.738,0.665,0.713), tolerance = 0.01)
 
   # test BLN soil quality score ESD production
-  expect_equal(d1$esd_prod, expected = c(0.797,0.801,0.823,0.852,0.772), tolerance = 0.01)
+  expect_equal(d1$esd_prod, expected = c(0.797,0.801,0.817,0.803,0.762), tolerance = 0.01)
 
   # test BLN soil quality score ESD water quality
   expect_equal(d1$esd_water, expected = c(0.735,0.709,0.635,0.474,0.707), tolerance = 0.01)

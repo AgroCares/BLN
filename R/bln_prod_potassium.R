@@ -148,7 +148,7 @@ bln_c_potassium <- function(B_LU_BRP, B_SOILTYPE_AGR,A_SOM_LOI, A_CLAY_MI,A_PH_C
 
     # subset and evaluate for maize
     dths <- dt.thresholds[bln_threshold_cropcat == 'maize']
-    dt.grass[, i_c_k := bln_evaluate_logistic(value, b = dths[,bln_st_c1], x0 = dths[,bln_st_c2],v = dths[,bln_st_c3])]
+    dt.maize[, i_c_k := bln_evaluate_logistic(value, b = dths[,bln_st_c1], x0 = dths[,bln_st_c2],v = dths[,bln_st_c3])]
 
     # subset and evaluate for arable sandy soils
     dths <- dt.thresholds[bln_threshold_cropcat == 'arable' & bln_threshold_soilcat == 'sand']
