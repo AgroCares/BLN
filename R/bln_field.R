@@ -418,6 +418,14 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
       # merge out with number per category
       out.score <- merge(out.score,dt.melt.ncat, by=c("ID","cat2"),all.x=TRUE)
 
+      # subscores for BLN subgroups
+      out.score.cat2 <- dcast(out.score,ID~cat2,value.var = 'value')
+
+      # overwrite names
+      setnames(out.score.cat2,
+               old = c('biology', 'chemistry', 'climate', 'gw_quality', 'gw_quantity', 'macronutrient', 'physics','sw_quality'),
+               new = c('s_bln_prod_b','s_bln_prod_c','s_bln_clim','s_bln_gw_quality','s_bln_gw_quantity','s_bln_nut','s_bln_prod_p','s_bln_sw_quality'))
+
       # calculate weighing factor depending on number of indicators
       out.score[,cf := log(ncat + 1)]
 
@@ -430,21 +438,31 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
       # merge out with number per category
       out.score <- merge(out.score,dt.melt.ncat, by=c("ID","cat1"),all.x=TRUE)
 
+      # BLN scores
+      out.score.cat1 <-  dcast(out.score,ID~cat1,value.var = 'value')
+
+      # overwrite names
+      setnames(out.score.cat1,
+               old = c('esd_climate', 'esd_nutcycle', 'esd_prod','esd_water'),
+               new = c('s_bln_esd_clim','s_bln_esd_nut','s_bln_esd_prod','s_bln_esd_water'))
+
       # calculate weighing factor depending on number of indicators
       out.score[,cf := log(ncat + 1)]
 
       # calculate total score over all categories
-      out.score.total.bln <- out.score[,list(value = round(sum(value * cf / sum(cf[value >= 0])),3),cat1='bln_total'),by= c('ID')]
+      out.score.total <- out.score[,list(s_bln_total = round(sum(value * cf / sum(cf[value >= 0])),3)),by= c('ID')]
 
-      # round at two numbers
-      out.score[, value := round(value,3)]
+      # combine BLN subscores, BLN scores and BLN total score
+      out.score.bln <- merge(out.score.cat1,
+                             out.score.cat2,by='ID',all.x=TRUE)
+      out.score.bln <- merge(out.score.bln,out.score.total,by='ID',all.x = TRUE)
 
-      # combine with BLN score per ESD
-      out.score <- rbind(out.score[,.(ID,cat1,value)],out.score.total.bln[,.(ID,cat1,value)])
+      # round all scores to two numbers
+      cols <- colnames(out.score.bln)[grepl('^s_bln',colnames(out.score.bln))]
+      out.score.bln[, c(cols) := lapply(.SD,function(x) round(x,2)),.SDcols = cols]
 
-      # reformat to one line per field
-      out.score[value== -999, value := NA]
-      out.score <- dcast(out.score,ID~cat1,value.var='value')
+      # remove temporary files
+      rm(out.score, out.score.cat1,out.score.cat2,out.score.total)
 
     # subset dt.melt for relevant columns only
     out.ind <-  dt.melt[,list(ID, indicator,year,cf,value = value.w)]
@@ -464,8 +482,8 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
     out.ind <- dcast(out.ind,ID~indicator,value.var='value')
 
   # prepare output, with default
-  if(output == 'all') {out <- merge(out.ind,out.score,by='ID',all.x=TRUE)}
-  if(output == 'score'){out <- copy(out.score)}
+  if(output == 'all') {out <- merge(out.ind,out.score.bln,by='ID',all.x=TRUE)}
+  if(output == 'score'){out <- copy(out.score.bln)}
   if(output == 'indicator'){out <- copy(out.ind)}
 
   # return output
