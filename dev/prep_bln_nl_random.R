@@ -15,26 +15,94 @@ nmi.site<- Sys.getenv('NMI_SITE')
 # shape file to extract data for
 s1.sel <- st_read(paste0(nmi.dat, 'landgebruik/brp/products/brpgewaspercelen_',2021,'.gpkg'))
 
-# select random subset of 5000 samples
-set.seed(123)
-a <- sample(1:nrow(s1.sel),5000)
-s1.sel <- s1.sel[a,]
-
 # add unique id
 s1.sel$fid <- s1.sel$id
 s1.sel$id <- 1:nrow(s1.sel)
 
 # Load BLN input data for spatial points object ----------------------------------------------------
 
+
+require(terra)
+r <- terra::rast(paste0(nmi.dat, 'watersysteem/Grondwaterniveau/raw/LHM GHG_2011-2018_L1.tif'))
+r <- aggregate(r, fact=4)
+
 # load in the data points for which the BLN data need to be selected. Only ID and coordinates
 sf.sel <- s1.sel[,c('id','geom')]
 
+# convert to centroid and spatial point for speed reasons
+sf.sel <- st_centroid(sf.sel)
+
+# function to rasterize categorial or numeric variable
+fc <- function(var,d,r) terra::rasterize(x = d,y = r,field=var,na.rm=T)
+fn <- function(var,d,r) terra::rasterize(x = d,y = r,field=var,fun = mean,na.rm=T)
+mfv <- function(x) names(sort(table(test),decreasing=T)[1])
+
+# convert sampling points to vect
+spv <- terra::vect(sp)
+spv$id <- 1:nrow(spv)
+
+# function to extract data
+fex <- function(spv,s,r,varname,vn_new = NULL){
+
+  # check variable type
+  vars <- unlist(sapply(s[varname],is.numeric))
+  vars <- vars[names(vars)[!grepl('geom',names(vars))]]
+
+  # define length of the stack
+  r2 <- c()
+
+  # set counter
+  count = 1
+
+  # extract the value
+  for(i in varname){
+
+    # convert shape file to raster
+    if(vars[i]==TRUE){r2 <- fn(var=i,d=s,r=r)} else {r2 <- fc(var=i,d=s,r=r)}
+
+    # extract the value from the raster for sampling points (bilinear for shapes, when point also simple for numeric)
+    #if(vars[i]==TRUE){e1 <- terra::extract(r2,spv,method='bilinear')} else {e1 <- terra::extract(r2,spv,method='simple')}
+    e1 <- terra::extract(r2,spv,method='simple')
+
+    # convert to data.table and take median per ID
+    e1 <- as.data.table(e1)
+
+    # adapt the names
+    if(!is.null(vn_new)) {setnames(e1,i,vn_new[count])}
+
+    # remove duplicated
+    if(nrow(e1) != nrow(spv)){
+
+      print(paste0('duplicates removed: ',e1[duplicated(ID),N],' samples'))
+      e1 <- e1[!duplicated(ID)]
+      #if(vars[i]==TRUE){e1 <- e1[,lapply(.SD,mean), by='ID']} else {e1 <- e1[!duplicated(ID)]}
+    }
+
+    # add to data.table
+    if(count==1){dt <- copy(e1);dt[,id := spv$id]} else {dt <- merge(dt,e1,by='ID',all.x=TRUE)}
+
+    # add counter
+    count = count + 1
+  }
+
+  dt[,ID := NULL]
+  setcolorder(dt,'id')
+
+  print(paste0('dataset merged with input sf variables: ',paste(varname,collapse=', ')))
+  rm(r2,e1)
+  return(dt)
+}
+
 # load in landbouwgebied, do spatial join with the object
 tmp1 <- sf::st_read(paste0(nmi.dat, 'topo/landbouwgebieden/raw/landbouwgebieden_2016/landbouwgebieden_2016.shp'))
-dt.aer <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = 'st_nearest_feature')
-dt.aer <- as.data.table(dt.aer)
-dt.aer <- dt.aer[,.(id,B_AER_CBS = statcode)]
-print(paste0('dataset merged with landbouwgebied ',dt.aer[is.na(B_AER_CBS),length(unique(id))],' samples are missing'))
+r1 <- fex(spv = spv,s=tmp1,r=r,varname = 'statcode',vn_new = 'B_AER_CBS')
+
+# load in bodemschat, do spatial join with the object
+tmp1 <- sf::st_read(paste0(nmi.dat, 'bodem/bodemschat/products/BS6/BS6_2021.gpkg'))
+cols <- colnames(tmp1)[grep('^A_',colnames(tmp1))]
+r2 <-  fex(spv = spv,s=tmp1,r=r,varname = cols[1:2],vn_new = NULL)
+
+
 
 # load in bodemschat, do spatial join with the object
 tmp1 <- sf::st_read(paste0(nmi.dat, 'bodem/bodemschat/products/BS6/BS6_2021.gpkg'))
@@ -462,8 +530,15 @@ saveRDS(dt.lsw.extr,'D:/OneDrive - SPRINGG/NMI-PROJ/BBWP/R_BBWPpaper/data/nl_lsw
   LSW <- readRDS('D:/OneDrive - SPRINGG/NMI-PROJ/BBWP/R_BBWPpaper/data/nl_lsw_5000_fields.rds')
 
   # run BLN for first 50 fields
-  dt.farm <- dt.farm[id < 51]
+  #dt.farm <- dt.farm[id < 51]
   LSW <- LSW[B_LSW_ID %in% dt.farm$B_LSW_ID]
+
+  # fix errors in input
+  dt.farm <- dt.farm[!is.na(B_SOILTYPE_AGR)]
+  dt.farm <- na.omit(dt.farm)
+  dt.farm[B_SOILTYPE_AGR=='loss', B_SOILTYPE_AGR := 'loess']
+  dt.farm[B_LSW_ID == 175, B_LSW_ID := 'lsw_nlmean']
+  dt.farm[B_GWL_GHG >= B_GWL_GLG, B_GWL_GLG := B_GWL_GHG-10]
 
   # run BLN
   d1 <- bln_field(ID = dt.farm$ref_id_2022,
@@ -523,10 +598,13 @@ saveRDS(dt.lsw.extr,'D:/OneDrive - SPRINGG/NMI-PROJ/BBWP/R_BBWPpaper/data/nl_lsw
                   runrothc = FALSE,
                   mc = TRUE)
 
+  saveRDS(out,'D:/OneDrive - SPRINGG/NMI-PROJ/BBWP/R_BBWPpaper/data/nl_bbwp_5000_fields_results.rds')
 
-  # check I_P_DU = NAN, I_GW_PEST
+  d2 <- merge(dt.farm[year==2021,],out,by.x='ref_id_2022',by.y='ID',all.x=TRUE)
+  s2 <- sf::st_as_sf(d2)
+  sf::st_write(s2,'D:/OneDrive - SPRINGG/NMI-PROJ/BBWP/R_BBWPpaper/data/nl_bbwp_5000_fields_results.gpkg')
 
-
+  #check I_P_DU = NAN, I_GW_PEST
   ID = dt.farm$ref_id_2022
   B_LU_BRP = dt.farm$B_LU_BRP
   B_SC_WENR = dt.farm$B_SC_WENR

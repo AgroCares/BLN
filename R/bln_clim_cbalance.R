@@ -17,6 +17,9 @@ bln_clim_cbalance <- function(ID,B_LU_BRP,A_SOM_LOI,A_P_AL,A_P_WA,M_COMPOST = 0,
   # add visual bindings
   D_SOM_BAL = NULL
 
+  # ensure that M_COMPOST is numeric
+  M_COMPOST = as.numeric(M_COMPOST)
+
   # Check inputs
   arg.length <- max(length(B_LU_BRP), length(A_SOM_LOI), length(A_P_AL), length(A_P_WA))
   checkmate::assert_integerish(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)
@@ -24,8 +27,8 @@ bln_clim_cbalance <- function(ID,B_LU_BRP,A_SOM_LOI,A_P_AL,A_P_WA,M_COMPOST = 0,
   checkmate::assert_numeric(A_SOM_LOI, lower = 0.1, upper = 100, any.missing = FALSE, min.len = 1, len = arg.length)
   checkmate::assert_numeric(A_P_AL, lower = 1, upper = 250, any.missing = FALSE, len = arg.length)
   checkmate::assert_numeric(A_P_WA, lower = 1, upper = 250, any.missing = FALSE, len = arg.length)
-  checkmate::assert_numeric(M_COMPOST, lower = 0, upper = 100, any.missing = FALSE, len = arg.length)
-  checkmate::assert_logical(M_GREEN,any.missing = FALSE, len = arg.length)
+  checkmate::assert_numeric(M_COMPOST, lower = 0, upper = 100, len = arg.length)
+  checkmate::assert_logical(M_GREEN,len = arg.length)
 
   # make internal table
   dt <- data.table(ID = ID,
@@ -33,14 +36,14 @@ bln_clim_cbalance <- function(ID,B_LU_BRP,A_SOM_LOI,A_P_AL,A_P_WA,M_COMPOST = 0,
                    A_SOM_LOI = as.numeric(A_SOM_LOI),
                    A_P_AL= as.numeric(A_P_AL),
                    A_P_WA = as.numeric(A_P_WA),
-                   M_COMPOST = M_COMPOST,
+                   M_COMPOST = as.numeric(M_COMPOST),
                    M_GREEN = M_GREEN,
                    value = NA_real_
                    )
 
   # set compost to zero if NA
   dt[is.na(M_COMPOST), M_COMPOST := 0]
-  dt[is.na(M_GREEN), M_GREEN := 0]
+  dt[is.na(M_GREEN), M_GREEN := FALSE]
 
   # SOM balance OBIC requires single value for soil properties
   dt[, A_SOM_LOI := mean(A_SOM_LOI),by=ID]
@@ -50,9 +53,7 @@ bln_clim_cbalance <- function(ID,B_LU_BRP,A_SOM_LOI,A_P_AL,A_P_WA,M_COMPOST = 0,
   dt[, M_GREEN := M_GREEN[1],by=ID]
 
   # calculate the SOM balance using OBIC
-  dt[, D_SOM_BAL := OBIC::calc_sombalance(B_LU_BRP,A_SOM_LOI,
-                                          A_P_AL, A_P_WA,
-                                          M_COMPOST,M_GREEN),by=ID]
+  dt[, D_SOM_BAL := OBIC::calc_sombalance(B_LU_BRP,A_SOM_LOI,A_P_AL, A_P_WA,M_COMPOST,M_GREEN)]
 
   # calculate the distance to target
   dt[,value := OBIC::evaluate_logistic(x = D_SOM_BAL,  b = 0.0008144, x0 = 0, v = 0.9077174, increasing = TRUE)]
