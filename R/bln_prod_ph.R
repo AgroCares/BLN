@@ -55,14 +55,24 @@ bln_c_ph <- function(ID,B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI, A_CLAY_MI, A_PH_CC)
   dt[, D_CP_RUST := calc_rotation_fraction(FIELD_ID, B_LU_BRP, crop = "rustgewas")]
   dt[, D_CP_RUSTDEEP := calc_rotation_fraction(FIELD_ID, B_LU_BRP, crop = "rustgewasdiep")]
 
+  # filter on one line per field
+  dt[,year := 1:.N,by='FIELD_ID']
+  dt2 <- dt[year==1]
+
   # calculate the distance to optimum pH
-  dt[, D_PH_DELTA := OBIC::calc_ph_delta(B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI,
+  dt2[, D_PH_DELTA := OBIC::calc_ph_delta(B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI,
                                          A_CLAY_MI, A_PH_CC, D_CP_STARCH,
                                          D_CP_POTATO, D_CP_SUGARBEET, D_CP_GRASS,
                                          D_CP_MAIS, D_CP_OTHER)]
 
+  # merge with original dt
+  dt <- merge(dt,dt2[,.(FIELD_ID,D_PH_DELTA)],by = 'FIELD_ID',all.x=TRUE)
+
   # evaluate the distance to target for BLN indicator
-  dt[, i_c_ph := ind_ph(D_PH_DELTA)]
+  dt[, i_c_ph := OBIC::ind_ph(D_PH_DELTA)]
+
+  # sort again
+  setorder(dt,oid)
 
   # extract the BLN indicator
   value <- dt[,i_c_ph]
