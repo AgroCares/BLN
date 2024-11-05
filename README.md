@@ -9,8 +9,8 @@ the BLN framework has been developed to evaluate the quality of soils in view of
 # Install the development version from GitHub
 remotes::install_github("https://github.com/AgroCares/BLN")
 
-# Load the OBIC package in your script
-library("OBIC")
+# Load the BLN package in your script
+library("BLN")
 ```
 ## More information
 The BLN has been developed by various soil experts, researchers and farm advisors, guided by researchers from Wageningen UR and the Nutrient Management Institute. The technical implementation in this R package is done by NMI. 
