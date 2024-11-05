@@ -59,7 +59,7 @@ bln_wat_pesticide <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,
                    value = NA_real_)
 
   # estimate derivatives for precipidation surplus
-  dt[, D_PSP := OBIC::calc_psp(B_LU_BRP,M_GREEN), by = FIELD_ID]
+  dt[, D_PSP := bln_calc_psp(ID = FIELD_ID, B_LU_BRP, M_GREEN)]
 
   # estimate the pesticide leaching to surface water
   dt[, D_PESTICIDE := OBIC::calc_pesticide_leaching(B_SOILTYPE_AGR,
