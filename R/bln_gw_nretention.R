@@ -9,15 +9,16 @@
 #' @param B_GWL_CLASS (character) The groundwater table class
 #' @param A_SOM_LOI (numeric) The organic matter content of the soil (\%)
 #' @param A_N_RT (numeric) The organic nitrogen content of the soil in mg N / kg
+#' @param A_CN_FR (numeric) The carbon to nitrogen ratio (-)
 #'
 #' @import data.table
 #' @import OBIC
 #'
 #' @export
-bln_wat_nretention_gw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLASS,A_SOM_LOI,A_N_RT){
+bln_wat_nretention_gw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLASS,A_SOM_LOI,A_N_RT,A_CN_FR = NA_real_){
 
   # add visual bindigns
-  bln_crops = code = choices = value_min = value_max = A_CN_FR = D_BDS = D_RD = D_OC = D_GA = FIELD_ID = D_NLV = D_NGW = NULL
+  bln_crops = code = choices = value_min = value_max = D_BDS = D_RD = D_OC = D_GA = FIELD_ID = D_NLV = D_NGW = NULL
 
   # make internal copy
   blnp <- BLN::bln_parms
@@ -51,6 +52,7 @@ bln_wat_nretention_gw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLA
                    B_AER_CBS=B_AER_CBS,
                    A_SOM_LOI = A_SOM_LOI,
                    A_N_RT = A_N_RT,
+                   A_CN_FR = A_CN_FR,
                    value = NA_real_)
 
   ### format inputs for OBIC
@@ -58,7 +60,8 @@ bln_wat_nretention_gw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLA
   dt[, B_AER_CBS := OBIC::format_aer(B_AER_CBS)]
 
   # add CN ratio
-  dt[, A_CN_FR := A_SOM_LOI *10 * 0.5 *1000/ A_N_RT]
+  dt[is.na(A_CN_FR), A_CN_FR := A_SOM_LOI *10 * 0.5 *1000/ A_N_RT]
+  checkmate::assert_numeric(dt$A_CN_FR, lower = blnp[code == "A_CN_FR", value_min], upper = blnp[code == "A_CN_FR", value_max])
 
   # calculate derivative supporting soil properties
   dt[, D_BDS := OBIC::calc_bulk_density(B_SOILTYPE_AGR,A_SOM_LOI)]
@@ -76,6 +79,9 @@ bln_wat_nretention_gw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLA
                                   D_NLV = D_NLV,
                                   B_AER_CBS = B_AER_CBS,
                                   leaching_to = "gw")]
+
+  # set max for D_NGW
+  dt[,D_NGW := pmin(250, D_NGW)]
 
   # calculate indicator for N retention in view of groundwater quality
   dt[, value := OBIC::ind_nretention(D_NGW, leaching_to = "gw")]
