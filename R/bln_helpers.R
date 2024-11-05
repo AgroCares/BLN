@@ -351,6 +351,9 @@ wf <- function(x, type = "indicators", penalty = TRUE) {
 #' @export
 bln_format_aer <- function(B_AER_CBS,type='name') {
 
+  # ensure B_AER_CBS is character
+  B_AER_CBS <- as.character(B_AER_CBS)
+
   # convert UTF-8 encoded strings to latin1 if required
   if('UTF-8' %in% Encoding(B_AER_CBS)) {
     B_AER_CBS <- iconv(B_AER_CBS, from = '', to = 'latin1')
