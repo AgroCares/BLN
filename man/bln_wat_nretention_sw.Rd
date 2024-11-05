@@ -11,7 +11,8 @@ bln_wat_nretention_sw(
   B_AER_CBS,
   B_GWL_CLASS,
   A_SOM_LOI,
-  A_N_RT
+  A_N_RT,
+  A_CN_FR = NA_real_
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ bln_wat_nretention_sw(
 \item{A_SOM_LOI}{(numeric) The organic matter content of the soil (\%)}
 
 \item{A_N_RT}{(numeric) The organic nitrogen content of the soil in mg N / kg}
+
+\item{A_CN_FR}{(numeric) The carbon to nitrogen ratio (-)}
 }
 \description{
 This function equals the N retention function of the OSI

@@ -9,9 +9,10 @@ test_that("bln_wat_nretention_sw works", {
       B_GWL_CLASS = rep('GtIII',4),
       B_AER_CBS = rep('LG06',4),
       A_SOM_LOI = rep(3,4),
-      A_N_RT = c(1000,2500,3500,9800)
+      A_N_RT = c(1000,2500,3500,9800),
+      A_CN_FR = c(25,15,10,5.5)
       ),
-    expected = c(0.97,0.17,0.01,0.001),
+    expected = c(0.97,0.97,0.96,0.052),
     tolerance = 0.1
   )
 
@@ -24,9 +25,10 @@ test_that("bln_wat_nretention_sw works", {
       B_GWL_CLASS = rep('GtVII',4),
       B_AER_CBS = rep('LG14',4),
       A_SOM_LOI = rep(3,4),
-      A_N_RT = c(1000,2500,3500,9800)
+      A_N_RT = c(1000,2500,3500,9800),
+      A_CN_FR = c(25,15,10,5.5)
     ),
-    expected = c(0.97,0,0,0),
+    expected = c(0.97,0.95,0.82,0.001),
     tolerance = 0.1
   )
 

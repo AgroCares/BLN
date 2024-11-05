@@ -4,7 +4,7 @@
 \alias{bln_c_nitrogen}
 \title{Calculate the soil nitrogen supplying capacity in the Netherlands}
 \usage{
-bln_c_nitrogen(B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI, A_N_RT)
+bln_c_nitrogen(B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI, A_N_RT, A_CN_FR = NA_real_)
 }
 \arguments{
 \item{B_LU_BRP}{(numeric) The crop code from the BRP}
@@ -14,6 +14,8 @@ bln_c_nitrogen(B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI, A_N_RT)
 \item{A_SOM_LOI}{(numeric) The percentage organic matter in the soil}
 
 \item{A_N_RT}{(numeric) The organic nitrogen content of the soil in mg N / kg}
+
+\item{A_CN_FR}{(numeric) The carbon to nitrogen ratio (-)}
 }
 \value{
 The capacity of the soil to supply nitrogen (kg N / ha / yr). A numeric value, converted to a OSI score.

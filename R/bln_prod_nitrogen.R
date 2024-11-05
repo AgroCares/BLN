@@ -22,7 +22,7 @@ bln_c_nitrogen <- function(B_LU_BRP, B_SOILTYPE_AGR,A_SOM_LOI,A_N_RT,A_CN_FR = N
 
   # add visual bindings
   bln_country = bln_indicator = crop_code = crop_cat1 = bln_threshold_cropcat = NULL
-  D_BDS = D_RD = D_OC = D_GA = id = value = i_c_n = bln_st_c1 = NULL
+  D_BDS = D_RD = D_OC = D_GA = id = value = i_c_n = bln_st_c1 = code = value_min = value_max = NULL
 
   # Load in the crops data set and the parms dataset
   dt.crops <- as.data.table(BLN::bln_crops)

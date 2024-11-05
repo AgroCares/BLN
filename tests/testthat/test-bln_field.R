@@ -144,27 +144,28 @@ test_that("bln_field works", {
                   mc = FALSE)
 
   # test for dimensions dataset
-  expect_equal(dim(d1), expected = c(5,41), tolerance = 0.1 )
+  expect_equal(dim(d1), expected = c(5,49), tolerance = 0.1 )
 
   # test for colnames
   cols <- c("ID","i_b_di","i_b_sf","i_c_k","i_c_mg","i_c_n","i_c_p","i_c_ph","i_c_s","i_clim_csat"  ,"i_clim_osb","i_clim_rothc", "i_gw_gwr","i_gw_ngw","i_gw_nlea","i_gw_nret","i_gw_pest",
             "i_gw_wb","i_nut_k","i_nut_n","i_nut_nue","i_nut_p","i_p_as","i_p_co","i_p_cr","i_p_ds","i_p_du","i_p_ro","i_p_se","i_p_whc","i_p_wo","i_p_ws","i_sw_nret","i_sw_nro",
-            "i_sw_nsw","i_sw_psw","bln_total","esd_climate",  "esd_nutcycle", "esd_prod","esd_water")
+            "i_sw_nsw","i_sw_psw",'s_bln_esd_clim','s_bln_esd_nut', 's_bln_esd_prod', 's_bln_esd_water', 's_bln_prod_b', 's_bln_prod_c', 's_bln_clim',
+            's_bln_gw_quality', 's_bln_gw_quantity', 's_bln_nut', 's_bln_prod_p', 's_bln_sw_quality', 's_bln_total')
   expect_equal(colnames(d1), expected = cols, tolerance = 0.1 )
 
   # test BLN score
-  expect_equal(d1$bln_total, expected = c(0.743,0.756,0.738,0.665,0.713), tolerance = 0.01)
+  expect_equal(d1$s_bln_total, expected = c(0.73,0.74,0.71,0.60,0.66), tolerance = 0.01)
 
   # test BLN soil quality score ESD production
-  expect_equal(d1$esd_prod, expected = c(0.797,0.801,0.817,0.803,0.762), tolerance = 0.01)
+  expect_equal(d1$s_bln_esd_prod, expected = c(0.8,0.8,0.82,0.8,0.79), tolerance = 0.01)
 
   # test BLN soil quality score ESD water quality
-  expect_equal(d1$esd_water, expected = c(0.735,0.709,0.635,0.474,0.707), tolerance = 0.01)
+  expect_equal(d1$s_bln_esd_water, expected = c(0.69,0.65,0.53,0.33,0.46), tolerance = 0.01)
 
   # test BLN soil quality score ESD climate
-  expect_equal(d1$esd_climate, expected = c(0.846,0.871,0.826,0.723,0.785), tolerance = 0.01)
+  expect_equal(d1$s_bln_esd_clim, expected = c(0.84,0.87,0.83,0.71,0.78), tolerance = 0.01)
 
   # test BLN soil quality score ESD nutrient cycle
-  expect_equal(d1$esd_nutcycle , expected = c(0.568,0.645,0.666,0.561,0.555), tolerance = 0.01)
+  expect_equal(d1$s_bln_esd_nut, expected = c(0.57,0.64,0.67,0.56,0.63), tolerance = 0.01)
 
 })

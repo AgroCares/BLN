@@ -589,7 +589,15 @@ saveRDS(dt.lsw.extr,'D:/DATA/18 bln/nl_lsw.rds')
 
   s1 <- readRDS('D:/DATA/18 bln/brp21_s1sel.rds')
 
+  dt <- readRDS('D:/DATA/18 bln/brp21_bln_before_scoring.rds')
 
+  d1 <- dt[B_AER_CBS=='IJsselmeerpolders']
+  d2 <- out.ind[out.ind$ID %in% d1$id]
+  s2 <- s1[s1$id %in% d1$id,]
+
+  st_write(s2,'D:/ESA/03 msc projects/23 dekkers/ijselmeerpolders.gpkg')
+  saveRDS(d1,'D:/ESA/03 msc projects/23 dekkers/ijselmeerpolders.rds')
+  saveRDS(d2,'D:/ESA/03 msc projects/23 dekkers/ijselmeerpolders_indicator_scores.rds')
 
   ID = dt$ID
   B_LU_BRP = dt$B_LU_BRP

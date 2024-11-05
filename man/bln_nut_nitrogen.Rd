@@ -4,7 +4,14 @@
 \alias{bln_nut_nitrogen}
 \title{Function to calculate and evaluate the nitrogen use efficiency in view of the soils' function to improve nutrient recycling}
 \usage{
-bln_nut_nitrogen(ID, B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI, A_N_RT)
+bln_nut_nitrogen(
+  ID,
+  B_LU_BRP,
+  B_SOILTYPE_AGR,
+  A_SOM_LOI,
+  A_N_RT,
+  A_CN_FR = NA_real_
+)
 }
 \arguments{
 \item{ID}{(character) A field id}
@@ -16,6 +23,8 @@ bln_nut_nitrogen(ID, B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI, A_N_RT)
 \item{A_SOM_LOI}{(numeric) The organic matter content of the soil (\%)}
 
 \item{A_N_RT}{(numeric) The organic nitrogen content of the soil (mg N / kg)}
+
+\item{A_CN_FR}{(numeric) The carbon to nitrogen ratio (-)}
 }
 \description{
 Function to calculate and evaluate the nitrogen use efficiency in view of the soils' function to improve nutrient recycling

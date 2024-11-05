@@ -22,7 +22,7 @@ bln_c_ph <- function(ID,B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI, A_CLAY_MI, A_PH_CC)
 
   # add visual bindings
   D_CP_STARCH = FIELD_ID = D_CP_POTATO = D_CP_SUGARBEET = D_CP_GRASS = D_CP_MAIS = D_CP_OTHER = D_CP_RUST = D_CP_RUSTDEEP = NULL
-  D_PH_DELTA = i_c_ph = NULL
+  D_PH_DELTA = i_c_ph = . = oid = NULL
 
   # Check inputs
   arg.length <- max(length(A_PH_CC), length(B_SOILTYPE_AGR), length(A_SOM_LOI), length(A_CLAY_MI),

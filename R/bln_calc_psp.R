@@ -7,8 +7,8 @@
 #' @param M_GREEN (boolean) A soil measure. Are catch crops sown after main crop (optional, options: TRUE, FALSE)
 #'
 #' @examples
-#' bln_calc_psp(B_LU_BRP = 265, M_GREEN = TRUE)
-#' bln_calc_psp(B_LU_BRP = c(265,1019,265,1019), M_GREEN = rep(TRUE,4))
+#' bln_calc_psp(ID = 1,B_LU_BRP = 265, M_GREEN = TRUE)
+#' bln_calc_psp(ID = c(1,2,1,2),B_LU_BRP = c(265,1019,265,1019), M_GREEN = rep(TRUE,4))
 #'
 #' @return
 #' The estimated precipitation surplus (in mm / ha) depending on averaged precipitation and evaporation. A numeric value.
@@ -17,7 +17,8 @@
 bln_calc_psp <- function(ID, B_LU_BRP, M_GREEN){
 
   # set visual bindings
-  crop_code = crop_name = crop_makkink = psp = A_PREC_MEAN = A_ET_MEAN = mcf = NULL
+  crop_code = crop_name = crop_makkink = psp = A_PREC_MEAN = A_ET_MEAN = mcf = . = NULL
+  year_wc = year_wc2 = oid = NULL
 
   # Check input
   arg.length <- max(length(B_LU_BRP), length(M_GREEN),length(ID))
