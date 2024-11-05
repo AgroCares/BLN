@@ -1,15 +1,18 @@
-# BLN
+# Bodemindicatorenset Landbouwgronden Nederland (BLN)
 Bodemindicatoren voor Landbouwgronden in Nederland. A soil quality assessment framework for application in the Netherlands.
 
-## Version 0.1.0
+This R package can be used to calculate the BLN index for agricultural fields in the Netherlands.
+the BLN framework has been developed to evaluate the quality of soils in view of four ecosystem services the soil supplies, including crop production, carbon sequestration, nutrient efficiency and water quantity and quality. More information about this framework can be found in the publication of [Ros et al., 2023](https://edepot.wur.nl/634579)
 
-### Added
-- 1 BLN wrapper function `bln_field` to estimate all indicators and ecosystem services (BLN scores) for agricultural fields
-- 18 functions starting with `bln_prod` to evaluate soil quality for its contribution to crop production. This includes soil chemical, physical and biological functions.
-- 6 functions starting with `bln_gw` to evaluate soil quality for its contribution to groundwater recharge and groundwater quality
-- 4 functions starting with `bln_sw` to evaluate soil quality for its contribution to surface water quality
-- 3 functions starting with `bln_clim` to evaluate soil quality for its contribution to carbon sequestration
-- 7 helper function in `bln helpers` for water retention, input formatting and weighing function
-- 4 evaluating functions in `bln_evaluate` to estimate a BLN indicator from a BLN function
-- 2 helper functions `bln_add_management` and `bln_calc_psp` as replacement of OBIC functions in view of speed
-- 7 package tables added: `bln_parms`, `bln_soiltype`, `bln_thresholds`, `bln_crops`, `bln_lsw`, `bln_farm_hf`, `bln_lsw_farm_hf`
+## Installation
+```R
+# Install the development version from GitHub
+remotes::install_github("https://github.com/AgroCares/BLN")
+
+# Load the OBIC package in your script
+library("OBIC")
+```
+## More information
+The BLN has been developed by various soil experts, researchers and farm advisors, guided by researchers from Wageningen UR and the Nutrient Management Institute. The technical implementation in this R package is done by NMI. 
+
+![Logo of NMI](https://media.licdn.com/dms/image/C560BAQEYGcm4HjNnxA/company-logo_200_200/0?e=2159024400&v=beta&t=u40rJ7bixPWB2SAqaj3KCKzJRoKcqf0wUXCdmsTDQvw)
