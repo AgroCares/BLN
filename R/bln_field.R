@@ -127,7 +127,7 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
                    B_SOILTYPE_AGR = B_SOILTYPE_AGR,
                    B_HELP_WENR = B_HELP_WENR,
                    B_AER_CBS = B_AER_CBS,
-                   B_GWL_GLG = B_GWL_GLG,
+                   B_GWL_GLG = pmax(0,B_GWL_GLG),
                    B_GWL_GHG = B_GWL_GHG,
                    B_GWL_ZCRIT = B_GWL_ZCRIT,
                    B_DRAIN = B_DRAIN,
@@ -180,7 +180,7 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
   # check formats B_SC_WENR and B_GWL_CLASS
   #dt[, B_SC_WENR := OBIC::format_soilcompaction(B_SC_WENR)]
   dt[, B_GWL_CLASS := OBIC::format_gwt(B_GWL_CLASS)]
-  dt[, B_AER_CBS := OBIC::format_aer(B_AER_CBS)]
+  dt[, B_AER_CBS := bln_format_aer(B_AER_CBS,type='name')]
 
   # estimate missing data
   dt[is.na(A_DENSITY_SA), A_DENSITY_SA := OBIC::calc_bulk_density(B_SOILTYPE_AGR, A_SOM_LOI, A_CLAY_MI)]
@@ -232,12 +232,12 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
   # calculate BLN crop production indicators
 
     # Calculate indicators for soil chemical functions
-    dt[, i_c_n := bln_c_nitrogen(B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI, A_N_RT)]
+    dt[, i_c_n := bln_c_nitrogen(B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI, A_N_RT,A_CN_FR)]
     dt[, i_c_p := bln_c_posphor(B_LU_BRP, A_P_AL, A_P_CC, A_P_WA)]
     dt[, i_c_k := bln_c_potassium(B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI, A_CLAY_MI, A_PH_CC, A_CEC_CO, A_K_CO_PO, A_K_CC)]
     dt[, i_c_mg := bln_c_magnesium(B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI, A_CLAY_MI, A_PH_CC,A_CEC_CO, A_K_CO_PO, A_MG_CC, A_K_CC)]
     dt[, i_c_s := bln_c_sulfur(B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS, A_SOM_LOI, A_S_RT)]
-    dt[, i_c_ph := bln_c_ph(ID,B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI, A_CLAY_MI, A_PH_CC),by=ID]
+    dt[, i_c_ph := bln_c_ph(ID,B_LU_BRP, B_SOILTYPE_AGR, A_SOM_LOI, A_CLAY_MI, A_PH_CC)]
 
     # Calculate indicators for soil physical functions
     dt[, i_p_cr := bln_p_crumbleability(B_LU_BRP,A_SOM_LOI, A_CLAY_MI, A_PH_CC)]
@@ -265,7 +265,7 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
 
     # ground water quantity and quality: recharge (I_H_GWR, from OBI)
     dt[, i_gw_gwr := bln_wat_groundwater_recharge(ID,B_LU_BRP, B_SC_WENR, B_GWL_CLASS,
-                                                 B_DRAIN, A_CLAY_MI,A_SAND_MI, A_SILT_MI, A_SOM_LOI, M_GREEN)]
+                                                  B_DRAIN, A_CLAY_MI,A_SAND_MI, A_SILT_MI, A_SOM_LOI, M_GREEN)]
 
     # groundwater quantity and quality: water retention (S_BBWP_WB, from BBWP)
     dt[,i_gw_wb := bln_bbwp_bw(ID,B_LU_BRP, B_HELP_WENR, B_GWL_CLASS, B_AREA_DROUGHT,
@@ -281,13 +281,13 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
                                         A_SOM_LOI, M_GREEN, M_MECHWEEDS, M_PESTICIDES_DST)]
 
     # groundwater quantity and qality: nitrogen retention (I_E_NGW, from OBI)
-    dt[, i_gw_nret := bln_wat_nretention_gw(ID, B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS, B_GWL_CLASS, A_SOM_LOI, A_N_RT)]
+    dt[, i_gw_nret := bln_wat_nretention_gw(ID, B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS, B_GWL_CLASS, A_SOM_LOI, A_N_RT,A_CN_FR)]
 
     # groundwater quantity and quality: nitrogen leaching (I_H_NGW, from OBI). M_GREEN FALSE (YF: otherwise too strong impact)
     dt[, i_gw_nlea := bln_wat_nrisk_gw(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLASS,B_SC_WENR,B_FERT_NORM_FR = B_FERT_NORM_FR,
                                        A_CLAY_MI,A_SAND_MI, A_SILT_MI, A_SOM_LOI,A_P_AL, A_P_WA, A_P_CC,
                                        A_PH_CC, A_CEC_CO,A_K_CO_PO, A_K_CC,
-                                       M_GREEN)]
+                                       M_GREEN = FALSE)]
 
   # calculate BLN regulation and purification of water (surface water)
 
@@ -298,7 +298,7 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
                                      M_GREEN = FALSE)]
 
     # surface water quality: nitrogen retention (I_E_NSW, from OBI)
-    dt[, i_sw_nret := bln_wat_nretention_sw(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLASS,A_SOM_LOI,A_N_RT)]
+    dt[, i_sw_nret := bln_wat_nretention_sw(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLASS,A_SOM_LOI,A_N_RT,A_CN_FR)]
 
     # surface water quality: nitrogen buffering (S_BBWP_NSW, from BBWP)
     dt[, i_sw_nsw := bln_bbwp_nsw(ID,B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GWL_CLASS,B_SLOPE_DEGREE,
@@ -332,7 +332,7 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
 # calculate BLN indicators for nutrient clycing
 
     # nutrient use effiency for soil nitrogen (evalation soil N supply, OBIC)
-    dt[,i_nut_n := bln_nut_nitrogen(ID, B_LU_BRP,B_SOILTYPE_AGR,A_SOM_LOI,A_N_RT)]
+    dt[,i_nut_n := bln_nut_nitrogen(ID, B_LU_BRP,B_SOILTYPE_AGR,A_SOM_LOI,A_N_RT,A_CN_FR)]
 
     # nutrient use effiency for soil phosphorus
     dt[,i_nut_p := bln_nut_phosphorus(B_LU_BRP, A_P_AL, A_P_CC, A_P_WA)]
