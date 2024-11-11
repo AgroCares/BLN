@@ -1,3 +1,8 @@
+# BLN 2024-11-11 UNRELEASED
+
+## Added
+* SOMERS calculation of emissions in peat soils
+
 # BLN 0.1.0 2024-11-05
 First version of the R package to assess soil quality using BLN framework
 
