@@ -15,6 +15,8 @@
 bln_clim_somers <- function(ID,B_SOILTYPE_AGR,A_SOM_LOI,B_SOMERS_BC,B_DRAIN_SP,B_DRAIN_WP, B_DRAIN_SP_CHANGE = 0.2){
 
   # add visual bindings
+  bln_country = bln_soil_cat1 = b_drain_sp = b_drain_wp = . = b_somers_bc = ref = awis = pwis = NULL
+  ref0 = oid = NULL
 
   # load internal package
   bln_som <- BLN::bln_somers
@@ -26,7 +28,7 @@ bln_clim_somers <- function(ID,B_SOILTYPE_AGR,A_SOM_LOI,B_SOMERS_BC,B_DRAIN_SP,B
   checkmate::assert_subset(B_SOILTYPE_AGR, choices = BLN::bln_soiltype[bln_country=='NL',bln_soil_cat1], empty.ok = FALSE)
   checkmate::assert_numeric(A_SOM_LOI, lower = 0.1, upper = 100, any.missing = FALSE, min.len = 1, len = arg.length)
   checkmate::assert_integerish(B_SOMERS_BC, min.len = 1, len = arg.length)
-  checkmate::assert_subset(B_SOMERS_BC, choices = unique(BLN::bln_somers$b_somers_bc), empty.ok = FALSE)
+  checkmate::assert_subset(B_SOMERS_BC, choices = c(NA,unique(BLN::bln_somers$b_somers_bc)))
   checkmate::assert_numeric(B_DRAIN_SP, lower = 0, upper = 1.2, min.len = 1, len = arg.length)
   checkmate::assert_numeric(B_DRAIN_WP, lower = -0.2, upper = 1.2, min.len = 1, len = arg.length)
   checkmate::assert_numeric(B_DRAIN_SP_CHANGE, lower = 0, upper = 0.5)

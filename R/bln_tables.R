@@ -131,3 +131,17 @@
 #'   \item{c6}{}
 #' }
 "bln_lsw_farm_hf"
+
+#' A dataset with meta-model results from SOMERS per unique base combination peat soil
+#'
+#' This table contains predicted CO2 emissions for various scenarios for predefined peat soil types
+#'
+#' \describe{
+#'   \item{c1}{}
+#'   \item{c2}{}
+#'   \item{c3}{}
+#'   \item{c4}{}
+#'   \item{c5}{}
+#'   \item{c6}{}
+#' }
+"bln_somers"
