@@ -21,6 +21,9 @@
 #' @param B_CT_NSW (numeric) the critical target for required reduction in N loss from agriculture (kg N / ha) to reach targets of KRW
 #' @param B_CT_PSW_MAX (numeric) the max critical target for P reduction loss (kg P / ha)
 #' @param B_CT_NSW_MAX (numeric) the max critical target for N reduction loss (kg N / ha)
+#' @param B_SOMERS_BC (integer) The base combination of SOMERS peat soil classification (varies between 1 and 290)
+#' @param B_DRAIN_SP (numeric) the drooglegging of a field in summer (difference field height and ditch level, in meters)
+#' @param B_DRAIN_WP (numeric) the drooglegging of a field in winter (difference field height and ditch level, in meters)
 #' @param A_SOM_LOI (numeric) The percentage organic matter in the soil (\%)
 #' @param A_SOM_LOI_MLMAX (numeric) The max. percentage organc matter estimated via machine learning model (\%)
 #' @param A_CLAY_MI (numeric) The clay content of the soil (\%)
@@ -95,6 +98,7 @@
 bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_WENR,B_AER_CBS,
                       B_GWL_GLG,B_GWL_GHG,B_GWL_ZCRIT,B_DRAIN,B_FERT_NORM_FR,B_SLOPE_DEGREE,B_GWP,
                       B_AREA_DROUGHT,B_CT_PSW,B_CT_NSW,B_CT_PSW_MAX =0.5,B_CT_NSW_MAX = 5.0,
+                      B_SOMERS_BC,B_DRAIN_SP,B_DRAIN_WP,
                       A_SOM_LOI,A_SOM_LOI_MLMAX = NA_real_, A_CLAY_MI,A_SAND_MI,A_SILT_MI,A_DENSITY_SA,A_FE_OX,A_AL_OX,A_PH_CC,A_N_RT,
                       A_CN_FR,A_S_RT,A_N_PMN,A_P_AL,A_P_CC,A_P_WA,A_P_SG,A_CEC_CO,A_CA_CO_PO,A_MG_CO_PO,
                       A_K_CO_PO,A_K_CC,A_MG_CC,A_MN_CC,A_ZN_CC,A_CU_CC,
@@ -139,6 +143,9 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
                    B_CT_NSW = B_CT_NSW,
                    B_CT_PSW_MAX = B_CT_PSW_MAX,
                    B_CT_NSW_MAX = B_CT_NSW_MAX,
+                   B_SOMERS_BC = B_SOMERS_BC,
+                   B_DRAIN_SP = B_DRAIN_SP,
+                   B_DRAIN_WP = B_DRAIN_WP,
                    A_SOM_LOI = A_SOM_LOI,
                    A_SOM_LOI_MLMAX = A_SOM_LOI_MLMAX,
                    A_CLAY_MI = A_CLAY_MI,
@@ -328,6 +335,10 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
 
     # estimate the C saturation via ML model
     dt[,i_clim_csat := bln_clim_csat(B_LU_BRP,A_SOM_LOI,A_SOM_LOI_MLMAX)]
+
+    # estimate the C saturation via SOMERS (only peat)
+    dt[,i_clim_somers := bln_clim_somers(ID,B_SOILTYPE_AGR,A_SOM_LOI,B_SOMERS_BC,
+                                         B_DRAIN_SP,B_DRAIN_WP, B_DRAIN_SP_CHANGE = 0.2)]
 
 # calculate BLN indicators for nutrient clycing
 
