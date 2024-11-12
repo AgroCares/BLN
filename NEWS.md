@@ -1,7 +1,11 @@
 # BLN 2024-11-11 UNRELEASED
 
 ## Added
-* SOMERS calculation of emissions in peat soils
+* SOMERS calculation of emissions in peat soils, function `bln_clim_somers` and associated test function
+* internal package table for SOMERS meta-model `bln_somers`
+
+## Updated
+* `ppr_tables` in dev to prepare internal package table `bln_somers`
 
 # BLN 0.1.0 2024-11-05
 First version of the R package to assess soil quality using BLN framework
