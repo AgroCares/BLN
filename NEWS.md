@@ -1,3 +1,8 @@
+# BLN 2024-11-14 UNRELEASED
+
+## Added
+* optimiser for crop rotation schemes in view of targeted improvements in soil ecosystem services
+
 # BLN 2024-11-11 UNRELEASED
 
 ## Added
