@@ -145,3 +145,16 @@
 #'   \item{c6}{}
 #' }
 "bln_somers"
+
+#' A dataset with potential crop rotation scenarios per agricultural economic region
+#'
+#' This table contains a series of potential crop rotations
+#'
+#' \describe{
+#'   \item{b_aer_cbs}{}
+#'   \item{soiltype}{}
+#'   \item{b_lu_brp}{}
+#'   \item{scen}{}
+#'   \item{year}{}
+#' }
+"bln_scen_croprotation"

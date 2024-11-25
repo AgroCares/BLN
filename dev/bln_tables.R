@@ -102,3 +102,120 @@
   # save updated SOMERS table for use in BLN package
   usethis::use_data(bln_somers,overwrite = TRUE)
 
+# make table with crop rotation scenarios for optimisation land use
+
+  # note that for each B_AER_CBS we assume one soil type as being the most dominant one
+
+  # data source for crop rotation arable systems: https://edepot.wur.nl/463816
+  # most common land use Noordelijk kleigebied: pootaardappel, wintertarwe, suikerbiet, wintertarwe
+  dt.scen.bld <- data.table(b_aer_cbs = 'LG01', soiltype = 'clay',b_lu_brp = c(2015,233,256,233))
+  # most common land use Oldambt: wintertarwe, wintertarwe, aardappel, wintertarwe
+  dt.scen.bld <- rbind(dt.scen.bld,data.table(b_aer_cbs = 'LG02', soiltype = 'clay',b_lu_brp = c(233,233,2015,233)))
+  # most common land use veenkolonien: zetmeelaardappel, wintertarwe, zetmeelaardappel, suikerbiet
+  dt.scen.bld <- rbind(dt.scen.bld,data.table(b_aer_cbs = 'LG02', soiltype= 'sand',b_lu_brp = c(2017,233,2017,256)))
+  # most common land use noordelijk zand en dal: consumptieaardappel, zomergerst, suikerbiet, wintertarwe
+  dt.scen.bld <- rbind(dt.scen.bld,data.table(b_aer_cbs = 'LG03', soiltype= 'sand',b_lu_brp = c(1910,236,256,233)))
+  # most common land use oostelijk zand: consumptieaardappel, zomergerst, suikerbiet, wintertarwe
+  dt.scen.bld <- rbind(dt.scen.bld,data.table(b_aer_cbs = 'LG04', soiltype= 'sand',b_lu_brp = c(1910,236,256,233)))
+  # most common land use centraal veehouderij: tijdelijk grasland en mais
+  dt.scen.bld <- rbind(dt.scen.bld,data.table(b_aer_cbs = 'LG05', soiltype= 'sand',b_lu_brp = c(266,266,266,259)))
+  # most common land use IJsselmeerpolders (en deels NH): aardappel - zomergerst - suikberbiet - wintertarwe
+  dt.scen.bld <- rbind(dt.scen.bld,data.table(b_aer_cbs = 'LG06', soiltype= 'clay',b_lu_brp = c(1910,236,256,233)))
+  dt.scen.bld <- rbind(dt.scen.bld,data.table(b_aer_cbs = 'LG07', soiltype= 'clay',b_lu_brp = c(2015,236,256,233)))
+  dt.scen.bld <- rbind(dt.scen.bld,data.table(b_aer_cbs = 'LG08', soiltype= 'clay',b_lu_brp = c(2015,236,256,233)))
+  # most common land use Utrechts weidegebied: consumptieaardappel, zomergerst, suikerbiet, wintertarwe
+  dt.scen.bld <- rbind(dt.scen.bld,data.table(b_aer_cbs = 'LG09', soiltype= 'clay',b_lu_brp =  c(1910,236,256,233)))
+  # most common land use rivierkleigebied: consumptieaardappel, zomergerst, suikerbiet, wintertarwe
+  dt.scen.bld <- rbind(dt.scen.bld,data.table(b_aer_cbs = 'LG10', soiltype= 'sand',b_lu_brp = c(1910,236,256,233)))
+  # most common land use zuidwestelijk klei / brabant: consumptieaardappel, zaauiui, suikerbiet, wintertarwe
+  dt.scen.bld <- rbind(dt.scen.bld,data.table(b_aer_cbs = 'LG11', soiltype= 'clay',b_lu_brp = c(1910,262,256,233)))
+  dt.scen.bld <- rbind(dt.scen.bld,data.table(b_aer_cbs = 'LG12', soiltype= 'clay',b_lu_brp = c(1910,262,256,233)))
+  # most common land use zuidelijk zand en loss: consumptieaardappel, zomergerst, suikerbiet, wintertarwe
+  dt.scen.bld <- rbind(dt.scen.bld,data.table(b_aer_cbs = 'LG13', soiltype= 'sand',b_lu_brp = c(1910,236,256,233)))
+  dt.scen.bld <- rbind(dt.scen.bld,data.table(b_aer_cbs = 'LG14', soiltype= 'loess',b_lu_brp = c(1910,236,256,233)))
+  dt.scen.bld[, scen := 'bld_arable_int']
+  dt.scen.bld[,year := 1:.N,by=c('b_aer_cbs','soiltype')]
+
+  # intensive arable crop rotation with additional winter cereal
+  dt.scen.bld.ext <- copy(dt.scen.bld)
+  dt.scen.bld.ext[, myear := max(year),by=c('b_aer_cbs','soiltype')]
+  dt.scen.bld.ext <- rbind(dt.scen.bld.ext,dt.scen.bld.ext[year==1][,b_lu_brp := 233][,year:=myear+1])
+  dt.scen.bld.ext[,scen := 'bld_arable_ext']
+  dt.scen.bld.ext[,myear:=NULL]
+
+  # intensive arable crop rotation with additional protein crops (1 x 5 year), soja boon
+  dt.scen.bld.prot <- copy(dt.scen.bld)
+  dt.scen.bld.prot[, myear := max(year),by=c('b_aer_cbs','soiltype')]
+  dt.scen.bld.prot <- rbind(dt.scen.bld.prot,dt.scen.bld.prot[year==1][,b_lu_brp := 665][,year:=myear+1])
+  dt.scen.bld.prot[,scen := 'bld_arable_prot']
+  dt.scen.bld.prot[,myear:=NULL]
+
+  # vollegrondsgroente
+  # noordwest nederland klei: bloemkool, zomertarwe, consumptieaardappel | CA,grasklaver, bloomkool,peen,zomertarwe,bloemkool
+  dt.scen.vgg <- CJ(b_aer_cbs = c('LG01','LG03','LG06','LG07','LG08','LG09'),
+                    soiltype='clay',scen = 'bld_vegetable_int',b_lu_brp = c(2713, 234, 1910))
+  dt.scen.vgg <- rbind(dt.scen.vgg,CJ(b_aer_cbs = c('LG01','LG03','LG06','LG07','LG08'),
+                                      soiltype='clay',scen = 'bld_vegetable_ext',b_lu_brp = c(1910,2653,2713,2785,234,2713)))
+  # zuid-oost nederland zandgrond: 4 x andijvie, prei | andijvie, grasklaver, prei, venkel, chinese kool, courgette
+  dt.scen.vgg <- rbind(dt.scen.vgg,CJ(b_aer_cbs = c('LG02','LG04','LG05','LG13'),
+                                      soiltype='sand',scen = 'bld_vegetable_int',b_lu_brp = c(2708,2708,2708,2708,2749)))
+  dt.scen.vgg <- rbind(dt.scen.vgg,CJ(b_aer_cbs = c('LG02','LG04','LG05','LG13'),
+                                      soiltype='sand',scen = 'bld_vegetable_ext',b_lu_brp = c(2708,2653,2749,2727,2721,2723)))
+  # zuid-oost nederland loss: 4 x andijvie, prei | andijvie, grasklaver, prei, venkel, chinese kool, courgette
+  dt.scen.vgg <- rbind(dt.scen.vgg,CJ(b_aer_cbs = c('LG14'),
+                                      soiltype='loess',scen = 'bld_vegetable_int',b_lu_brp = c(2708,2708,2708,2708,2749)))
+  dt.scen.vgg <- rbind(dt.scen.vgg,CJ(b_aer_cbs = c('LG14'),
+                                      soiltype='loess',scen = 'bld_vegetable_ext',b_lu_brp = c(2708,2653,2749,2727,2721,2723)))
+  # zuid-west nederland klei: CA, ijsbergsla, grasklaver,spruitkool,knolvenkel,zomertarwe
+  dt.scen.vgg <- rbind(dt.scen.vgg,CJ(b_aer_cbs = c('LG11','LG10','LG12'),
+                                      soiltype='clay',scen = 'bld_vegetable_int',b_lu_brp =  c(1910,2767,2653,2777,2727,234)))
+  dt.scen.vgg[,year := 1:.N,by=c('scen','b_aer_cbs','soiltype')]
+
+  # permanent grass
+  dt.scen.s1 <- CJ(b_aer_cbs = c('LG01','LG02','LG03','LG04','LG05','LG06','LG07','LG08','LG09','LG10','LG11','LG12','LG13','LG14'),
+                   soiltype=NA_character_,scen = 'gld_permanent',b_lu_brp =rep(265,5))
+  dt.scen.s1[,year := 1:.N,by=c('b_aer_cbs')]
+
+  # permanent maize
+  dt.scen.s2 <- copy(dt.scen.s1)
+  dt.scen.s2[, b_lu_brp := 259]
+  dt.scen.s2[, scen := 'sms_permanent']
+
+  # intensive cropland rotation
+  dt.scen.s3 <- CJ(b_aer_cbs = c('LG01','LG02','LG03','LG04','LG05','LG06','LG07','LG08','LG09','LG10','LG11','LG12','LG13','LG14'),
+                   soiltype=NA_character_,scen = 'bld_int',b_lu_brp =c(2017, 256, 2017,236,2017, 1002))
+  dt.scen.s3[,year := 1:.N,by=c('b_aer_cbs')]
+
+  # scenario with 3 cereals and 1 potato
+  dt.scen.s4 <- CJ(b_aer_cbs = c('LG01','LG02','LG03','LG04','LG05','LG06','LG07','LG08','LG09','LG10','LG11','LG12','LG13','LG14'),
+                   soiltype=NA_character_,scen = 'bld_cereals',b_lu_brp =c(233,233,2015,233))
+  dt.scen.s4[,year := 1:.N,by=c('b_aer_cbs')]
+
+  # scenario collaboration arable farming and husbandry
+  dt.scen.s5 <- CJ(b_aer_cbs = c('LG01','LG02','LG03','LG04','LG05','LG06','LG07','LG08','LG09','LG10','LG11','LG12','LG13','LG14'),
+                   soiltype=NA_character_,scen = 'bld_gld_collaboration',b_lu_brp =c(1910, 256, 262, 2785,1910, 256,266,266))
+  dt.scen.s5[,year := 1:.N,by=c('b_aer_cbs')]
+
+  # scenario with biodiverse arable farming
+  dt.scen.s6 <- CJ(b_aer_cbs = c('LG01','LG02','LG03','LG04','LG05','LG06','LG07','LG08','LG09','LG10','LG11','LG12','LG13','LG14'),
+                   soiltype=NA_character_,scen = 'bld_divers',b_lu_brp =c(233,256,262,2015,256,1004))
+  dt.scen.s6[,year := 1:.N,by=c('b_aer_cbs')]
+
+  # bln crop rotation scenarios
+  bln_scen_croprotation <- rbind(dt.scen.bld,
+                                 dt.scen.bld.ext,
+                                 dt.scen.bld.prot,
+                                 dt.scen.vgg,
+                                 dt.scen.s1,
+                                 dt.scen.s2,
+                                 dt.scen.s3,
+                                 dt.scen.s4,
+                                 dt.scen.s5,
+                                 dt.scen.s6)
+
+  # replace NA soiltype with "all"
+  bln_scen_croprotation[is.na(soiltype), soiltype := 'all']
+
+  # save updated SOMERS table for use in BLN package
+  usethis::use_data(bln_scen_croprotation,overwrite = TRUE)
+
