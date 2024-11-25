@@ -72,10 +72,13 @@ bln_field_optimiser<-function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,
                               A_SOM_LOI, A_CLAY_MI,A_SAND_MI,A_SILT_MI,A_FE_OX,A_AL_OX,A_PH_CC,A_N_RT,
                               A_CN_FR,A_S_RT,A_N_PMN,A_P_AL,A_P_CC,A_P_WA,A_P_SG,A_CEC_CO,A_CA_CO_PO,A_MG_CO_PO,
                               A_K_CO_PO,A_K_CC,A_MG_CC,A_MN_CC,A_ZN_CC,A_CU_CC,
-                              D_SA_W,D_RO_R,
+                              D_SA_W,D_RO_R,M_COMPOST,M_GREEN,
                               A_DENSITY_SA = NA_real_,
                               B_LSW_ID = NA_character_,LSW = NULL, i_clim_rothc = NA_real_,A_SOM_LOI_MLMAX = NA_real_,
                               foptim = list(scenarios = NULL, b_lu_brp = NULL, outputtype = 'cr_best_bln',mc = TRUE,runrothc = TRUE)){
+
+  # add visial bindings
+  scen = soiltype = . = b_aer_cbs = fieldid = b_lu_brp = B_CT_PSW_MAX = variable = indicator = s_bln_total = esd = NULL
 
   # load internal table with crop rotation scenarios
   bln_rot_scen <- BLN::bln_scen_croprotation

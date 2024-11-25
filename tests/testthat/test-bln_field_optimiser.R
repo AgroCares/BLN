@@ -134,6 +134,7 @@ test_that("bln_field works", {
                             A_CU_CC = dt.farm$A_CU_CC,
                             D_SA_W = dt.farm$D_SA_W,
                             D_RO_R = dt.farm$D_RO_R,
+                            M_COMPOST = NA_real_,M_GREEN = NA,
                             i_clim_rothc = NA_real_,
                             B_LSW_ID = NA_character_,
                             LSW = NULL,
@@ -156,7 +157,7 @@ test_that("bln_field works", {
   expect_equal(d1$bld_arable_int_bln_hs, expected = c(0.66), tolerance = 0.01)
 
   # test BLN soil quality score ESD production
-  expect_equal(d1$s_bln_esd_prod, expected = c(0.8,0.8,0.82,0.8,0.79), tolerance = 0.01)
+  expect_equal(d1$bld_gld_collaboration_bln_hs, expected = 0.65, tolerance = 0.01)
 
   # test BLN soil quality score ESD water quality
   expect_equal(d1$s_bln_esd_nut_blu, expected = 'gld_permanent', tolerance = 0.01)
