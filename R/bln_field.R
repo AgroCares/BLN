@@ -334,7 +334,7 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
     }
 
     # estimate the C saturation via ML model
-    dt[,i_clim_csat := bln_clim_csat(B_LU_BRP,A_SOM_LOI,A_SOM_LOI_MLMAX)]
+    dt[,i_clim_csat := bln_clim_csat(B_LU_BRP,A_SOM_LOI,A_CLAY_MI,A_SOM_LOI_MLMAX)]
 
     # estimate the C saturation via SOMERS (only peat)
     dt[,i_clim_somers := bln_clim_somers(ID,B_SOILTYPE_AGR,A_SOM_LOI,B_SOMERS_BC,
