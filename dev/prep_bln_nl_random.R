@@ -587,6 +587,9 @@ saveRDS(dt.lsw.extr,'D:/DATA/18 bln/nl_lsw.rds')
   saveRDS(out.score.bln,'D:/DATA/18 bln/brp21_bln_scores.rds')
   saveRDS(out.ind,'D:/DATA/18 bln/brp21_bln_indicators.rds')
 
+  dt <- readRDS('D:/DATA/18 bln/brp21_bln_indicators.rds')
+  dt.score <- readRDS('D:/DATA/18 bln/brp21_bln_scores.rds')
+
   s1 <- readRDS('D:/DATA/18 bln/brp21_s1sel.rds')
 
   dt <- readRDS('D:/DATA/18 bln/brp21_bln_before_scoring.rds')
