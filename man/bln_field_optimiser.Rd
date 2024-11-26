@@ -177,7 +177,7 @@ This function estimates what crop rotation plan is mosts suited for the current 
 \details{
 the foptim is a list with parameters affecting the selection of best crop rotation plans.
 the parameter outputtype gives the user the possibility to select specific outcomes: cr_nbottlenecks (nr of bottlenecks per scenario), cr_esd (BLN score per ESD),
-cr_best_bln (best rotation for BLN total), cr_best_per_esd (best rotation per ESD), or all
+cr_best_bln (best rotation for BLN total), cr_best_per_esd (best rotation per ESD), cr_esd_obi (OBI score) or all
 The parameter b_lu_brp allows the user to send an user defined crop rotation using BRP codes. This will replace the default scenarios as long as the parameter scenarios is NULL.
 The parameter scenarios allows the user to select only specific crop rotation scenarios from the package table `bln_scen_croprotation`
 }

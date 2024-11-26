@@ -60,7 +60,7 @@
 #' @details
 #' the foptim is a list with parameters affecting the selection of best crop rotation plans.
 #' the parameter outputtype gives the user the possibility to select specific outcomes: cr_nbottlenecks (nr of bottlenecks per scenario), cr_esd (BLN score per ESD),
-#' cr_best_bln (best rotation for BLN total), cr_best_per_esd (best rotation per ESD), or all
+#' cr_best_bln (best rotation for BLN total), cr_best_per_esd (best rotation per ESD), cr_esd_obi (OBI score) or all
 #' The parameter b_lu_brp allows the user to send an user defined crop rotation using BRP codes. This will replace the default scenarios as long as the parameter scenarios is NULL.
 #' The parameter scenarios allows the user to select only specific crop rotation scenarios from the package table `bln_scen_croprotation`
 #'
@@ -167,6 +167,8 @@ bln_field_optimiser<-function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,
                    B_LSW_ID = B_LSW_ID,
                    i_clim_rothc = i_clim_rothc)
 
+  # set format b_aer_cbs to L-code
+  dt[, B_AER_CBS := bln_format_aer(B_AER_CBS,type='code')]
 
   # estimate the mean soil properties per field
   cols <- colnames(dt[1 , .SD, .SDcols = is.numeric])
@@ -269,6 +271,18 @@ bln_field_optimiser<-function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,
     out <- merge(out,dt3.score.bln,by='ID',all.x=TRUE)
   }
 
+  # select OBI scoring per BLN per rotation scenario
+  check <- max(0,sum(foptim$outputtype %in% c('cr_esd_obi'),na.rm=T))
+
+  if(check > 0){
+
+    cols <- colnames(dt3)[grepl('ID|scen|^s_bln_prod',colnames(dt3))]
+    dt3.score.obi <- dt3[,mget(cols)]
+    dt3.score.obi[,scen := paste0(scen,'_obi_hs')]
+    dt3.score.obi <- dcast(dt3.score.obi,ID~scen,value.var=c('s_bln_prod_b', 's_bln_prod_c', 's_bln_prod_p'))
+
+    out <- merge(out,dt3.score.obi,by='ID',all.x=TRUE)
+  }
 
   # select the most fitted crop rotation plan with current overall soil quality
   check <- max(0,sum(foptim$outputtype %in% c('cr_best_bln'),na.rm=T))
