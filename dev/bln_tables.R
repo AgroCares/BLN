@@ -77,3 +77,28 @@
   # save updated crop table
   usethis::use_data(bln_lsw,overwrite = TRUE)
 
+# make SOMERS table with all information of each base combination
+
+  # read in the somers csv file
+  bln_somers <- fread('dev/bln_somers_v2_0.csv',skip=32)
+
+  # overwrite names: basis combinatie, zomer drooglegging, winterdrooglegging
+  setnames(bln_somers,
+           old =c('basiscombinatie', 'zomerdrooglegging', 'winterdrooglegging'),
+           new = c('B_SOMERS_BC','B_DRAIN_SP','B_DRAIN_WP'))
+
+  # dcast the table
+  bln_somers <- dcast(bln_somers,B_SOMERS_BC + B_DRAIN_SP + B_DRAIN_WP ~infiltratiemaatregel,
+                      value.var = c('mediaan','minimum','maximum'))
+
+  # select only the median values
+  bln_somers <- bln_somers[,.(B_SOMERS_BC,B_DRAIN_SP,B_DRAIN_WP,
+                              mediaan_AWIS,mediaan_PWIS,mediaan_ref)]
+
+  # clean up names and set to lower case
+  setnames(bln_somers,gsub('mediaan_','',colnames(bln_somers)))
+  setnames(bln_somers,tolower(colnames(bln_somers)))
+
+  # save updated SOMERS table for use in BLN package
+  usethis::use_data(bln_somers,overwrite = TRUE)
+

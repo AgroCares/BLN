@@ -24,6 +24,9 @@ bln_field(
   B_CT_NSW,
   B_CT_PSW_MAX = 0.5,
   B_CT_NSW_MAX = 5,
+  B_SOMERS_BC,
+  B_DRAIN_SP,
+  B_DRAIN_WP,
   A_SOM_LOI,
   A_SOM_LOI_MLMAX = NA_real_,
   A_CLAY_MI,
@@ -123,6 +126,12 @@ bln_field(
 \item{B_CT_PSW_MAX}{(numeric) the max critical target for P reduction loss (kg P / ha)}
 
 \item{B_CT_NSW_MAX}{(numeric) the max critical target for N reduction loss (kg N / ha)}
+
+\item{B_SOMERS_BC}{(integer) The base combination of SOMERS peat soil classification (varies between 1 and 290)}
+
+\item{B_DRAIN_SP}{(numeric) the drooglegging of a field in summer (difference field height and ditch level, in meters)}
+
+\item{B_DRAIN_WP}{(numeric) the drooglegging of a field in winter (difference field height and ditch level, in meters)}
 
 \item{A_SOM_LOI}{(numeric) The percentage organic matter in the soil (\%)}
 
