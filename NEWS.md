@@ -1,4 +1,4 @@
-# BLN 2024-11-11 UNRELEASED
+# BLN 0.2.0 2024-12-23 
 
 ## Added
 * SOMERS calculation of emissions in peat soils, function `bln_clim_somers` and associated test function
