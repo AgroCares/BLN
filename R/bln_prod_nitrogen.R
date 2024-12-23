@@ -74,6 +74,9 @@ bln_c_nitrogen <- function(B_LU_BRP, B_SOILTYPE_AGR,A_SOM_LOI,A_N_RT,A_CN_FR = N
 
   # convert to OSI score
 
+    # set default score
+    dt[, i_c_n := NA_real_]
+
     # subset and evaluate for arable soils
     dths <- dt.thresholds[bln_threshold_cropcat == 'arable']
     dt[grepl('arable|maize',crop_cat1), i_c_n := bln_evaluate_parabolic(value, x.top = dths[,bln_st_c1])]

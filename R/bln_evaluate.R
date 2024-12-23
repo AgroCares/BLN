@@ -68,6 +68,8 @@ bln_evaluate_parabolic <- function(x, x.top, must.plateau = TRUE) {
   }
   y <- ifelse(y < 0, 0, y)
 
+  y <- as.numeric(y)
+
   return(y)
 
 }

@@ -157,7 +157,7 @@ test_that("bln_field works", {
   expect_equal(colnames(d1), expected = cols, tolerance = 0.1 )
 
   # test BLN score
-  expect_equal(d1$s_bln_total, expected = c(0.73,0.74,0.71,0.60,0.66), tolerance = 0.01)
+  expect_equal(d1$s_bln_total, expected = c(0.74,0.74,0.72,0.61,0.67), tolerance = 0.01)
 
   # test BLN soil quality score ESD production
   expect_equal(d1$s_bln_esd_prod, expected = c(0.8,0.8,0.82,0.8,0.79), tolerance = 0.01)
@@ -166,7 +166,7 @@ test_that("bln_field works", {
   expect_equal(d1$s_bln_esd_water, expected = c(0.69,0.65,0.53,0.33,0.46), tolerance = 0.01)
 
   # test BLN soil quality score ESD climate
-  expect_equal(d1$s_bln_esd_clim, expected = c(0.84,0.87,0.83,0.71,0.78), tolerance = 0.01)
+  expect_equal(d1$s_bln_esd_clim, expected = c(0.88,0.88,0.87,0.73,0.83), tolerance = 0.01)
 
   # test BLN soil quality score ESD nutrient cycle
   expect_equal(d1$s_bln_esd_nut, expected = c(0.57,0.64,0.67,0.56,0.63), tolerance = 0.01)
