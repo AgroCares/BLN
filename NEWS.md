@@ -1,7 +1,11 @@
 # BLN 0.3.0 2024-12-23
 
 ## Added
-* optimiser for crop rotation schemes in view of targeted improvements in soil ecosystem services
+* optimiser for crop rotation schemes in view of targeted improvements in soil ecosystem services `bln_field_optimiser`
+* internal package table for crop rotation schemes `bln_scen_croprotation`
+
+## Updated
+* `ppr_tables` in dev to prepare internal package table `bln_scen_croprotation`
 
 # BLN 0.2.0 2024-12-23 
 
