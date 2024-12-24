@@ -1,3 +1,9 @@
+# BLN 0.4.0 2024-12-24
+
+## Added
+* function `bln_format_gtclass` for creating classes of ground water table data, based on GHG and GLG
+* test function `test-bln_format_gtclass` of the function described above
+
 # BLN 0.3.0 2024-12-23
 
 ## Added
