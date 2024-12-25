@@ -5,7 +5,7 @@ test_that("bln_format_gtclass works", {
       B_GWL_GHG = c(5, 16, 135, 34, 41, 98),
       B_GWL_GLG = c(41, 60, 157, 156, 55, 135)
     ),
-    expected = c("I", "II", "VII", "Vb", "-", "VII"),
+    expected = c("I", "II", "VII", "Vb", "IIb", "VII"),
     tolerance = 0
   )
 })
