@@ -25,38 +25,44 @@ bln_format_gtclass <- function(B_GWL_GHG, B_GWL_GLG) {
   checkmate::assert_true(all(B_GWL_GHG < B_GWL_GLG))
 
   # Make internal table
-  dt = data.table(B_GWL_GHG = B_GWL_GHG, B_GWL_GLG = B_GWL_GLG)
+  dt <- data.table(B_GWL_GHG = B_GWL_GHG, B_GWL_GLG = B_GWL_GLG)
 
   # Classification is based on the article:
   # Knotters, M., Walvoort., D., Brouwer, .F, Stuyt, L., Okx, J. (2018). Landsdekkende, actuele informatie
   # over grondwatertrappen digitaal beschikbaar. KNW, Den Haag.
 
   # GW classes range from I to VIII, with 'a' and 'b' as a sub categorization.
-
   dt[, B_GWL_CLASS := '-']
 
+  # set Gt class for wet soils (I-II-III)
   dt[B_GWL_GHG < 40 & B_GWL_GLG < 50, B_GWL_CLASS := 'I']
-
   dt[B_GWL_GHG < 25 & B_GWL_GLG >= 50 & B_GWL_GLG < 80, B_GWL_CLASS := 'II']
-  dt[B_GWL_GHG >= 25 & B_GWL_GHG < 40 & B_GWL_GLG >= 50 & B_GWL_GLG < 80, B_GWL_CLASS := 'IIb']
-
+  dt[B_GWL_GHG >= 25 & B_GWL_GHG <= 40 & B_GWL_GLG >= 50 & B_GWL_GLG < 80, B_GWL_CLASS := 'IIb']
+  dt[B_GWL_GHG > 40 & B_GWL_GLG >= 50 & B_GWL_GLG < 80, B_GWL_CLASS := 'IIb'] # IIc originally
   dt[B_GWL_GHG < 40 & B_GWL_GLG >= 80 & B_GWL_GLG < 120, B_GWL_CLASS := 'III']
-    dt[B_GWL_GHG < 25 & B_GWL_GLG >= 80 & B_GWL_GLG < 120, B_GWL_CLASS := 'IIIa']
-    dt[B_GWL_GHG >= 25 & B_GWL_GHG < 40 & B_GWL_GLG >= 80 & B_GWL_GLG < 120, B_GWL_CLASS := 'IIIb']
+  dt[B_GWL_GHG < 25 & B_GWL_GLG >= 80 & B_GWL_GLG < 120, B_GWL_CLASS := 'IIIa']
+  dt[B_GWL_GHG >= 25 & B_GWL_GHG < 40 & B_GWL_GLG >= 80 & B_GWL_GLG < 120, B_GWL_CLASS := 'IIIb']
 
+  # set Gt class for intermediate soils (IV-V-VI)
   dt[B_GWL_GHG >= 40 & B_GWL_GLG >= 80 & B_GWL_GLG < 120, B_GWL_CLASS := 'IV']
-
   dt[B_GWL_GHG < 40 & B_GWL_GLG >= 120, B_GWL_CLASS := 'V']
-    dt[B_GWL_GHG < 25 & B_GWL_GLG >= 120, B_GWL_CLASS := 'Va']
-    dt[B_GWL_GHG >= 25 & B_GWL_GHG < 40 & B_GWL_GLG >= 120, B_GWL_CLASS := 'Vb']
-
+  dt[B_GWL_GHG < 25 & B_GWL_GLG >= 120, B_GWL_CLASS := 'Va']
+  dt[B_GWL_GHG >= 25 & B_GWL_GHG < 40 & B_GWL_GLG >= 120, B_GWL_CLASS := 'Vb']
   dt[B_GWL_GHG >= 40 & B_GWL_GHG < 80 & B_GWL_GLG >= 120, B_GWL_CLASS := 'VI']
 
+  # set Gt class for dry soils (VII-VIII)
   dt[B_GWL_GHG >= 80 & B_GWL_GHG < 140 & B_GWL_GLG >= 120, B_GWL_CLASS := 'VII']
-
   dt[B_GWL_GHG >= 140 & B_GWL_GLG >= 120, B_GWL_CLASS := 'VIII']
 
+  # overwrite "-" when its clear dry soils
+  dt[B_GWL_GHG >= 140 & B_GWL_CLASS == '-', B_GWL_CLASS := 'VIII']
+  dt[B_GWL_GHG >= 80 & B_GWL_GHG < 140 & B_GWL_CLASS == '-', B_GWL_CLASS := 'VII']
+  dt[B_GWL_GLG <= 50 & B_GWL_CLASS == '-', B_GWL_CLASS := 'I']
+
+  # select GT class
   value = dt[, B_GWL_CLASS]
+
+  # return value
   return(value)
 
 }
