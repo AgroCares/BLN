@@ -219,3 +219,119 @@
   # save updated SOMERS table for use in BLN package
   usethis::use_data(bln_scen_croprotation,overwrite = TRUE)
 
+# make table with parameter names of input variables
+
+  # make vector with all input for bln_field
+  colsp <- c('B_LU_BRP','B_SC_WENR','B_GWL_CLASS','B_SOILTYPE_AGR','B_HELP_WENR','B_AER_CBS','B_GWL_GLG','B_GWL_GHG',
+             'B_GWL_ZCRIT','B_DRAIN','B_FERT_NORM_FR','B_SLOPE_DEGREE','B_GWP','B_AREA_DROUGHT',
+             'B_CT_PSW','B_CT_NSW','B_CT_PSW_MAX','B_CT_NSW_MAX','B_SOMERS_BC','B_DRAIN_SP','B_DRAIN_WP',
+             'A_SOM_LOI','A_SOM_LOI_MLMAX','A_CLAY_MI','A_SAND_MI','A_SILT_MI','A_DENSITY_SA',
+             'A_FE_OX','A_AL_OX','A_PH_CC','A_N_RT','A_CN_FR','A_S_RT','A_N_PMN','A_P_AL','A_P_CC','A_P_WA',
+             'A_P_SG','A_CEC_CO','A_CA_CO_PO','A_MG_CO_PO','A_K_CO_PO','A_K_CC','A_MG_CC','A_MN_CC',
+             'A_ZN_CC','A_CU_CC','A_EW_BCS','A_SC_BCS','A_GS_BCS','A_P_BCS','A_C_BCS','A_RT_BCS','A_RD_BCS','A_SS_BCS','A_CC_BCS',
+             'D_SA_W','D_RO_R','M_COMPOST','M_GREEN','M_NONBARE','M_EARLYCROP','M_SLEEPHOSE','M_DRAIN','M_DITCH',
+             'M_UNDERSEED','M_LIME','M_NONINVTILL','M_SSPM','M_SOLIDMANURE','M_STRAWRESIDUE','M_MECHWEEDS',
+             'M_PESTICIDES_DST')
+
+  # select properties and description from pandex
+  dp <- pandex::nmi_parameters
+  dp <- dp[code %in% colsp,.(code,parameter,data_type,value_min,value_max)]
+
+  # add missing ones (not yet in pandex)
+  dp.missing <- data.table(code = c("B_DRAIN","B_SOMERS_BC","B_DRAIN_SP","B_DRAIN_WP","A_SOM_LOI_MLMAX"),
+                           parameter = c('Are drains installed to drain the field',
+                                         'The base combination of SOMERS peat soil classification',
+                                         'The drooglegging of a field in summer (difference field height and ditch level, in meters)',
+                                         'The drooglegging of a field in winter (difference field height and ditch level, in meters)',
+                                         'The max. percentage organc matter estimated via machine learning model (/%)'),
+                           data_type = c('bool','int','num','num','num'),
+                           value_min = c(NA,1,0,0,0),
+                           value_max = c(NA,290,3,3,100))
+  dp <- rbind(dp,dp.missing)
+
+  # add basic properties
+  dp.missing <- data.table(code = c('ID','B_LSW_ID','LSW'),
+                           parameter = c('field id, unique identifier for a field',
+                                         'the id for the local surface water geometry where the field is located',
+                                         'the LSW database with mean properties per Local Surface Water'),
+                           data_type = c('char','char','data.table'),
+                           value_min = c(NA,NA,NA),
+                           value_max = c(NA,NA,NA))
+  dp <- rbind(dp,dp.missing)
+
+  # copy as bln_column_description
+  bln_input_description <- copy(dp)
+
+  # save updated SOMERS table for use in BLN package
+  usethis::use_data(bln_input_description,overwrite = TRUE)
+
+# make object with bln output variables
+
+  cols <- c("i_b_di","i_b_sf","i_c_k","i_c_mg","i_c_n","i_c_p","i_c_ph","i_c_s",
+            "i_p_as","i_p_co","i_p_cr","i_p_ds","i_p_du","i_p_ro","i_p_se","i_p_whc","i_p_wo","i_p_ws",
+            "i_clim_csat"  ,"i_clim_osb","i_clim_rothc", "i_clim_somers",
+            "i_gw_gwr","i_gw_ngw","i_gw_nlea","i_gw_nret","i_gw_pest","i_gw_wb",
+            "i_nut_k","i_nut_n","i_nut_nue","i_nut_p",
+            "i_sw_nret","i_sw_nro","i_sw_nsw","i_sw_psw",
+            's_bln_esd_clim','s_bln_esd_nut', 's_bln_esd_prod', 's_bln_esd_water', 's_bln_prod_b', 's_bln_prod_c','s_bln_prod_p', 's_bln_clim',
+            's_bln_gw_quality', 's_bln_gw_quantity', 's_bln_nut', 's_bln_sw_quality', 's_bln_total')
+
+  colsnames <- c('The soil indicator value reflecting distance to target for disease supressiveness in view of crop production',
+                'The soil indicator value reflecting distance to target for soil microbial activity in view of crop production',
+                'The soil indicator value reflecting distance to target for potassium supply in view of crop production',
+                'The soil indicator value reflecting distance to target for magnesium supply in view of crop production',
+                'The soil indicator value reflecting distance to target for nitrogen supply in view of crop production',
+                'The soil indicator value reflecting distance to target for phosphorus supply in view of crop production',
+                'The soil indicator value reflecting distance to target for soil pH in view of crop production',
+                'The soil indicator value reflecting distance to target for sulfur supply in view of crop production',
+                'The soil indicator value reflecting distance to target for aggregate stability in view of crop production',
+                'The soil indicator value reflecting distance to target for subsoil compaction in view of crop production',
+                'The soil indicator value reflecting distance to target for crumbleability in view of crop production',
+                'The soil indicator value reflecting distance to target for drought stress in view of crop production',
+                'The soil indicator value reflecting distance to target for wind erodibility in view of crop production',
+                'The soil indicator value reflecting distance to target for rootability in view of crop production',
+                'The soil indicator value reflecting distance to target for topsoil sealing in view of crop production',
+                'The soil indicator value reflecting distance to target for water retention in view of crop production',
+                'The soil indicator value reflecting distance to target for workability in view of crop production',
+                'The soil indicator value reflecting distance to target for water stress in view of crop production',
+                'The soil indicator value reflecting distance to target for carbon saturation in mineral soils in view carbon sequestration potential using DL model',
+                'The soil indicator value reflecting distance to target for carbon soil balance in view carbon sequestration potential',
+                'The soil indicator value reflecting distance to target for carbon saturation in mineral soils in view carbon sequestration potential using RothC model',
+                'The soil indicator value reflecting distance to target for carbon saturation in peat soils in view carbon sequestration potential using SOMERS model',
+                'The soil indicator value reflecting distance to target for OBICs groundwater recharge in view of groundwater regulation and purification',
+                'The soil indicator value reflecting distance to target for BBWPs nitrogen leaching risks in view of groundwater regulation and purification',
+                'The soil indicator value reflecting distance to target for OBICs nitrogen leaching risks in view of groundwater regulation and purification',
+                'The soil indicator value reflecting distance to target for OBICs topsoil nitrogen retention in view of groundwater regulation and purification',
+                'The soil indicator value reflecting distance to target for OBICs pesticide leaching in view of groundwater regulation and purification',
+                'The soil indicator value reflecting distance to target for BBWPs topsoil water retention in view of groundwater regulation and purification',
+                'The soil indicator value reflecting distance to target for potassium use efficiency in view of nutrient recycling and reuse',
+                'The soil indicator value reflecting distance to target for nitrogen use efficiency in view of nutrient recycling and reuse',
+                'The soil indicator value reflecting distance to target for BBWPs nutrient use efficiency in view of nutrient recycling and reuse',
+                'The soil indicator value reflecting distance to target for phosphorus use efficiency in view of nutrient recycling and reuse',
+                'The soil indicator value reflecting distance to target for OBICs nitrogen runoff risks in view of surface water regulation and purification',
+                'The soil indicator value reflecting distance to target for OBICs nitrogen retention in view of surface water regulation and purification',
+                'The soil indicator value reflecting distance to target for BBWPs nitorgen runoff risk in view of surface water regulation and purification',
+                'The soil indicator value reflecting distance to target for BBWPs phosphorus runoff risk in view of surface water regulation and purification',
+                'The BLN soil quality score for the ecosystem service carbon sequestration and climate regulation',
+                'The BLN soil quality score for the ecosystem service nutrient recycling and reuse',
+                'The BLN soil quality score for the ecosystem service crop production',
+                'The BLN soil quality score for the ecosystem service water regulation and purification',
+                'The aggregated soil indicator value for biological soil functions supporting crop production',
+                'The aggregated soil indicator value for chemical soil functions supporting crop production',
+                'The aggregated soil indicator value for physical soil functions supporting crop production',
+                'The aggregated soil indicator value for soil functions supporting carbon sequestration and climate regulation',
+                'The aggregated soil indicator value for soil functions supporting groundwater regulation',
+                'The aggregated soil indicator value for soil functions supporting groundwater purification',
+                'The aggregated soil indicator value for soil functions supporting nutrient recycling and reuse',
+                'The aggregated soil indicator value for soil functions supporting surface water purification',
+                'The total BLN soil quality score')
+
+  # make output description
+  dp <- data.table(code = cols,
+                   parameter = colsnames)
+
+  # copy as bln_column_description
+  bln_output_description <- copy(dp)
+
+  # save updated SOMERS table for use in BLN package
+  usethis::use_data(bln_output_description,overwrite = TRUE)
