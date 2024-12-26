@@ -1,0 +1,53 @@
+---
+title: "Description of the input and output for BLN"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{bln_column_description}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+
+```{r setup}
+library(BLN)
+```
+
+## BLN input variables
+The main function of the package `bln_field()` requires as input a series of soil properties required to assess the soil quality. 
+The required input columns are specified in `BLN::bln_input_description` and can also be seen in the table below.
+
+Note that not all parameters are required. Optional parameters incude:
+* measurements retreived from the Soil Condition Score, a manual soil profile assessment. These include all input variables ending with `_BCS`.
+* variables related to soil management measures. These include all input variables starting with `M_`
+* variables related to the targets for N and P being defined per Local Surface Water (LSW). These include the variables B_LSW_ID (set at NA), B_CT_PSW_MAX (set at 0.5), B_CT_NSW_MAX (set at 5.0) and the data.table with mean properties per LSW (object LSW, set at NULL). 
+
+Note also that by default the function is not (re)calculating the C saturation via machine learning (ML) models or the RothC model due to time restrictions. This implies the following:
+* by default the C-saturation via ML model is approximated via a simple linear regression model. This is done when `A_SOM_LOI_MLMAX` is set to NA. If the user has acces to a ML model, then this argument can be overwritten by the user.
+* by default the C-saturation for mineral soils, being estimated via RothC simulation modelling is set to NA. This is done when argument `i_clim_rothc` is set to NA and the variable runrothc = FALSE. 
+* to rerun RothC one should set runrothc to TRUE. When mc is set to TRUE then it is calculated using multi-core processing. 
+
+
+```{r table input}
+desc <- BLN::bln_input_description
+knitr::kable(desc)
+```
+
+## BLN output variables
+When the function bln_field has been used to assess the quality of the soil, then by default all soil indicators and BLN soil quality scores are calculated. A soil indicator is a number varying between zero (value 0) and one (value 1) expressing the distance to target. The target is met when the distance equals to 1. There are serious bottlenecks when the indicator value approaches zero. Similarly, a high score represents a high soil quality. Soil quality scores are basically a weighted mean of a subset of soil indicators, where the weighing procedure accounts for the distance to target.
+
+All output variables are listed in the table below
+
+
+```{r table output}
+outdesc <- BLN::bln_output_description
+knitr::kable(outdesc)
+```
+
