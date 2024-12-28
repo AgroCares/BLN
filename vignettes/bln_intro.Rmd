@@ -11,9 +11,7 @@ vignette: >
 
 ```{r setup, include=FALSE}
 require(data.table)
-#require(ggplot2)
 require(BLN)
-#require(patchwork)
 knitr::opts_chunk$set(echo = FALSE,
                       collapse = TRUE,
                       comment = "#>")
@@ -23,20 +21,107 @@ setDTthreads(1)
 
 
 ## BLN introduction
+The crucial role of healthy soil in achieving sustainable food production and environment is increasingly recognized, as is the importance of proper assessment of soil quality. Healthy soils are not just a growing medium for crops, but they regulate and support essential ecosystem services, such as water purification, carbon sequestration, and nutrient cycling, and they provide habitats for biodiversity. Improving and sustaining soil health are therefore key to sustainable crop production. To date, many attempts have been made to develop indices for assessing soil health, but an operational and reproducible methodology to assess soil health has not been developed so far. There is a broad consensus that multiple aspects of soils (e.g., chemistry, structure, and biology) and their interactions need to be considered. Further, various approaches have been proposed to translate soil attributes into indicators and aggregate them into an index, including (advanced) statistical methods and refined expert knowledge systems. These approaches however are often highly dependent on costly soil measures, are difficult to interpret, and not easily applicable across spatial scales, ranging from field to regions. To overcome these challenges, Ros et al. (2021) introduced a new soil assessment framework, being the open soil index (OSI). The OSI builds on extensive soil and agronomic research to maintain a direct link to the objective (which is sustainable crop production), leverages routine laboratory data and public databases to make its large-scale application affordable, has a modular design to allow for easy adjustment and expansion, is developed in an open-source environment to assure transparency, and provides advice for field-level farming practices. In this way, OSI strives to provide an operational soil assessment that valorizes soil health and therewith promote sustainable soil management.
 
-This vignette will give you a short introduction on the BLN package.
-Text will follow later
+From 2021 onwards, soil scientists, agronomy researchers, farm advisors and extension service providers collaborated to expand the OSI approach to include multiple ecosystem services. Where the OSI strongly focuses on the interpretion of soil health in view of crop production, many other ecosystem services are recognized as crucial societal objectives that soil can contribute.Relevant soil ecosystem services from the Sustainable Development Goals (SDGs) include not only delivery of
+healthy food (SDG2 and SDG3) but also clean and sufficient water (SDG6), the mitigation of climate (SDG13), and the
+support for biodiversity and protection of land degradation (SDG15). Engaging farmers to consider these SDGs requires
+extension of the framework to include more environmental soil functions. The newly developed framework follows the conceptual approach of the OSI and expands the soil health assessment in view of these ecosystem services. A full description is given in the (Dutc) report `Bodemindicatoren Landbouwgronden in Nederland`, and implemented in this BLN R package. This tutorial gives a short explanation of the packaage focussing on the main functionalities of the R package.
 
+## Importing dataset for research farm
+We start with some (virtual) data being collected for one of the research farms in the Netherlands: de Marke. This husbandry farm is located in the Eastern part of the Netherlands, characterised by drought sensitive sandy soils, and the main land use is grassland and maize.
+
+The dataset contains soil properties from 29 agricultural fields and is documented in `?bln_farm_hf`. More information on the input and ouput variables for BLN are documented in a separte vignette `bln_column_description`.
 
 ```{r make data}
 
-# make data table
- 
-dt <- data.table(test= 1:3)
+# select the data for de Mare farm
+dt <- BLN::bln_farm_hf
+
+# remove unique field identifier (for visual clarity)
+dt[, ref_id_2022 := NULL]
+
+# show the first line with all properties for a single field and latest year
+print(dt[1])
 
 ```
 
+## calculate BLN for a single field
+Lets see how to assess the soil quality for a single field. First select the first field. This is basically a subset of the farm and contains all soil and field properties for the last 11 years. We subsequently use the function `bln_field()` to calculate the different soil indicators and soil scores. We start with a request for the soil indicators  
 
-```{r show dt}
-#knitr::kable(dt, format = 'html')
+
+```{r make sim1}
+
+# select the data for de Mare farm
+dt.field <- dt[id==1]
+
+# calculate the BLN indicator values
+out <- bln_field(ID = dt.field$ref_id_2022,
+                  B_LU_BRP = dt.field$B_LU_BRP,
+                  B_SC_WENR = dt.field$B_SC_WENR,
+                  B_GWL_CLASS = dt.field$B_GWL_CLASS,
+                  B_SOILTYPE_AGR = dt.field$B_SOILTYPE_AGR,
+                  B_HELP_WENR = dt.field$B_HELP_WENR,
+                  B_AER_CBS = dt.field$B_AER_CBS,
+                  B_GWL_GLG = dt.field$B_GWL_GLG,
+                  B_GWL_GHG = dt.field$B_GWL_GHG,
+                  B_GWL_ZCRIT = dt.field$B_GWL_ZCRIT,
+                  B_DRAIN = dt.field$B_DRAIN,
+                  B_FERT_NORM_FR = dt.field$B_FERT_NORM_FR,
+                  B_SLOPE_DEGREE = dt.field$B_SLOPE_DEGREE,
+                  B_GWP = dt.field$B_GWP,
+                  B_AREA_DROUGHT = dt.field$B_AREA_DROUGHT,
+                  B_CT_PSW = dt.field$B_CT_PSW,
+                  B_CT_NSW = dt.field$B_CT_NSW,
+                  B_CT_PSW_MAX =0.5,
+                  B_CT_NSW_MAX = 5.0,
+                  B_SOMERS_BC = NA_real_,
+                  B_DRAIN_SP = NA_real_,
+                  B_DRAIN_WP = NA_real_,
+                  A_SOM_LOI = dt.field$A_SOM_LOI,
+                  A_SOM_LOI_MLMAX = dt.field$a_som_loi_csat_top,
+                  A_CLAY_MI = dt.field$A_CLAY_MI,
+                  A_SAND_MI = dt.field$A_SAND_MI,
+                  A_SILT_MI = dt.field$A_SILT_MI,
+                  A_DENSITY_SA = NA_real_,
+                  A_FE_OX = dt.field$A_FE_OX,
+                  A_AL_OX = dt.field$A_AL_OX,
+                  A_PH_CC = dt.field$A_PH_CC,
+                  A_N_RT = dt.field$A_N_RT,
+                  A_CN_FR = dt.field$A_CN_FR,
+                  A_S_RT = dt.field$A_S_RT,
+                  A_N_PMN = dt.field$A_N_PMN,
+                  A_P_AL = dt.field$A_P_AL,
+                  A_P_CC = dt.field$A_P_CC,
+                  A_P_WA = dt.field$A_P_WA,
+                  A_P_SG = dt.field$A_P_SG,
+                  A_CEC_CO = dt.field$A_CEC_CO,
+                  A_CA_CO_PO = dt.field$A_CA_CO_PO,
+                  A_MG_CO_PO = dt.field$A_MG_CO_PO,
+                  A_K_CO_PO = dt.field$A_K_CO_PO,
+                  A_K_CC = dt.field$A_K_CC,
+                  A_MG_CC = dt.field$A_MG_CC,
+                  A_MN_CC = dt.field$A_MN_CC,
+                  A_ZN_CC = dt.field$A_ZN_CC,
+                  A_CU_CC = dt.field$A_CU_CC,
+                  A_EW_BCS = NA,A_SC_BCS = NA,A_GS_BCS = NA,A_P_BCS = NA,A_C_BCS = NA,
+                  A_RT_BCS = NA,A_RD_BCS = NA,A_SS_BCS = NA,A_CC_BCS = NA,
+                  D_SA_W = dt.field$D_SA_W,
+                  D_RO_R = dt.field$D_RO_R,
+                  M_COMPOST = NA_real_,M_GREEN = NA,M_NONBARE = NA,M_EARLYCROP = NA,
+                  M_SLEEPHOSE = NA,M_DRAIN = NA,M_DITCH = NA,M_UNDERSEED = NA,
+                  M_LIME = NA,M_NONINVTILL = NA,M_SSPM = NA,M_SOLIDMANURE = NA,
+                  M_STRAWRESIDUE = NA,M_MECHWEEDS = NA,M_PESTICIDES_DST = NA,
+                  B_LSW_ID = NA_character_,LSW = NULL, output ='indicators',
+                  runrothc = TRUE,
+                  mc = FALSE)
+
+# show the first line with all properties for a single field and latest year
+print(dt[1])
+
+# add a few variables to de Marke farm (needs an update)
+dt.field[,ID := id]
+dt.field[,c("B_SOMERS_BC","B_DRAIN_SP","B_DRAIN_WP") := NA_real_]
+
+
 ```
