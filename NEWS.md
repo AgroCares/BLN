@@ -1,3 +1,19 @@
+# BLN 0.5.0 2024-12-30
+
+# Added
+- vignette `bln_intro` given a short intro to the package and the main function to assess soil quality
+- vignette `bln_column_description` describing all inputs and outputs of the BLN package
+- internal package tables for `bln_input_description` and `bln_output_description`
+- wrapper function `bln_field_dt` to apply the `bln_field` function on a data.table
+- checkmate on argument `output` in `bln_field`
+- add ignore to vignettes to avoid synchronize html pages with git
+
+# Fixed
+- ensure that `B_LSW_ID` in the wrapper function `bln_field` is always converted to character
+
+# Updated
+- `bln_lsw_farm_hf` table 
+
 # BLN 0.4.0 2024-12-24
 
 ## Added
