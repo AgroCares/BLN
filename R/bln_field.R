@@ -526,6 +526,9 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
 #' @export
 bln_field_dt <- function(dt, LSW = NULL,output ='all', runrothc = FALSE, mc = FALSE){
 
+  # add visual bindings
+  A_DENSITY_SA = A_SOM_LOI_MLMAX = B_CT_NSW_MAX = B_CT_PSW_MAX = B_LSW_ID = M_COMPOST = a_som_loi_csat_top = NULL
+
   # check the input names
   checkmate::assert_data_table(dt)
 
