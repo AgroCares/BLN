@@ -36,7 +36,7 @@ The dataset contains soil properties from 29 agricultural fields and is document
 ```{r make data}
 
 # select the data for de Mare farm
-dt <- BLN::bln_farm_hf
+dt <- copy(BLN::bln_farm_hf)
 
 # remove unique field identifier (for visual clarity)
 dt[, ref_id_2022 := NULL]
@@ -47,16 +47,16 @@ print(dt[1])
 ```
 
 ## calculate BLN for a single field
-Lets see how to assess the soil quality for a single field. First select the first field. This is basically a subset of the farm and contains all soil and field properties for the last 11 years. We subsequently use the function `bln_field()` to calculate the different soil indicators and soil scores. We start with a request for the soil indicators  
+Lets see how to assess the soil quality for a single field. First select the first field given a crop rotation scheme for 11 years. This is basically a subset of the farm and contains all soil and field properties for the last 11 years, from 2012 up to 2022. We subsequently use the function `bln_field()` to calculate the different soil indicators and soil scores. We start with a request for the soil indicators.  
 
 
 ```{r make sim1}
 
-# select the data for de Mare farm
+# select the data for the first field of de Marke farm
 dt.field <- dt[id==1]
 
-# calculate the BLN indicator values
-out <- bln_field(ID = dt.field$ref_id_2022,
+# calculate the BLN indicator values for that field
+out <- bln_field(ID = dt.field$id,
                   B_LU_BRP = dt.field$B_LU_BRP,
                   B_SC_WENR = dt.field$B_SC_WENR,
                   B_GWL_CLASS = dt.field$B_GWL_CLASS,
@@ -117,11 +117,50 @@ out <- bln_field(ID = dt.field$ref_id_2022,
                   mc = FALSE)
 
 # show the first line with all properties for a single field and latest year
-print(dt[1])
+print(dt[id==1 & year==2022])
+
+
+```
+
+
+To simplify, one can also use a data.table as input. In that case use the function `bln_field_dt()`. The function checks whether all desired input variables are present. By default is the option to calculate the C saturation with RothC switched off. Again, only the indicators are calculated.
+
+
+```{r make sim2}
+
+# select the data for de Marke farm
+dt.field <- dt[id==1]
 
 # add a few variables to de Marke farm (needs an update)
 dt.field[,ID := id]
 dt.field[,c("B_SOMERS_BC","B_DRAIN_SP","B_DRAIN_WP") := NA_real_]
 
+# calculate the BLN indicator values excluding RothC and LSW = NULL
+out <- bln_field_dt(dt.field, output = 'indicators')
+
+# calculate the BLN indicator values including RothC and associated LSW table
+out <- bln_field_dt(dt.field, LSW = BLN::bln_lsw_farm_hf,output = 'indicators', runrothc = TRUE)
+
+# print the names of the output object
+print(colnames(out))
 
 ```
+
+To ask for the BLN scores, summarizing the contribution of the soil to various ecosystem services, one can ask for the scores as output. Just replace the argument output with `scores` rather than `indicators`. It is also possible to ask for both: just set the argument output equal to `all`, being the default option. 
+
+
+
+```{r make sim3}
+
+# calculate the BLN scoring values for the ecosystem services, without calculating C saturation with RothC
+out <- bln_field_dt(dt.field, output = 'scores')
+
+# calculate the BLN indicator and scoring values including RothC calculations
+out <- bln_field_dt(dt.field, output = 'all', runrothc = TRUE)
+
+# print the output object
+print(out)
+```
+
+
+
