@@ -181,7 +181,7 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
                    M_SLEEPHOSE = M_SLEEPHOSE,M_DRAIN = M_DRAIN,M_DITCH = M_DITCH,M_UNDERSEED = M_UNDERSEED,
                    M_LIME = M_LIME,M_NONINVTILL = M_NONINVTILL,M_SSPM = M_SSPM,M_SOLIDMANURE = M_SOLIDMANURE,
                    M_STRAWRESIDUE = M_STRAWRESIDUE,M_MECHWEEDS = M_MECHWEEDS,M_PESTICIDES_DST = M_PESTICIDES_DST,
-                   B_LSW_ID = B_LSW_ID,
+                   B_LSW_ID = as.character(B_LSW_ID),
                    i_clim_rothc = i_clim_rothc)
 
   # check formats B_SC_WENR and B_GWL_CLASS
@@ -215,6 +215,9 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
               "B_FE_OX","B_AL_OX","B_SA_W","B_RO_R","B_SOM_LOI_SD", "B_CLAY_MI_SD", "B_SAND_MI_SD", "B_SILT_MI_SD", "B_N_RT_SD","B_P_AL_SD","B_P_CC_SD",
               "B_P_WA_SD","B_P_SG_SD","B_FE_OX_SD","B_AL_OX_SD","B_SA_W_SD","B_RO_R_SD")
 
+    # replace oow_id with B_LSW_ID
+    setnames(LSW,old = c('oow_id'),new = 'B_LSW_ID',skip_absent = TRUE)
+
     # get all B_LSW_ID
     this.lsw <- B_LSW_ID
 
@@ -233,6 +236,10 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
 
   # set internal data.table
   dt <- merge(dt, LSW, by = 'B_LSW_ID',all.x = TRUE)
+
+  # set checks
+  checkmate::assert_character(output,len=1)
+  checkmate::assert_subset(output,choices = c('indicators','all','scores'))
 
 # --- step 2. calculate BLN indicators ----
 
@@ -494,8 +501,8 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
 
   # prepare output, with default
   if(output == 'all') {out <- merge(out.ind,out.score.bln,by='ID',all.x=TRUE)}
-  if(output == 'score'){out <- copy(out.score.bln)}
-  if(output == 'indicator'){out <- copy(out.ind)}
+  if(output == 'scores'){out <- copy(out.score.bln)}
+  if(output == 'indicators'){out <- copy(out.ind)}
 
   # return output
   return(out)
@@ -529,6 +536,9 @@ bln_field_dt <- function(dt, LSW = NULL,output ='all', runrothc = FALSE, mc = FA
   if(!'A_SOM_LOI_MLMAX' %in% colnames(dt)){dt[,A_SOM_LOI_MLMAX := NA_real_]}
   if(!'A_DENSITY_SA' %in% colnames(dt)){dt[,A_DENSITY_SA := NA_real_]}
   if(!'B_LSW_ID' %in% colnames(dt)){dt[,B_LSW_ID := NA_character_]}
+
+  # chnage B_LSW_ID into character
+  dt[,B_LSW_ID := as.character(B_LSW_ID)]
 
   # check whether all input variables are present
   colsp <- c('ID','B_LU_BRP','B_SC_WENR','B_GWL_CLASS','B_SOILTYPE_AGR','B_HELP_WENR','B_AER_CBS','B_GWL_GLG','B_GWL_GHG',
