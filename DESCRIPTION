@@ -35,5 +35,8 @@ Suggests:
     testthat (>= 2.1.0),
     knitr,
     rmarkdown,
-    covr
+    covr,
+    sf,
+    ggplot2,
+    patchwork
 VignetteBuilder: knitr
