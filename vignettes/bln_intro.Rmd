@@ -45,7 +45,7 @@ We start with some (virtual) data being collected for one of the research farms 
 s1 <- copy(BLN::bln_farm_hf)
 
 # make a spatial object from the farm, only latest year
-s1 <- sf::st_as_sf(s1[year==2022,.(id,geom)])
+s1 <- st_as_sf(s1[year==2022,.(id,geom)])
 
 # show the first line with all properties for a single field and latest year
 p1 <- ggplot(data=s1) + 
