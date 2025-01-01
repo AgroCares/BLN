@@ -1,4 +1,4 @@
-# BLN 0.5.0 2024-12-30
+# BLN 0.5.0 2025-01-01
 
 ## Added
 - vignette `bln_intro` given a short intro to the package and the main function to assess soil quality
