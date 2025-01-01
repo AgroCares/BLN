@@ -420,6 +420,9 @@ lsw.nl <- data.table(B_LSW_ID = 'lsw_nlmean', B_SOM_LOI = 8.65,B_CLAY_MI = 15.8,
                      B_P_WA_SD = 15.6,B_P_SG_SD = 14,B_FE_OX_SD = 59,B_AL_OX_SD = 19,B_RO_R_SD = 0.3,B_SA_W_SD = 0.33)
 dt.lsw.extr <- rbind(dt.lsw.extr,lsw.nl)
 
+# change ID into character
+dt.lsw.extr[,B_LSW_ID := as.character(B_LSW_ID)]
+
 # save LSW data
 bln_lsw_farm_hf <- copy(dt.lsw.extr)
 

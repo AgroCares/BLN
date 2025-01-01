@@ -40,6 +40,7 @@ bln_c_sulfur <- function(B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS,A_SOM_LOI,A_S_RT) {
   dt <- data.table(id = 1:arg.length,
                    B_LU_BRP = B_LU_BRP,
                    B_SOILTYPE_AGR = B_SOILTYPE_AGR,
+                   B_AER_CBS = B_AER_CBS,
                    A_SOM_LOI = A_SOM_LOI,
                    A_S_RT = A_S_RT,
                    i_c_s = NA_real_

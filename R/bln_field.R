@@ -181,7 +181,7 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
                    M_SLEEPHOSE = M_SLEEPHOSE,M_DRAIN = M_DRAIN,M_DITCH = M_DITCH,M_UNDERSEED = M_UNDERSEED,
                    M_LIME = M_LIME,M_NONINVTILL = M_NONINVTILL,M_SSPM = M_SSPM,M_SOLIDMANURE = M_SOLIDMANURE,
                    M_STRAWRESIDUE = M_STRAWRESIDUE,M_MECHWEEDS = M_MECHWEEDS,M_PESTICIDES_DST = M_PESTICIDES_DST,
-                   B_LSW_ID = B_LSW_ID,
+                   B_LSW_ID = as.character(B_LSW_ID),
                    i_clim_rothc = i_clim_rothc)
 
   # check formats B_SC_WENR and B_GWL_CLASS
@@ -215,6 +215,9 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
               "B_FE_OX","B_AL_OX","B_SA_W","B_RO_R","B_SOM_LOI_SD", "B_CLAY_MI_SD", "B_SAND_MI_SD", "B_SILT_MI_SD", "B_N_RT_SD","B_P_AL_SD","B_P_CC_SD",
               "B_P_WA_SD","B_P_SG_SD","B_FE_OX_SD","B_AL_OX_SD","B_SA_W_SD","B_RO_R_SD")
 
+    # replace oow_id with B_LSW_ID
+    setnames(LSW,old = c('oow_id'),new = 'B_LSW_ID',skip_absent = TRUE)
+
     # get all B_LSW_ID
     this.lsw <- B_LSW_ID
 
@@ -233,6 +236,10 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
 
   # set internal data.table
   dt <- merge(dt, LSW, by = 'B_LSW_ID',all.x = TRUE)
+
+  # set checks
+  checkmate::assert_character(output,len=1)
+  checkmate::assert_subset(output,choices = c('indicators','all','scores'))
 
 # --- step 2. calculate BLN indicators ----
 
@@ -494,10 +501,152 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
 
   # prepare output, with default
   if(output == 'all') {out <- merge(out.ind,out.score.bln,by='ID',all.x=TRUE)}
-  if(output == 'score'){out <- copy(out.score.bln)}
-  if(output == 'indicator'){out <- copy(out.ind)}
+  if(output == 'scores'){out <- copy(out.score.bln)}
+  if(output == 'indicators'){out <- copy(out.ind)}
 
   # return output
   return(out)
 
+}
+
+
+#' Calculate the BLN score for one field using a data.table as input
+#'
+#' This functions wraps the functions of the BLN2 into one main function to calculate the soil quality score for a single field. Whereas the function `bln_field` requires all variables as separate inputs, the function `bln_field_dt` allows one to send in a data.table
+#'
+#' @param dt (data.table) A data.table with all input required to calculate BLN on field level
+#' @param LSW (data.table) The averaged soil properties (mean and sd) per Local Surface Water. Can be derived from bbwp_lsw_properties.
+#' @param output (character) An optional argument to select output: scores, indicators, or all. (default = all)
+#' @param runrothc (boolean) An argument to switch off rothc calculations due to running time (default: FALSE)
+#' @param mc (boolean) option to run rothc in parallel on multicores
+#'
+#' @import OBIC
+#' @import carboncastr
+#'
+#' @export
+bln_field_dt <- function(dt, LSW = NULL,output ='all', runrothc = FALSE, mc = FALSE){
+
+  # add visual bindings
+  A_DENSITY_SA = A_SOM_LOI_MLMAX = B_CT_NSW_MAX = B_CT_PSW_MAX = B_LSW_ID = M_COMPOST = a_som_loi_csat_top = NULL
+
+  # check the input names
+  checkmate::assert_data_table(dt)
+
+  # add default variables when missing
+  if(!'B_CT_PSW_MAX' %in% colnames(dt)){dt[,B_CT_PSW_MAX := 0.5]}
+  if(!'B_CT_NSW_MAX' %in% colnames(dt)){dt[,B_CT_NSW_MAX := 5.0]}
+  if(!'a_som_loi_csat_top' %in% colnames(dt)){dt[,A_SOM_LOI_MLMAX := a_som_loi_csat_top]}
+  if(!'A_SOM_LOI_MLMAX' %in% colnames(dt)){dt[,A_SOM_LOI_MLMAX := NA_real_]}
+  if(!'A_DENSITY_SA' %in% colnames(dt)){dt[,A_DENSITY_SA := NA_real_]}
+  if(!'B_LSW_ID' %in% colnames(dt)){dt[,B_LSW_ID := NA_character_]}
+
+  # chnage B_LSW_ID into character
+  dt[,B_LSW_ID := as.character(B_LSW_ID)]
+
+  # check whether all input variables are present
+  colsp <- c('ID','B_LU_BRP','B_SC_WENR','B_GWL_CLASS','B_SOILTYPE_AGR','B_HELP_WENR','B_AER_CBS','B_GWL_GLG','B_GWL_GHG',
+             'B_GWL_ZCRIT','B_DRAIN','B_FERT_NORM_FR','B_SLOPE_DEGREE','B_GWP','B_AREA_DROUGHT',
+             'B_CT_PSW','B_CT_NSW','B_CT_PSW_MAX','B_CT_NSW_MAX','B_SOMERS_BC','B_DRAIN_SP','B_DRAIN_WP',
+             'A_SOM_LOI','A_SOM_LOI_MLMAX','A_CLAY_MI','A_SAND_MI','A_SILT_MI','A_DENSITY_SA',
+             'A_FE_OX','A_AL_OX','A_PH_CC','A_N_RT','A_CN_FR','A_S_RT','A_N_PMN','A_P_AL','A_P_CC','A_P_WA',
+             'A_P_SG','A_CEC_CO','A_CA_CO_PO','A_MG_CO_PO','A_K_CO_PO','A_K_CC','A_MG_CC','A_MN_CC',
+             'A_ZN_CC','A_CU_CC','D_SA_W','D_RO_R')
+  checkmate::assert_true(all(colsp  %in% colnames(dt)))
+
+  # check whether visual soil assessment variables are given, and add as NA
+  cols <- c('A_EW_BCS','A_SC_BCS','A_GS_BCS','A_P_BCS','A_C_BCS','A_RT_BCS','A_RD_BCS','A_SS_BCS','A_CC_BCS')
+  cols <- cols[!cols %in% colnames(dt)]
+  if(length(cols)>0){dt[,c(cols) := NA]}
+
+  # check whether soil measures are given and add as FALSE
+  if(!'M_COMPOST' %in% colnames(dt)){dt[,M_COMPOST := NA_real_]}
+  cols <- c('M_GREEN','M_NONBARE','M_EARLYCROP','M_SLEEPHOSE','M_DRAIN','M_DITCH',
+            'M_UNDERSEED','M_LIME','M_NONINVTILL','M_SSPM','M_SOLIDMANURE','M_STRAWRESIDUE','M_MECHWEEDS',
+            'M_PESTICIDES_DST')
+  cols <- cols[!cols %in% colnames(dt)]
+  if(length(cols)>0){dt[,c(cols) := NA]}
+
+  # run BLN
+  d1 <- bln_field(ID = dt$ID,
+                  B_LU_BRP = dt$B_LU_BRP,
+                  B_SC_WENR = dt$B_SC_WENR,
+                  B_GWL_CLASS = dt$B_GWL_CLASS,
+                  B_SOILTYPE_AGR = dt$B_SOILTYPE_AGR,
+                  B_HELP_WENR = dt$B_HELP_WENR,
+                  B_AER_CBS = dt$B_AER_CBS,
+                  B_GWL_GLG = dt$B_GWL_GLG,
+                  B_GWL_GHG = dt$B_GWL_GHG,
+                  B_GWL_ZCRIT = dt$B_GWL_ZCRIT,
+                  B_DRAIN = dt$B_DRAIN,
+                  B_FERT_NORM_FR = dt$B_FERT_NORM_FR,
+                  B_SLOPE_DEGREE = dt$B_SLOPE_DEGREE,
+                  B_GWP = dt$B_GWP,
+                  B_AREA_DROUGHT = dt$B_AREA_DROUGHT,
+                  B_CT_PSW = dt$B_CT_PSW,
+                  B_CT_NSW = dt$B_CT_NSW,
+                  B_CT_PSW_MAX =dt$B_CT_PSW_MAX,
+                  B_CT_NSW_MAX = dt$B_CT_NSW_MAX,
+                  B_SOMERS_BC = dt$B_SOMERS_BC,
+                  B_DRAIN_SP = dt$B_DRAIN_SP,
+                  B_DRAIN_WP = dt$B_DRAIN_WP,
+                  A_SOM_LOI = dt$A_SOM_LOI,
+                  A_SOM_LOI_MLMAX = dt$A_SOM_LOI_MLMAX,
+                  A_CLAY_MI = dt$A_CLAY_MI,
+                  A_SAND_MI = dt$A_SAND_MI,
+                  A_SILT_MI = dt$A_SILT_MI,
+                  A_DENSITY_SA = dt$A_DENSITY_SA,
+                  A_FE_OX = dt$A_FE_OX,
+                  A_AL_OX = dt$A_AL_OX,
+                  A_PH_CC = dt$A_PH_CC,
+                  A_N_RT = dt$A_N_RT,
+                  A_CN_FR = dt$A_CN_FR,
+                  A_S_RT = dt$A_S_RT,
+                  A_N_PMN = dt$A_N_PMN,
+                  A_P_AL = dt$A_P_AL,
+                  A_P_CC = dt$A_P_CC,
+                  A_P_WA = dt$A_P_WA,
+                  A_P_SG = dt$A_P_SG,
+                  A_CEC_CO = dt$A_CEC_CO,
+                  A_CA_CO_PO = dt$A_CA_CO_PO,
+                  A_MG_CO_PO = dt$A_MG_CO_PO,
+                  A_K_CO_PO = dt$A_K_CO_PO,
+                  A_K_CC = dt$A_K_CC,
+                  A_MG_CC = dt$A_MG_CC,
+                  A_MN_CC = dt$A_MN_CC,
+                  A_ZN_CC = dt$A_ZN_CC,
+                  A_CU_CC = dt$A_CU_CC,
+                  A_EW_BCS = dt$A_EW_BCS,
+                  A_SC_BCS = dt$A_SC_BCS,
+                  A_GS_BCS = dt$A_GS_BCS,
+                  A_P_BCS = dt$A_P_BCS,
+                  A_C_BCS = dt$A_C_BCS,
+                  A_RT_BCS = dt$A_RT_BCS,
+                  A_RD_BCS = dt$A_RD_BCS,
+                  A_SS_BCS = dt$A_SS_BCS,
+                  A_CC_BCS = dt$A_CC_BCS,
+                  D_SA_W = dt$D_SA_W,
+                  D_RO_R = dt$D_RO_R,
+                  M_COMPOST = dt$M_COMPOST,
+                  M_GREEN = dt$M_GREEN,
+                  M_NONBARE = dt$M_NONBARE,
+                  M_EARLYCROP = dt$M_EARLYCROP,
+                  M_SLEEPHOSE = dt$M_SLEEPHOSE,
+                  M_DRAIN = dt$M_DRAIN,
+                  M_DITCH = dt$M_DITCH,
+                  M_UNDERSEED = dt$M_UNDERSEED,
+                  M_LIME = dt$M_LIME,
+                  M_NONINVTILL = dt$M_NONINVTILL,
+                  M_SSPM = dt$M_SSPM,
+                  M_SOLIDMANURE = dt$M_SOLIDMANURE,
+                  M_STRAWRESIDUE = dt$M_STRAWRESIDUE,
+                  M_MECHWEEDS = dt$M_MECHWEEDS,
+                  M_PESTICIDES_DST = dt$M_PESTICIDES_DST,
+                  B_LSW_ID = dt$B_LSW_ID,
+                  LSW = LSW,
+                  output =output,
+                  runrothc = runrothc,
+                  mc = mc)
+
+  # return output
+  return(d1)
 }

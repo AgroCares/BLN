@@ -1,7 +1,7 @@
 Package: BLN
 Type: Package
 Title: Calculate the Soil Quality Assessment Score using the Dutch BLN framework
-Version: 0.4.0
+Version: 0.5.0
 Authors@R: c(
     person("Gerard", "Ros", email = "gerard.ros@nmi-agro.nl", role = c("aut","cre")),
     person("Sven", "Verweij", email = "sven.verweij@nmi-agro.nl", role = "aut"),
@@ -35,5 +35,8 @@ Suggests:
     testthat (>= 2.1.0),
     knitr,
     rmarkdown,
-    covr
+    covr,
+    sf,
+    ggplot2,
+    patchwork
 VignetteBuilder: knitr

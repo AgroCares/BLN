@@ -5,7 +5,7 @@
 \alias{bln_lsw_farm_hf}
 \title{An example dataset with all LSW properties related to the fields of the Marke farm}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 1 rows and 27 columns.
+An object of class \code{data.table} (inherits from \code{data.frame}) with 2 rows and 27 columns.
 }
 \usage{
 bln_lsw_farm_hf
