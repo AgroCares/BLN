@@ -173,7 +173,6 @@ bln_clim_rothc <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI,quiet = FAL
 #' @param spinup (numeric) the spinup period that is used for initialisation model
 #'
 #' @import data.table
-#' @import carboncastr
 #'
 #' @export
 bln_rothc_field <- function(B_LU_BRP, A_SOM_LOI, A_CLAY_MI, simyears = 50, init = FALSE,spinup = 10){
@@ -256,7 +255,6 @@ bln_rothc_field <- function(B_LU_BRP, A_SOM_LOI, A_CLAY_MI, simyears = 50, init 
 #' @param A_CLAY_MI (numeric) value for the clay content of the soil
 #'
 #' @import data.table
-#' @import carboncastr
 #'
 #' @export
 rothc_initialise <- function(B_LU_BRP,A_SOM_LOI,A_CLAY_MI){
