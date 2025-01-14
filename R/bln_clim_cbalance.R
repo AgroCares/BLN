@@ -9,7 +9,6 @@
 #' @param M_GREEN (boolean) A soil measure. Are catch crops sown after main crop (optional)
 #
 #' @import data.table
-#' @import carboncastr
 #'
 #' @export
 bln_clim_cbalance <- function(ID,B_LU_BRP,A_SOM_LOI,A_P_AL,A_P_WA,M_COMPOST = 0,M_GREEN = FALSE){

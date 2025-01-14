@@ -308,7 +308,7 @@ rothc_scenario <- function(B_LU_BRP, scen){
   # add visual bindings
   . = B_LU_NAME = B_LU_EOM = B_LU_EOM_RESIDUE = B_LU_HC = B_LU_WATERSTRESS_OBIC = NULL
   B_LU = gld = cereal = nat = bld = M_GREEN_TIMING = M_CROPRESIDUE = man_name = NULL
-  P_OM = P_HC = P_p2o5 = P_DOSE = P_NAME = p_p2o5 = NULL
+  P_OM = P_HC = P_p2o5 = P_DOSE = P_NAME = p_p2o5 = crop_code = crop_name = NULL
 
   # composition table for cattle slurry and compost
   dtcm <- data.table(man_name = c('cattle_slurry','green_compost'),
@@ -442,7 +442,7 @@ rothc_scenario <- function(B_LU_BRP, scen){
 
     # update properties
     rotation <- merge(rotation[,.(year,B_LU_BRP)],
-                      bln_crops,by.x = 'B_LU_BRP',
+                      BLN::bln_crops,by.x = 'B_LU_BRP',
                       by.y='crop_code',all.x=TRUE)
     rotation[, gld := fifelse(grepl('gras',B_LU_NAME),1,0)]
     rotation[, cereal := fifelse(grepl('gerst|tarwe|rogge|haver|granen',B_LU_NAME),1,0)]

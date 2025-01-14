@@ -1,20 +1,33 @@
+# BLN 0.5.1 2025-01-14
+
+## Changed
+* move private package `soilcastor` from imports to suggests
+* add warnings / stops for internal functions `bln_rothc_field`, `rothc_initialise`, `rothc_parallel` and `bln_rothc_multicore` using soilcastor
+* remove use of internal package table from `soilcastor` in `rothc_scenario` function
+* add stops for internal function `bln_rothc_multicore` for packages `future`, `future.apply` and `parallelly` when packages are not installed 
+* set `i_clim_rothc` to NA when carboncastr is not available
+
+## Updated
+* add tests for rothc helper functions `rothc_scenario` and `rothc_initialise`
+* updated the `bln_crop` package table in `dev` following pandex
+
 # BLN 0.5.0 2025-01-01
 
 ## Added
-- vignette `bln_intro` given a short intro to the package and the main function to assess soil quality
-- vignette `bln_column_description` describing all inputs and outputs of the BLN package
-- vignette `bln_ess_crop_production` describing the assessment of soil health in view of crop production
-- internal package tables for `bln_input_description` and `bln_output_description`
-- wrapper function `bln_field_dt` to apply the `bln_field` function on a data.table
-- checkmate on argument `output` in `bln_field`
-- add ignore to vignettes to avoid synchronize html pages with git
+* vignette `bln_intro` given a short intro to the package and the main function to assess soil quality
+* vignette `bln_column_description` describing all inputs and outputs of the BLN package
+* vignette `bln_ess_crop_production` describing the assessment of soil health in view of crop production
+* internal package tables for `bln_input_description` and `bln_output_description`
+* wrapper function `bln_field_dt` to apply the `bln_field` function on a data.table
+* checkmate on argument `output` in `bln_field`
+* add ignore to vignettes to avoid synchronize html pages with git
 
 ## Fixed
-- ensure that `B_LSW_ID` in the wrapper function `bln_field` is always converted to character
-- add `B_AER_CBS` as input in internal table in `bln_c_sulfur`
+* ensure that `B_LSW_ID` in the wrapper function `bln_field` is always converted to character
+* add `B_AER_CBS` as input in internal table in `bln_c_sulfur`
 
 ## Updated
-- `bln_lsw_farm_hf` table 
+* `bln_lsw_farm_hf` table 
 
 # BLN 0.4.0 2024-12-24
 

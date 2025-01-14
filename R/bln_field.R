@@ -85,7 +85,6 @@
 #' @param quiet (boolean) showing progress bar for calculation RothC C-saturation for each field
 #'
 #' @import OBIC
-#' @import carboncastr
 #'
 #' @details
 #' It is assumed that the crop series is a continuous series in decreasing order of years. So most recent year first, oldest year last.
@@ -521,7 +520,6 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
 #' @param mc (boolean) option to run rothc in parallel on multicores
 #'
 #' @import OBIC
-#' @import carboncastr
 #'
 #' @export
 bln_field_dt <- function(dt, LSW = NULL,output ='all', runrothc = FALSE, mc = FALSE){

@@ -9,7 +9,6 @@
 #' @param B_DRAIN_SP_CHANGE (numeric) the decrease in drooglegging of a field in summer (in meters). Allowed decrease varies from 0 to 0.5m.
 #'
 #' @import data.table
-#' @import carboncastr
 #'
 #' @export
 bln_clim_somers <- function(ID,B_SOILTYPE_AGR,A_SOM_LOI,B_SOMERS_BC,B_DRAIN_SP,B_DRAIN_WP, B_DRAIN_SP_CHANGE = 0.2){
