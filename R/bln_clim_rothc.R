@@ -443,6 +443,9 @@ rothc_scenario <- function(B_LU_BRP, scen){
     }
 
     # update properties
+    rotation <- merge(rotation[,.(year,B_LU_BRP)],
+                      bln_crops,by.x = 'B_LU_BRP',
+                      by.y='crop_code',all.x=TRUE)
     rotation[, gld := fifelse(grepl('gras',B_LU_NAME),1,0)]
     rotation[, cereal := fifelse(grepl('gerst|tarwe|rogge|haver|granen',B_LU_NAME),1,0)]
     rotation[, nat := fifelse(grepl('bomen|struiken|heesters|contain|wijn|definitief|fauna|boomkwe|natuur|boomgr|scheerheg|hakhout|wandelp|landschaps|zandwal|boom|bufferstr|^rand',B_LU_NAME),1,0)]

@@ -15,6 +15,38 @@ test_that("bln_clim_rothc works", {
     tolerance = 0.1
   )
 
+  # check on RothC initialisation
+  expect_equal(
+    rothc_initialise(
+      B_LU_BRP = 3732,
+      A_SOM_LOI = 7.92,
+      A_CLAY_MI = 3.5
+    ),
+    expected = c(fr_IOM = 0.1604, fr_DPM = 0.0048,fr_RPM = 0.1394,fr_BIO = 0.0118),
+    tolerance = 0.1
+  )
+
+  # test scenario
+  out <- rothc_scenario(B_LU_BRP = 3732, scen = 'BAU')
+  expect_equal(names(out),
+    expected = c('rotation','amendment'),
+    tolerance = 0.1
+  )
+  expect_equal(as.numeric(out$rotation[,c(2,3,4)]),
+               expected = c(875,0,0.22),
+               tolerance = 0.1
+  )
+  out <- rothc_scenario(B_LU_BRP = 3732, scen = 'ALL')
+  expect_equal(as.numeric(out$rotation[,c(2,3,4)]),
+               expected = c(1640,990,0.31),
+               tolerance = 0.1
+  )
+  expect_equal(as.numeric(out$amendment$P_DOSE),
+               expected = c(44333,3182),
+               tolerance = 0.1
+  )
+
+
   # test for potato on peat soil
   expect_equal(
     bln_clim_rothc(
