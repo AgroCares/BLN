@@ -2,8 +2,8 @@
 
 ## Changed
 * move private package `soilcastor` from imports to suggests
-* add warnings / stops for internal functions `bln_rothc_field`, `rothc_initialise`, `rothc_parallel` and `bln_rothc_multicore` using soilcastor
-* remove use of internal package table from `soilcastor` in `rothc_scenario` function
+* add warnings / stops for internal functions `bln_rothc_field`, `rothc_initialise`, `rothc_parallel` and `bln_rothc_multicore` using `soilcastor` to avoid installation errors when the `soilcastor` package is not available.
+* remove use of internal package tables from `soilcastor` in `rothc_scenario` function
 * add stops for internal function `bln_rothc_multicore` for packages `future`, `future.apply` and `parallelly` when packages are not installed 
 * set `i_clim_rothc` to NA when carboncastr is not available
 
