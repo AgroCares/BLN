@@ -58,12 +58,16 @@
 #'
 #' This table helps to link the different crops in the OBIC functions with the crops selected by the user
 #'
-#' @format A data.frame with 465 rows and 3 columns:
+#' @format A data.frame with 521 rows and 8 columns:
 #' \describe{
 #'   \item{crop_code}{The BRP gewascode of the crop}
 #'   \item{crop_name}{The name of the crop, in lower case}
 #'   \item{crop_cat1}{Classification of crop per land use type (arable, maize, grass, nature)}
-#'   \item{bln_country}{the country name where the crop codes are applicable}
+#'   \item{bln_country}{The country name where the crop codes are applicable}
+#'   \item{B_LU_EOM}{The effective organic matter supply via roots and root exudates (kg EOS/ha)}
+#'   \item{B_LU_EOM_RESIDUE}{The effective organic matter supply via crop residues (kg EOS/ha)}
+#'   \item{B_LU_HC}{The humification coefficient for the crop remainings left in soil after harvest}
+#'   \item{B_LU_WATERSTRESS_OBIC}{A crop category used in OBIC to express sensitivity to water stress}
 #' }
 "bln_crops"
 

@@ -65,63 +65,77 @@ bln_clim_rothc <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI,quiet = FAL
   # subset the mineral soils
   dt.min <- dt[stype == 'mineral']
 
-  # run RothC to estimate max carbon storage (averaged per field)
-  if(mc & nrow(dt.min) >0){
+  # check of availability of SoilCastor package. If not available, set to NA
+  if (system.file(package = 'carboncastr') == '') {
 
-    # calculation multicore
-    dt.cs <- BLN::bln_rothc_multicore(ID = dt.min$ID,
-                                       B_LU_BRP = dt.min$B_LU_BRP,
-                                       B_GWL_GLG = dt.min$B_GWL_GLG,
-                                       A_SOM_LOI = dt.min$A_SOM_LOI,
-                                       A_CLAY_MI = dt.min$A_CLAY_MI,
-                                       quiet = quiet)
+    # give one warning when carboncastr is not installed
+    warning('The package carboncastr is not installed. The indicator i_c_rothc is set to NA and not used to assess the contribution of soils to carbon sequestration')
 
-    # sink() to get back to console
+    # set value of BAU and ALL to zero
+    dt.cs <- data.table(ID = dt.min$ID,A_SOM_LOI_ALL=0,A_SOM_LOI_BAU = 0)
 
-  } else if(mc == FALSE & nrow(dt.min) > 0){
+  }  else {
 
-    # add progress bar
-    if(!quiet) {pb = txtProgressBar(min = 0, max = length(unique(dt$ID)), initial = 0)}
+    # run RothC to estimate max carbon storage (averaged per field)
+    if(mc & nrow(dt.min) >0){
 
-    # set initial settings
-    stepi <- 0 ; out <- list()
+      # calculation multicore
+      dt.cs <- BLN::bln_rothc_multicore(ID = dt.min$ID,
+                                        B_LU_BRP = dt.min$B_LU_BRP,
+                                        B_GWL_GLG = dt.min$B_GWL_GLG,
+                                        A_SOM_LOI = dt.min$A_SOM_LOI,
+                                        A_CLAY_MI = dt.min$A_CLAY_MI,
+                                        quiet = quiet)
+
+      # sink() to get back to console
+
+    } else if(mc == FALSE & nrow(dt.min) > 0){
+
+      # add progress bar
+      if(!quiet) {pb = txtProgressBar(min = 0, max = length(unique(dt$ID)), initial = 0)}
+
+      # set initial settings
+      stepi <- 0 ; out <- list()
 
 
-    # run RothC to simulate current and potential SOC per field
-    for(i in unique(dt.min$ID)){
+      # run RothC to simulate current and potential SOC per field
+      for(i in unique(dt.min$ID)){
 
-      # subset the dataset
-      stepi = stepi + 1
-      this.brp <- dt.min[ID==i,B_LU_BRP]
-      this.som <- dt.min[ID==i,A_SOM_LOI]
-      this.clay <- dt.min[ID==i,A_CLAY_MI]
+        # subset the dataset
+        stepi = stepi + 1
+        this.brp <- dt.min[ID==i,B_LU_BRP]
+        this.som <- dt.min[ID==i,A_SOM_LOI]
+        this.clay <- dt.min[ID==i,A_CLAY_MI]
 
-      # run the RothC model for mineral soils
-      dt.rothc <- bln_rothc_field(this.brp, this.som, this.clay,
-                                  simyears = 100,init = FALSE,spinup = 10)
+        # run the RothC model for mineral soils
+        dt.rothc <- bln_rothc_field(this.brp, this.som, this.clay,
+                                    simyears = 100,init = FALSE,spinup = 10)
 
-      # take the mean of the last 10 years
-      dt.prc <- dt.rothc[year > max(year) - 10,lapply(.SD,mean)]
+        # take the mean of the last 10 years
+        dt.prc <- dt.rothc[year > max(year) - 10,lapply(.SD,mean)]
 
-      # save in list
-      out[[stepi]] <- data.table(ID=i,
-                                 A_SOM_LOI_BAU = round(dt.prc$A_SOM_LOI_BAU,4),
-                                 A_SOM_LOI_ALL = round(dt.prc$A_SOM_LOI_ALL,4))
-      # show progressbar
-      if(!quiet) {setTxtProgressBar(pb,stepi)}
+        # save in list
+        out[[stepi]] <- data.table(ID=i,
+                                   A_SOM_LOI_BAU = round(dt.prc$A_SOM_LOI_BAU,4),
+                                   A_SOM_LOI_ALL = round(dt.prc$A_SOM_LOI_ALL,4))
+        # show progressbar
+        if(!quiet) {setTxtProgressBar(pb,stepi)}
+      }
+
+      # close progress bar
+      if(!quiet) {close(pb)}
+
+      # combine all sites in a data.table again
+      dt.cs <- rbindlist(out)
+
+    } else {
+
+      # if not mineral soils present
+      dt.cs <- data.table(ID=-999,A_SOM_LOI_ALL=0,A_SOM_LOI_BAU = 0)
     }
 
-    # close progress bar
-    if(!quiet) {close(pb)}
-
-    # combine all sites in a data.table again
-    dt.cs <- rbindlist(out)
-
-  } else {
-
-    # if not mineral soils present
-    dt.cs <- data.table(ID=-999,A_SOM_LOI_ALL=0,A_SOM_LOI_BAU = 0)
   }
+
 
   # rbind the peat and mineral soils
   dt.combi <- rbind(dt.cs[,.(ID,A_SOM_LOI_ALL, A_SOM_LOI_BAU)],
@@ -132,6 +146,9 @@ bln_clim_rothc <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI,quiet = FAL
 
   # merge with the internal dt
   dt <- merge(dt[,.(id,ID,B_LU_BRP)],dt.combi,by='ID',all.x=TRUE)
+
+  # set infinite to NA_real
+  dt[!is.finite(i_clim_rothc), i_clim_rothc := NA_real_]
 
   # setorder
   setorder(dt,id)
@@ -156,10 +173,12 @@ bln_clim_rothc <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI,quiet = FAL
 #' @param spinup (numeric) the spinup period that is used for initialisation model
 #'
 #' @import data.table
-#' @import carboncastr
 #'
 #' @export
 bln_rothc_field <- function(B_LU_BRP, A_SOM_LOI, A_CLAY_MI, simyears = 50, init = FALSE,spinup = 10){
+
+  # check of availability of SoilCastor package.
+  if (system.file(package = 'carboncastr') == '') {stop('The package carboncastr is not installed. The function bln_rothc_field can not (yet) be used.')}
 
   # a single field can only have one value for SOM and clay
   this.som <- mean(A_SOM_LOI)
@@ -236,13 +255,16 @@ bln_rothc_field <- function(B_LU_BRP, A_SOM_LOI, A_CLAY_MI, simyears = 50, init 
 #' @param A_CLAY_MI (numeric) value for the clay content of the soil
 #'
 #' @import data.table
-#' @import carboncastr
 #'
 #' @export
 rothc_initialise <- function(B_LU_BRP,A_SOM_LOI,A_CLAY_MI){
 
   # add visual bindings
   . = CIOM = CDPM = CRPM = CBIO = NULL
+
+  # check whether carboncastr is present
+  if (system.file(package = 'carboncastr') == '') {stop('The package carboncastr is not installed. The function rothc_initialise can not (yet) be used.')}
+
 
   # Prepare input for scenario Business As Usual
   scen.inp <- rothc_scenario(B_LU_BRP = B_LU_BRP, scen = 'BAU')
@@ -266,8 +288,10 @@ rothc_initialise <- function(B_LU_BRP,A_SOM_LOI,A_CLAY_MI){
                                   fr_DPM = CDPM / A_SOM_LOI,
                                   fr_RPM = CRPM / A_SOM_LOI,
                                   fr_BIO = CBIO / A_SOM_LOI)]
-  fractions <- unlist(fractions)
 
+
+  # unlist fractions
+  fractions <- unlist(fractions)
 
   # Return output
   return(fractions)
@@ -284,13 +308,19 @@ rothc_scenario <- function(B_LU_BRP, scen){
   # add visual bindings
   . = B_LU_NAME = B_LU_EOM = B_LU_EOM_RESIDUE = B_LU_HC = B_LU_WATERSTRESS_OBIC = NULL
   B_LU = gld = cereal = nat = bld = M_GREEN_TIMING = M_CROPRESIDUE = man_name = NULL
-  P_OM = P_HC = P_p2o5 = P_DOSE = P_NAME = p_p2o5 = NULL
+  P_OM = P_HC = P_p2o5 = P_DOSE = P_NAME = p_p2o5 = crop_code = crop_name = NULL
+
+  # composition table for cattle slurry and compost
+  dtcm <- data.table(man_name = c('cattle_slurry','green_compost'),
+                     P_OM = c(7.1,17.9),
+                     P_HC = c(0.7,0.9),
+                     p_p2o5 = c(0.15,0.22))
 
   # combine input data
   dt <- data.table(B_LU_BRP = B_LU_BRP,year = 1:length(B_LU_BRP))
   dt <- merge(dt,
-              carboncastr::cc.crops[,.(B_LU_BRP,B_LU_NAME,B_LU_EOM,B_LU_EOM_RESIDUE,
-                                       B_LU_HC,B_LU_WATERSTRESS_OBIC)],
+              BLN::bln_crops[,.(B_LU_BRP = crop_code,B_LU_NAME = crop_name,B_LU_EOM,B_LU_EOM_RESIDUE,
+                                B_LU_HC,B_LU_WATERSTRESS_OBIC)],
               by = 'B_LU_BRP',
               all.x=TRUE)
 
@@ -304,9 +334,7 @@ rothc_scenario <- function(B_LU_BRP, scen){
 
   # Set crop rotation
   rotation <- copy(dt)
-  rotation <- merge(rotation,
-                    carboncastr::cc.crops.blu[,.(B_LU,B_LU_BRP)],by='B_LU_BRP',all.x=TRUE)
-  rotation <- rotation[,.(year,B_LU,B_LU_BRP,B_LU_NAME,B_LU_EOM,B_LU_EOM_RESIDUE,B_LU_HC)]
+  rotation <- rotation[,.(year,B_LU_BRP,B_LU_NAME,B_LU_EOM,B_LU_EOM_RESIDUE,B_LU_HC)]
 
   # set categories
   rotation[, gld := fifelse(grepl('gras',B_LU_NAME),1,0)]
@@ -324,11 +352,7 @@ rothc_scenario <- function(B_LU_BRP, scen){
   # Set amendment
   amendment <- dt[,.(year,cat,B_LU_BRP,B_LU_NAME)]
   amendment[, c('P_NAME','month') := list('cattle_slurry',month = 3)]
-  amendment <- merge(amendment,
-                     carboncastr::cc.manure[,list(man_name,P_OM,P_HC,p_p2o5)],
-                     by.x = 'P_NAME',
-                     by.y = 'man_name',
-                     all.x = TRUE)
+  amendment <- merge(amendment,dtcm,by.x = 'P_NAME',by.y = 'man_name',all.x = TRUE)
   amendment[cat == 1, P_DOSE := 63300]
   amendment[cat == 0, P_DOSE := 46700]
   amendment[grepl('uien|peen|witlof|graszaad|bieten, suiker-',B_LU_NAME), P_DOSE := 0]
@@ -346,8 +370,7 @@ rothc_scenario <- function(B_LU_BRP, scen){
     amendment2 <- amendment[,.(year,B_LU_BRP,B_LU_NAME,cat,P_NAME,month)]
     amendment2[,c('P_NAME','month') := list('green_compost',month = 8)]
     amendment <- rbind(amendment[,.(year,B_LU_BRP,B_LU_NAME,cat,P_NAME,month)],amendment2)
-    amendment <- merge(amendment,
-                       carboncastr::cc.manure[,list(man_name,P_OM,P_HC,p_p2o5)], by.x = 'P_NAME', by.y = 'man_name', all.x = TRUE)
+    amendment <- merge(amendment,dtcm, by.x = 'P_NAME', by.y = 'man_name', all.x = TRUE)
 
     # Determine dosage of slurry and compost based on crop category
     amendment[cat == 1 & grepl('cattle',P_NAME), P_DOSE := round(95 * 0.95*1000*0.1/ p_p2o5)]
@@ -370,14 +393,12 @@ rothc_scenario <- function(B_LU_BRP, scen){
 
     # Set crop rotation
     rotation <- copy(dt)
-    rotation <- merge(rotation,
-                      carboncastr::cc.crops.blu[,.(B_LU,B_LU_BRP)],by='B_LU_BRP',all.x=TRUE)
-    rotation <- rotation[,.(year,B_LU,B_LU_NAME,B_LU_EOM,B_LU_EOM_RESIDUE,B_LU_HC)]
+    rotation <- rotation[,.(year,B_LU_NAME,B_LU_EOM,B_LU_EOM_RESIDUE,B_LU_HC)]
 
     # set default green manure
     rotation[grepl('mais|aardappel',B_LU_NAME), M_GREEN_TIMING := 'august']
     rotation[is.na(M_GREEN_TIMING), M_GREEN_TIMING := 'never']
-    rotation <- rotation[,.(year,B_LU,B_LU_NAME,B_LU_EOM,B_LU_EOM_RESIDUE,B_LU_HC,M_GREEN_TIMING)]
+    rotation <- rotation[,.(year,B_LU_NAME,B_LU_EOM,B_LU_EOM_RESIDUE,B_LU_HC,M_GREEN_TIMING)]
 
     # set default crop residue
     rotation[, M_CROPRESIDUE := TRUE]
@@ -385,11 +406,7 @@ rothc_scenario <- function(B_LU_BRP, scen){
     # Set amendment
     amendment <- dt[,.(year,cat,B_LU_BRP,B_LU_NAME)]
     amendment[, c('P_NAME','month') := list('cattle_slurry',month = 3)]
-    amendment <- merge(amendment,
-                       carboncastr::cc.manure[,list(man_name,P_OM,P_HC,p_p2o5)],
-                       by.x = 'P_NAME',
-                       by.y = 'man_name',
-                       all.x = TRUE)
+    amendment <- merge(amendment,dtcm,by.x = 'P_NAME',by.y = 'man_name',all.x = TRUE)
     amendment[cat == 1, P_DOSE := 63300]
     amendment[cat == 0, P_DOSE := 46700]
     amendment[grepl('uien|peen|witlof|graszaad|bieten, suiker-',B_LU_NAME), P_DOSE := 0]
@@ -424,8 +441,9 @@ rothc_scenario <- function(B_LU_BRP, scen){
     }
 
     # update properties
-    rotation <- merge(rotation[,.(B_LU_BRP,year)],
-                      carboncastr::cc.crops.blu, by = "B_LU_BRP")
+    rotation <- merge(rotation[,.(year,B_LU_BRP)],
+                      BLN::bln_crops,by.x = 'B_LU_BRP',
+                      by.y='crop_code',all.x=TRUE)
     rotation[, gld := fifelse(grepl('gras',B_LU_NAME),1,0)]
     rotation[, cereal := fifelse(grepl('gerst|tarwe|rogge|haver|granen',B_LU_NAME),1,0)]
     rotation[, nat := fifelse(grepl('bomen|struiken|heesters|contain|wijn|definitief|fauna|boomkwe|natuur|boomgr|scheerheg|hakhout|wandelp|landschaps|zandwal|boom|bufferstr|^rand',B_LU_NAME),1,0)]
@@ -444,8 +462,7 @@ rothc_scenario <- function(B_LU_BRP, scen){
     amendment2 <- amendment[,.(year,B_LU_BRP,B_LU_NAME,cat,P_NAME,month)]
     amendment2[,c('P_NAME','month') := list('green_compost',month = 8)]
     amendment <- rbind(amendment[,.(year,B_LU_BRP,B_LU_NAME,cat,P_NAME,month)],amendment2)
-    amendment <- merge(amendment,
-                       carboncastr::cc.manure[,list(man_name,P_OM,P_HC,p_p2o5)], by.x = 'P_NAME', by.y = 'man_name', all.x = TRUE)
+    amendment <- merge(amendment,dtcm, by.x = 'P_NAME', by.y = 'man_name', all.x = TRUE)
 
     # Determine dosage of slurry and compost based on crop category
     amendment[cat == 1 & grepl('cattle',P_NAME), P_DOSE := round(95 * 0.95*1000*0.1/ p_p2o5)]
@@ -460,10 +477,14 @@ rothc_scenario <- function(B_LU_BRP, scen){
   }
 
   # subset final rotation
-  rotation <- rotation[,.(year,B_LU,B_LU_EOM,B_LU_EOM_RESIDUE,B_LU_HC,M_GREEN_TIMING,M_CROPRESIDUE)]
+  rotation <- rotation[,.(year,B_LU_BRP,B_LU_EOM,B_LU_EOM_RESIDUE,B_LU_HC,M_GREEN_TIMING,M_CROPRESIDUE)]
+
+  # add B_LU for Dutch situation
+  rotation[, B_LU := paste0('nl_',B_LU_BRP)]
 
   # Remove unnecessary columns
   amendment[,c('cat','B_LU_BRP','B_LU_NAME') := NULL]
+  rotation[,c('B_LU_BRP') := NULL]
 
   out <- list(rotation = rotation, amendment = amendment)
   return(out)
@@ -481,6 +502,9 @@ rothc_parallel <- function(this.xs, dt.c, p = NULL,final = TRUE){
 
   # set visual binding
   xs = NULL
+
+  # check of availability of SoilCastor package.
+  if (system.file(package = 'carboncastr') == '') {stop('The package carboncastr is not installed. The function rothc_parallel can not (yet) be used.')}
 
   # get simulation data
   sim.dt <- dt.c[xs == this.xs]
@@ -557,6 +581,12 @@ bln_rothc_multicore <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI, quiet
 
   # add visual bindings
   A_SOM_LOI_ALL = A_SOM_LOI_BAU = . = NULL
+
+  # Check if relevant packes are installed
+  if (system.file(package = 'future') == '') {stop('multicore processing requires future to be installed')}
+  if (system.file(package = 'future.apply') == '') {stop('multicore processing requires the package future.apply to be installed')}
+  if (system.file(package = 'parallelly') == '') {stop('multicore processing requires the package parallelly to be installed')}
+  if (system.file(package = 'carboncastr') == '') {stop('The package carboncastr is not installed. The function bln_rothc_multicore can not (yet) be used.')}
 
   # Check inputs
   arg.length <- max(length(B_LU_BRP), length(A_SOM_LOI), length(A_CLAY_MI))

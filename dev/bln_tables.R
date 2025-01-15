@@ -44,11 +44,16 @@
 
 # make crop table
 
-  # load (for the moment a copy of OBIC crop list)
-  bln_crops <- OBIC::crops.obic
-
-  # select only selected categories
-  bln_crops <- bln_crops[,.(crop_code,crop_name,crop_cat1 = crop_category)]
+  # load table with crop properties from pandex (private repo)
+  bln_crops <- pandex::b_lu_brp[,.(crop_code = B_LU_BRP,
+                                   crop_name = B_LU_NAME,
+                                   crop_cat1 = B_LU_CULTCAT4,
+                                   bln_country ="NL",
+                                   B_LU_EOM,
+                                   B_LU_EOM_RESIDUE,
+                                   B_LU_HC,
+                                   B_LU_WATERSTRESS_OBIC
+                                   )]
 
   # replace löss with loess
   bln_crops[grepl('löss',crop_name), crop_name := gsub('löss','loess',crop_name)]
@@ -58,9 +63,6 @@
   bln_crops[crop_cat1=='mais', crop_cat1 := 'maize']
   bln_crops[crop_cat1=='grasland', crop_cat1 := 'grassland']
   bln_crops[crop_cat1=='natuur', crop_cat1 := 'nature']
-
-  # add country
-  bln_crops[,bln_country :='NL']
 
   # save updated crop table
   usethis::use_data(bln_crops,overwrite = TRUE)
