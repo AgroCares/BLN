@@ -59,8 +59,12 @@
 #'
 #' @details
 #' the foptim is a list with parameters affecting the selection of best crop rotation plans.
-#' the parameter outputtype gives the user the possibility to select specific outcomes: cr_nbottlenecks (nr of bottlenecks per scenario), cr_esd (BLN score per ESD),
-#' cr_best_bln (best rotation for BLN total), cr_best_per_esd (best rotation per ESD), cr_esd_obi (OBI score) or all
+#' the parameter outputtype gives the user the possibility to select specific outcomes:
+#' scores (gives all scores per rotation)
+#' indicators (gives the indicator values per rotation)
+#' bottlenecks (gives the number of bottlenecks per rotation)
+#' rotation (gives the best rotation for BLN total, per ESD and OBI)
+#' all (all output options)
 #' The parameter b_lu_brp allows the user to send an user defined crop rotation using BRP codes. This will replace the default scenarios as long as the parameter scenarios is NULL.
 #' The parameter scenarios allows the user to select only specific crop rotation scenarios from the package table `bln_scen_croprotation`
 #'
@@ -75,7 +79,7 @@ bln_field_optimiser<-function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,
                               D_SA_W,D_RO_R,M_COMPOST,M_GREEN,
                               A_DENSITY_SA = NA_real_,
                               B_LSW_ID = NA_character_,LSW = NULL, i_clim_rothc = NA_real_,A_SOM_LOI_MLMAX = NA_real_,
-                              foptim = list(scenarios = NULL, b_lu_brp = NULL, outputtype = 'cr_best_bln',mc = TRUE,runrothc = TRUE)){
+                              foptim = list(scenarios = NULL, b_lu_brp = NULL, outputtype = 'rotation',mc = TRUE,runrothc = TRUE)){
 
   # add visial bindings
   scen = soiltype = . = b_aer_cbs = fieldid = b_lu_brp = B_CT_PSW_MAX = variable = indicator = s_bln_total = esd = NULL
@@ -110,6 +114,10 @@ bln_field_optimiser<-function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,
     bln_rot_scen <- rbind(bln_rot_scen,tmp1)
 
   }
+
+  # check the input of foptim
+  checkmate::assert_character(foptim$outputtype)
+  checkmate::assert_subset(foptim$outputtype,choices = c('all','scores','indicators','bottlenecks','rotation'))
 
   # combine all inputs
   dt <- data.table(ID = ID,
@@ -244,7 +252,7 @@ bln_field_optimiser<-function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,
   out <- dt[,.(ID)]
 
   # count number of bottlenecks
-  check <- max(0,sum(foptim$outputtype %in% c('cr_nbottlenecks','all'),na.rm=T))
+  check <- max(0,sum(foptim$outputtype %in% c('cr_nbottlenecks','bottlenecks','all'),na.rm=T))
 
   if(check > 0){
 
@@ -258,61 +266,50 @@ bln_field_optimiser<-function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,
 
   }
 
-  # select ESD scoring for BLN per rotation scenario
-  check <- max(0,sum(foptim$outputtype %in% c('cr_esd','all'),na.rm=T))
+  # select all ESD scores for BLN per rotation scenario
+  check <- max(0,sum(foptim$outputtype %in% c('scores','all'),na.rm=T))
 
   if(check > 0){
 
-    cols <- colnames(dt3)[grepl('ID|scen|^s_bln_total',colnames(dt3))]
+    cols <- colnames(dt3)[grepl('ID|scen|^s_bln',colnames(dt3))]
     dt3.score.bln <- dt3[,mget(cols)]
-    dt3.score.bln[,scen := paste0(scen,'_bln_hs')]
-    dt3.score.bln <- dcast(dt3.score.bln,ID~scen,value.var='s_bln_total')
+    dt3.score.bln <- melt(dt3.score.bln,id.vars = c('scen','ID'),variable.name='bln_score',value.name='score')
+    dt3.score.bln[,bln_score := gsub('s_bln_esd','s_esd',bln_score)]
+    dt3.score.bln[,scen := paste0(scen,'_',bln_score,'_hs')]
+    dt3.score.bln <- dcast(dt3.score.bln,ID~scen,value.var='score')
 
     out <- merge(out,dt3.score.bln,by='ID',all.x=TRUE)
   }
 
-  # select OBI scoring per BLN per rotation scenario
-  check <- max(0,sum(foptim$outputtype %in% c('cr_esd_obi'),na.rm=T))
+  # select all BLN indicator scores per rotation scenario
+  check <- max(0,sum(foptim$outputtype %in% c('indicators','all'),na.rm=T))
 
   if(check > 0){
 
-    cols <- colnames(dt3)[grepl('ID|scen|^s_bln_prod',colnames(dt3))]
-    dt3.score.obi <- dt3[,mget(cols)]
-    dt3.score.obi[,scen := paste0(scen,'_obi_hs')]
-    dt3.score.obi <- dcast(dt3.score.obi,ID~scen,value.var=c('s_bln_prod_b', 's_bln_prod_c', 's_bln_prod_p'))
+    cols <- colnames(dt3)[grepl('ID|scen|^i_',colnames(dt3))]
+    dt3.indicator.bln <- dt3[,mget(cols)]
+    dt3.indicator.bln <- melt(dt3.indicator.bln,id.vars = c('scen','ID'),variable.name='bln_indicator',value.name='score')
+    dt3.indicator.bln[,scen := paste0(scen,'_',bln_indicator,'_hs')]
+    dt3.indicator.bln <- dcast(dt3.indicator.bln,ID~scen,value.var='score')
 
-    out <- merge(out,dt3.score.obi,by='ID',all.x=TRUE)
+    out <- merge(out,dt3.indicator.bln,by='ID',all.x=TRUE)
   }
 
-  # select the most fitted crop rotation plan with current overall soil quality
-  check <- max(0,sum(foptim$outputtype %in% c('cr_best_bln'),na.rm=T))
+  # select the most fitted crop rotation plan for soil quality per ESD and aggregated BLN score
+  check <- max(0,sum(foptim$outputtype %in% c('rotation'),na.rm=T))
 
   if(check > 0){
 
-    cols <- colnames(dt3)[grepl('ID|scen|^s_bln_total',colnames(dt3))]
+    cols <- colnames(dt3)[grepl('ID|scen|^s_bln',colnames(dt3))]
     dt3.score.bln.blu <- dt3[,mget(cols)]
-    setorder(dt3.score.bln.blu,ID,-s_bln_total)
-    dt3.score.bln.blu <- dt3.score.bln.blu[,.SD[1],by=c('ID')]
+    dt3.score.bln.blu <- melt(dt3.score.bln.blu,id.vars=c('ID','scen'),value.name = 'value',variable.name = 'esd')
+
+    setorder(dt3.score.bln.blu,ID,-value)
+    dt3.score.bln.blu <- dt3.score.bln.blu[,.SD[1],by=c('ID','esd')]
+    dt3.score.bln.blu[,esd := paste0(esd,'_blu')]
+    dt3.score.bln.blu <- dcast(dt3.score.bln.blu,ID~esd,value.var = 'scen')
 
     out <- merge(out,dt3.score.bln.blu,by='ID',all.x=TRUE)
-  }
-
-
-  # select the highest crop production value (ESD1)
-  check <- max(0,sum(foptim$outputtype %in% c('cr_best_per_esd','all'),na.rm=T))
-
-  if(check > 0){
-
-    cols <- colnames(dt3)[grepl('ID|scen|^s_bln_esd',colnames(dt3))]
-    dt3.score.esd <- dt3[,mget(cols)]
-    dt3.score.esd <- melt(dt3.score.esd,id.vars=c('ID','scen'),value.name = 'value',variable.name = 'esd')
-    setorder(dt3.score.esd,ID,esd,-value)
-    dt3.score.esd <- dt3.score.esd[,.SD[1],by=c('ID','esd')]
-    dt3.score.esd[,esd := paste0(esd,'_blu')]
-    dt3.score.esd <- dcast(dt3.score.esd,ID~esd,value.var='scen')
-
-    out <- merge(out,dt3.score.esd,by='ID',all.x=TRUE)
-
   }
 
   # return output
