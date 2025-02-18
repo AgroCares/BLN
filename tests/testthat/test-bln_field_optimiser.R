@@ -14,6 +14,9 @@
     # B_DRAIN = dt.farm$B_DRAIN
     # B_FERT_NORM_FR = dt.farm$B_FERT_NORM_FR
     # B_SLOPE_DEGREE = dt.farm$B_SLOPE_DEGREE
+    # B_SOMERS_BC = NA_real_
+    # B_DRAIN_SP = NA_real_
+    # B_DRAIN_WP = NA_real_
     # B_GWP = dt.farm$B_GWP
     # B_AREA_DROUGHT = dt.farm$B_AREA_DROUGHT
     # B_CT_PSW = dt.farm$B_CT_PSW
@@ -73,10 +76,12 @@
     # M_MECHWEEDS = NA
     # M_PESTICIDES_DST = NA
     # B_LSW_ID = NA_character_
+    # i_clim_rothc = NA_real_
     # LSW = NULL
     # output ='all'
+    # foptim = list(scenarios = NULL, b_lu_brp = NULL, outputtype = 'rotation',mc = TRUE,runrothc = TRUE)
 
-# unit test
+    # unit test
 test_that("bln_field works", {
 
   # select properties
@@ -138,34 +143,21 @@ test_that("bln_field works", {
                             i_clim_rothc = NA_real_,
                             B_LSW_ID = NA_character_,
                             LSW = NULL,
-                            foptim = list(scenarios = NULL, b_lu_brp = NULL, outputtype = 'all',mc = TRUE,runrothc = TRUE))
+                            foptim = list(scenarios = NULL, b_lu_brp = NULL, outputtype = 'scores',mc = TRUE,runrothc = TRUE))
 
   # test for dimensions dataset
-  expect_equal(dim(d1), expected = c(1,29), tolerance = 0.1 )
+  expect_equal(dim(d1), expected = c(1,157), tolerance = 0.1 )
 
   # test for colnames
-  cols <- c("ID","bld_arable_ext_bnc","bld_arable_int_bnc","bld_arable_prot_bnc","bld_cereals_bnc",
-            "bld_divers_bnc","bld_gld_collaboration_bnc","bld_int_bnc","bld_vegetable_ext_bnc","bld_vegetable_int_bnc",
-            "current_bnc","gld_permanent_bnc","sms_permanent_bnc","bld_arable_ext_bln_hs","bld_arable_int_bln_hs",
-            "bld_arable_prot_bln_hs","bld_cereals_bln_hs","bld_divers_bln_hs","bld_gld_collaboration_bln_hs", "bld_int_bln_hs",
-            "bld_vegetable_ext_bln_hs","bld_vegetable_int_bln_hs","current_bln_hs","gld_permanent_bln_hs","sms_permanent_bln_hs",
-            "s_bln_esd_clim_blu","s_bln_esd_nut_blu","s_bln_esd_prod_blu","s_bln_esd_water_blu")
-  expect_equal(colnames(d1), expected = cols, tolerance = 0.1 )
+  cols <- c("ID","bld_arable_int_s_esd_nut_hs","bld_arable_prot_s_esd_clim_hs",
+            "bld_int_s_bln_prod_c_hs","current_s_bln_prod_p_hs","sms_permanent_s_esd_nut_hs")
+  expect_equal(colnames(d1)[c(1,25,37,85,125,155)], expected = cols, tolerance = 0.1 )
 
   # test BLN score
-  expect_equal(d1$bld_arable_int_bln_hs, expected = c(0.66), tolerance = 0.01)
+  expect_equal(d1$bld_arable_int_s_bln_total_hs, expected = c(0.66), tolerance = 0.01)
 
   # test BLN soil quality score ESD production
-  expect_equal(d1$bld_gld_collaboration_bln_hs, expected = 0.65, tolerance = 0.01)
-
-  # test BLN soil quality score ESD water quality
-  expect_equal(d1$s_bln_esd_nut_blu, expected = 'gld_permanent', tolerance = 0.01)
-
-  # test BLN soil quality score ESD climate
-  expect_equal(d1$bld_vegetable_int_bnc, expected = 15, tolerance = 0.01)
-
-  # test BLN soil quality score ESD nutrient cycle
-  expect_equal(d1$bld_int_bln_hs, expected = .63, tolerance = 0.01)
+  expect_equal(d1$bld_gld_collaboration_s_bln_total_hs, expected = 0.65, tolerance = 0.01)
 
 
   # run BLN
@@ -221,30 +213,20 @@ test_that("bln_field works", {
                             i_clim_rothc = NA_real_,
                             B_LSW_ID = NA_character_,
                             LSW = NULL,
-                            foptim = list(scenarios = NULL, b_lu_brp = NULL, outputtype = 'cr_esd_obi',mc = TRUE,runrothc = TRUE))
+                            foptim = list(scenarios = NULL, b_lu_brp = NULL, outputtype = 'rotation',mc = TRUE,runrothc = TRUE))
 
   # test for dimensions dataset
-  expect_equal(dim(d1), expected = c(1,37), tolerance = 0.1 )
+  expect_equal(dim(d1), expected = c(1,14), tolerance = 0.1 )
 
   # test for colnames
-  cols <- c("ID",
-            "s_bln_prod_b_bld_arable_ext_obi_hs","s_bln_prod_b_bld_arable_int_obi_hs",
-            "s_bln_prod_b_bld_arable_prot_obi_hs","s_bln_prod_b_bld_cereals_obi_hs","s_bln_prod_b_bld_divers_obi_hs" ,
-            "s_bln_prod_b_bld_gld_collaboration_obi_hs", "s_bln_prod_b_bld_int_obi_hs","s_bln_prod_b_bld_vegetable_ext_obi_hs",
-            "s_bln_prod_b_bld_vegetable_int_obi_hs","s_bln_prod_b_current_obi_hs","s_bln_prod_b_gld_permanent_obi_hs" ,
-            "s_bln_prod_b_sms_permanent_obi_hs","s_bln_prod_c_bld_arable_ext_obi_hs","s_bln_prod_c_bld_arable_int_obi_hs" ,
-            "s_bln_prod_c_bld_arable_prot_obi_hs","s_bln_prod_c_bld_cereals_obi_hs","s_bln_prod_c_bld_divers_obi_hs" ,
-            "s_bln_prod_c_bld_gld_collaboration_obi_hs", "s_bln_prod_c_bld_int_obi_hs","s_bln_prod_c_bld_vegetable_ext_obi_hs",
-            "s_bln_prod_c_bld_vegetable_int_obi_hs","s_bln_prod_c_current_obi_hs","s_bln_prod_c_gld_permanent_obi_hs",
-            "s_bln_prod_c_sms_permanent_obi_hs","s_bln_prod_p_bld_arable_ext_obi_hs","s_bln_prod_p_bld_arable_int_obi_hs",
-            "s_bln_prod_p_bld_arable_prot_obi_hs","s_bln_prod_p_bld_cereals_obi_hs","s_bln_prod_p_bld_divers_obi_hs",
-            "s_bln_prod_p_bld_gld_collaboration_obi_hs", "s_bln_prod_p_bld_int_obi_hs","s_bln_prod_p_bld_vegetable_ext_obi_hs",
-            "s_bln_prod_p_bld_vegetable_int_obi_hs","s_bln_prod_p_current_obi_hs","s_bln_prod_p_gld_permanent_obi_hs",
-            "s_bln_prod_p_sms_permanent_obi_hs")
+  cols <- c("ID",  "s_bln_clim_blu","s_bln_esd_clim_blu","s_bln_esd_nut_blu",
+            "s_bln_esd_prod_blu","s_bln_esd_water_blu","s_bln_gw_quality_blu" , "s_bln_gw_quantity_blu",
+            "s_bln_nut_blu","s_bln_prod_b_blu","s_bln_prod_c_blu","s_bln_prod_p_blu",
+            "s_bln_sw_quality_blu" , "s_bln_total_blu"  )
   expect_equal(colnames(d1), expected = cols, tolerance = 0.1 )
 
   # test BLN score
-  expect_equal(d1$s_bln_prod_c_sms_permanent_obi_hs, expected = c(0.74), tolerance = 0.01)
+  expect_equal(d1$s_bln_prod_c_blu , expected = c('sms_permanent'), tolerance = 0.01)
 
 
 })

@@ -58,7 +58,7 @@ bln_field_optimiser(
   LSW = NULL,
   i_clim_rothc = NA_real_,
   A_SOM_LOI_MLMAX = NA_real_,
-  foptim = list(scenarios = NULL, b_lu_brp = NULL, outputtype = "cr_best_bln", mc = TRUE,
+  foptim = list(scenarios = NULL, b_lu_brp = NULL, outputtype = "rotation", mc = TRUE,
     runrothc = TRUE)
 )
 }
@@ -176,8 +176,12 @@ This function estimates what crop rotation plan is mosts suited for the current 
 }
 \details{
 the foptim is a list with parameters affecting the selection of best crop rotation plans.
-the parameter outputtype gives the user the possibility to select specific outcomes: cr_nbottlenecks (nr of bottlenecks per scenario), cr_esd (BLN score per ESD),
-cr_best_bln (best rotation for BLN total), cr_best_per_esd (best rotation per ESD), cr_esd_obi (OBI score) or all
+the parameter outputtype gives the user the possibility to select specific outcomes:
+scores (gives all scores per rotation)
+indicators (gives the indicator values per rotation)
+bottlenecks (gives the number of bottlenecks per rotation)
+rotation (gives the best rotation for BLN total, per ESD and OBI)
+all (all output options)
 The parameter b_lu_brp allows the user to send an user defined crop rotation using BRP codes. This will replace the default scenarios as long as the parameter scenarios is NULL.
 The parameter scenarios allows the user to select only specific crop rotation scenarios from the package table `bln_scen_croprotation`
 }

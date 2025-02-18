@@ -1,3 +1,15 @@
+# BLN 0.6.0 2025-02-18
+
+## Changed
+* the argument `outputtype` in `bln_field_optimiser` has new arguments: scores, indicators, bottlenecks, rotation or all, #BLN-6
+* `bln_field_optimiser` can give the score per ESD and aggregated BLN function for each of the requested crop rotations (option scores)
+* `bln_field_optimiser` can give the score per indicators for each of the requested crop rotations (option indicators)
+* `bln_field_optimiser` can give the bottleneck per ESD or aggregated BLN function (option bottlenecks)
+* `bln_field_optimiser` can give the best crop rotation per ESD or aggregated BLN function (option rotation)
+
+## Updated
+* test for `bln_field_optimiser` given the update in function argumentation
+
 # BLN 0.5.1 2025-01-14
 
 ## Changed
