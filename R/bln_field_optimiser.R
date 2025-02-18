@@ -83,6 +83,7 @@ bln_field_optimiser<-function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,
 
   # add visial bindings
   scen = soiltype = . = b_aer_cbs = fieldid = b_lu_brp = B_CT_PSW_MAX = variable = indicator = s_bln_total = esd = NULL
+  bln_score = bln_indicator = NULL
 
   # load internal table with crop rotation scenarios
   bln_rot_scen <- BLN::bln_scen_croprotation
