@@ -81,7 +81,7 @@ Lets see how to assess the soil quality for a single field. First select the fir
 We start with a request for the soil indicators.  
 
 
-```{r make sim1,echo=TRUE}
+```{r make-sim1,fig.width = 7, fig.height = 4,fig.fullwidth = TRUE,echo=TRUE}
 
 # select the data for the first field of de Marke farm
 dt.field <- dt[id==1]
@@ -202,7 +202,7 @@ out <- bln_field(ID = dt.field$id,
 To simplify, one can also use a data.table as input. In that case use the function `bln_field_dt()`. The function checks whether all desired input variables are present. By default is the option to calculate the C saturation with RothC switched off. Again, the illustration below shows the use of `bln_field_dt` to retreive the BLN indicators. For the interpretation of each of the 35 soil indicators, one can have a look at the `vignette("bln_column_description")`
 
 
-```{r make sim2, echo =TRUE}
+```{r make-sim2,fig.width = 7, fig.height = 4,fig.fullwidth = TRUE,echo=TRUE}
 
 # select the data for de Marke farm
 dt.field <- dt[id==1]
@@ -235,7 +235,7 @@ Below we summarize the BLN score for a single field. Given the hierarchical stru
 Besides these four ecoystem services provided by the soil, two of the ESS can be shown in more detail, thereby reflecting underlying processes controlling the ESS. First, the ESS crop production can be separated into the soil quality assessment in view of chemical, physical and biological soil functions contributing to the ability of soils to sustain crop production. Second, the ESS water involves a separate assessment of the capacity of soils to retain and recharge groundwater, and to purify the water leaching to surface water on the one hand and to groundwater to the other.
 
 
-```{r make sim3, echo = TRUE, fig.height= 6, fig.width=6.8,fig.align='center'}
+```{r make-sim3, echo = TRUE, fig.height= 6, fig.width=6.8,fig.align='center'}
 
 # calculate the BLN indicator and scoring values also without RothC calculations (not run)
 # out <- bln_field_dt(dt.field, output = 'all', runrothc = FALSE)
