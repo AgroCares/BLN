@@ -39,7 +39,7 @@ The newly developed framework follows the conceptual approach of the OSI and exp
 We start with some (virtual) data being collected for one of the research farms in the Netherlands: de Marke. This husbandry farm is located in the Eastern part of the Netherlands, characterised by drought sensitive sandy soils, and the main land use is grassland and maize.
 
 
-```{r make plot,echo=TRUE, fig.height= 6, fig.width=6.8,fig.align='center'}
+```{r make-plot,echo=TRUE, fig.height= 6, fig.width=6.8,fig.align='center'}
 
 # select the data for de Mare farm
 s1 <- copy(BLN::bln_farm_hf)
