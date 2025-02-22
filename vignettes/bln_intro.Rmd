@@ -87,7 +87,7 @@ We start with a request for the soil indicators.
 dt.field <- dt[id==1]
 
 # calculate the BLN indicator values for that field
-out <- bln_field(ID = dt.field$id,
+out <- BLN::bln_field(ID = dt.field$id,
                   B_LU_BRP = dt.field$B_LU_BRP,
                   B_SC_WENR = dt.field$B_SC_WENR,
                   B_GWL_CLASS = dt.field$B_GWL_CLASS,
@@ -144,7 +144,7 @@ out <- bln_field(ID = dt.field$id,
                   M_LIME = NA,M_NONINVTILL = NA,M_SSPM = NA,M_SOLIDMANURE = NA,
                   M_STRAWRESIDUE = NA,M_MECHWEEDS = NA,M_PESTICIDES_DST = NA,
                   B_LSW_ID = NA_character_,LSW = NULL, output ='indicators',
-                  runrothc = TRUE,
+                  runrothc = FALSE,
                   mc = FALSE)
 
 # show the first line with all properties for a single field and latest year
