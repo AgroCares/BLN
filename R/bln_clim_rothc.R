@@ -85,6 +85,8 @@ bln_clim_rothc <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI,quiet = FAL
                                         B_GWL_GLG = dt.min$B_GWL_GLG,
                                         A_SOM_LOI = dt.min$A_SOM_LOI,
                                         A_CLAY_MI = dt.min$A_CLAY_MI,
+                                        scen = c('BAU','ALL'),
+                                        simyears = 100,
                                         quiet = quiet)
 
       # sink() to get back to console
@@ -107,9 +109,10 @@ bln_clim_rothc <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI,quiet = FAL
         this.som <- dt.min[ID==i,A_SOM_LOI]
         this.clay <- dt.min[ID==i,A_CLAY_MI]
 
-        # run the RothC model for mineral soils
+        # run the RothC model for mineral soils using fixed scenarios BAU and ALL
         dt.rothc <- bln_rothc_field(this.brp, this.som, this.clay,
-                                    simyears = 100,init = FALSE,spinup = 10)
+                                    simyears = 100,init = FALSE,spinup = 10,
+                                    scen = c('BAU','ALL'))
 
         # take the mean of the last 10 years
         dt.prc <- dt.rothc[year > max(year) - 10,lapply(.SD,mean)]
@@ -181,6 +184,11 @@ bln_rothc_field <- function(B_LU_BRP, A_SOM_LOI, A_CLAY_MI, simyears = 50, init 
 
   # check of availability of SoilCastor package.
   if (system.file(package = 'carboncastr') == '') {stop('The package carboncastr is not installed. The function bln_rothc_field can not (yet) be used.')}
+
+  # check on inputs
+  checkmate::assert_numeric(simyears,len=1,lower=15)
+  checkmate::assert_character(scen)
+  checkmate::assert_subset(scen,choices = c('BAU','BAUIMPR','CLT','ALL'))
 
   # a single field can only have one value for SOM and clay
   this.som <- mean(A_SOM_LOI)
@@ -493,11 +501,13 @@ rothc_scenario <- function(B_LU_BRP, scen){
 #' function to run RothC parallel for a series of fields
 #' @param this.xs (numeric) selected id for a single field
 #' @param dt.c (data.table) set will all fields
+#' @param scen (character) scenarios to be simulated. Options include BAU, BAUIMPR, CLT and ALL.
+#' @param simyears (integer) value for the amount of years to simulate, default is 50 years
 #' @param p (progress bar) progress bar
 #' @param final (boolean) option to select only the last year
 #'
 #' @export
-rothc_parallel <- function(this.xs, dt.c, p = NULL,final = TRUE){
+rothc_parallel <- function(this.xs, dt.c, scen, simyears = 50,p = NULL,final = TRUE){
 
   # set visual binding
   xs = NULL
@@ -521,11 +531,12 @@ rothc_parallel <- function(this.xs, dt.c, p = NULL,final = TRUE){
     this.clay <- mean(sim.dt$A_CLAY_MI)
 
     # run RothC
-    out <- BLN::bln_rothc_field(B_LU_BRP = sim.dt$B_LU_BRP,
+    out <- bln_rothc_field(B_LU_BRP = sim.dt$B_LU_BRP,
                                 A_SOM_LOI = this.som,
                                 A_CLAY_MI =  this.clay,
-                                simyears = 100,
+                                simyears = simyears,
                                 init = FALSE,
+                                scen = scen,
                                 spinup = 10)
     out[,xs := this.xs]
 
@@ -543,9 +554,9 @@ rothc_parallel <- function(this.xs, dt.c, p = NULL,final = TRUE){
 
 
     if(final){
-      result <-data.table(year = 50,A_SOM_LOI_BAU = 0, A_SOM_LOI_ALL = 0,xs = this.xs)
+      result <-data.table(year = simyears,A_SOM_LOI_BAU = 0, A_SOM_LOI_ALL = 0,xs = this.xs)
       } else{
-      result <- data.table(year = 1:50,A_SOM_LOI_BAU = 0, A_SOM_LOI_ALL = 0,xs = this.xs)
+      result <- data.table(year = 1:simyears,A_SOM_LOI_BAU = 0, A_SOM_LOI_ALL = 0,xs = this.xs)
     }
     result$error <- as.character(e)
 
@@ -567,6 +578,8 @@ rothc_parallel <- function(this.xs, dt.c, p = NULL,final = TRUE){
 #' @param B_GWL_GLG (numeric) The lowest groundwater level averaged over the most dry periods in 8 years in cm below ground level
 #' @param A_SOM_LOI (numeric) value for the soil organic matter content of the soil
 #' @param A_CLAY_MI (numeric) value for the clay content of the soil
+#' @param scen (character) scenarios to be simulated. Options include BAU, BAUIMPR,CLT and ALL.
+#' @param simyears (integer) value for the amount of years to simulate, default is 50 years
 #' @param quiet (boolean) showing progress bar for calculation RothC C-saturation for each field
 #'
 #' @import data.table
@@ -576,7 +589,7 @@ rothc_parallel <- function(this.xs, dt.c, p = NULL,final = TRUE){
 #' @import parallelly
 #'
 #' @export
-bln_rothc_multicore <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI, quiet = TRUE){
+bln_rothc_multicore <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI, scen, simyears = 50, quiet = TRUE){
 
   # add visual bindings
   A_SOM_LOI_ALL = A_SOM_LOI_BAU = . = NULL
@@ -594,6 +607,10 @@ bln_rothc_multicore <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI, quiet
   checkmate::assert_numeric(A_CLAY_MI, lower = 0, upper = 100, any.missing = FALSE, min.len = 1)
   checkmate::assert_numeric(A_SOM_LOI, lower = 0.1, upper = 100, any.missing = FALSE, min.len = 1, len = arg.length)
   checkmate::assert_numeric(B_GWL_GLG, lower = 0, any.missing = FALSE, len = arg.length)
+  checkmate::assert_character(scen)
+  checkmate::assert_subset(scen,choices = c('BAU','BAUIMPR','CLT','ALL'))
+  checkmate::assert_numeric(simyears,len=1,lower=15)
+
   if(length(ID)>1){checkmate::assert_true(length(ID) == arg.length)}
   checkmate::assert_logical(quiet)
 
@@ -628,6 +645,8 @@ bln_rothc_multicore <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI, quiet
                                            FUN = BLN::rothc_parallel,
                                            dt.c = dt.c,
                                            p = p,
+                                           scen = scen,
+                                           simyears = simyears,
                                            future.seed = TRUE,
                                            future.packages = c('BLN','carboncastr'))
   })
@@ -638,13 +657,16 @@ bln_rothc_multicore <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI, quiet
   # combine output
   dt.res <- rbindlist(results, fill = TRUE)
 
+  # columns to select
+  mcols <- paste0('A_SOM_LOI_',scen)
+
   # merge with dt.c
   dt.c <- merge(dt.c,
-                dt.res[,.(xs,A_SOM_LOI_ALL, A_SOM_LOI_BAU)],
+                dt.res[,mget(c('xs',mcols))],
                 by='xs',all.x=TRUE)
 
   # retreive unique value per ID
-  dt.c <- dt.c[,lapply(.SD,mean),.SDcols = c('A_SOM_LOI_ALL','A_SOM_LOI_BAU'),by=ID]
+  dt.c <- dt.c[,lapply(.SD,mean),.SDcols = mcols,by=ID]
 
   # return
   return(dt.c)
