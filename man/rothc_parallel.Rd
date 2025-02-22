@@ -4,12 +4,16 @@
 \alias{rothc_parallel}
 \title{function to run RothC parallel for a series of fields}
 \usage{
-rothc_parallel(this.xs, dt.c, p = NULL, final = TRUE)
+rothc_parallel(this.xs, dt.c, scen, simyears = 50, p = NULL, final = TRUE)
 }
 \arguments{
 \item{this.xs}{(numeric) selected id for a single field}
 
 \item{dt.c}{(data.table) set will all fields}
+
+\item{scen}{(character) scenarios to be simulated. Options include BAU, BAUIMPR, CLT and ALL.}
+
+\item{simyears}{(integer) value for the amount of years to simulate, default is 50 years}
 
 \item{p}{(progress bar) progress bar}
 
