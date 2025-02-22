@@ -38,6 +38,7 @@ Suggests:
     knitr,
     rmarkdown,
     covr,
-    sf,
-    carboncastr
+    sf
+Remotes:
+    AgroCares/carboncastr
 VignetteBuilder: knitr
