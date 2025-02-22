@@ -27,7 +27,8 @@ Imports:
     patchwork
 License: 
     GPL-3
-URL: https://github.com/AgroCares/BLN
+URL: https://github.com/AgroCares/BLN,
+    https://agrocares.github.io/BLN/
 BugReports: https://github.com/AgroCares/BLN/issues
 Encoding: UTF-8
 LazyData: true

@@ -9,3 +9,5 @@
 ^\.github$
 ^codecov\.yml$
 ^LICENSE
+^_pkgdown\.yml$
+^pkgdown$
