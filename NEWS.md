@@ -1,4 +1,7 @@
-# BLN 0.8.0 UNRELEASED
+# BLN 0.8.0 2025-02-22
+
+## Added
+* github page added via pgkdown to build package website plus articles
 
 # BLN 0.7.0 2025-02-22
 
