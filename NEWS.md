@@ -1,4 +1,4 @@
-# BLN 0.6.1 2025-02-22
+# BLN 0.7.0 2025-02-22
 
 ## Changed
 * function `bln_rothc_field` has now argument `scen` to allow users to use rothc for multiple scenarios: BAU, BAUIMPR, CLT and ALL
