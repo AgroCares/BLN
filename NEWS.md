@@ -1,7 +1,18 @@
-# BLN 0.6.1 UNRELEASED
+# BLN 0.6.1 2025-02-22
 
 ## Changed
+* function `bln_rothc_field` has now argument `scen` to allow users to use rothc for multiple scenarios: BAU, BAUIMPR, CLT and ALL
+* function `bln_clim_rothc` runs with default scenarios BAU and ALL
+* function `rothc_parallel` and `bln_rothc_multicore` allow users to use rothc for multiple scenarios
 
+## Added
+* plot function `plot_bln_rothc_ts` for SOC evolution from RothC
+* plot function `plot_bln_map` to plot BLN scores for a set of fields
+* plot function `plot_bln_boxplot` to plot classic boxplots for BLN scores, aggregated per ESD type
+* test script `test-bln_plots` for testing plot functions
+
+# Fixed
+* adapt inconcistent number of simyears in multicore and default RothC calculation in `bln_clim_rothc` 
 
 # BLN 0.6.0 2025-02-18
 
