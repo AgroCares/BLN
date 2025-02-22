@@ -4,7 +4,7 @@ author: 'Gerard H. Ros'
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{bln_ess_crop_production}
+  %\VignetteIndexEntry{BLN assessment for crop production}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -143,7 +143,8 @@ The process how measurable soil properties are used to evaluate the agronomic so
 
 ```{r, echo=FALSE, out.width = '85%', out.height = '85%', fig.cap = 'Figure 1. Graphic representation of how measured soil properties are aggregated to scores.'}
 # ![](OBIC_score_integratie.png){widht = 25%, height = 20%}
-knitr::include_graphics('../vignettes/OBIC_score_integratie_2.png')
+#knitr::include_graphics('../vignettes/OBIC_score_integratie_2.png')
+knitr::include_graphics('../man/figures/OBIC_score_integratie_2.png')
 ```
 
 <br />

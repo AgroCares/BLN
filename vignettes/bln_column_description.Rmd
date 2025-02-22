@@ -4,7 +4,7 @@ author: 'Gerard H. Ros'
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{bln_column_description}
+  %\VignetteIndexEntry{Description of the input and output for BLN}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
