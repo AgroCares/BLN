@@ -1,15 +1,23 @@
 #' Function to plot simple RothC simulation time series for a single field
 #'
 #' @param dt (data.table) data.table with results from BLN RothC simulation, calculated with bln_rothc_field
+#' @param lpos (vector) a two dimensional vector to position the legend inside the plot. Default c(0.2,0.8).
+#' @param ptitle (character) a title to be added to the figure. Default is NULL.
+#' @param psubtitle (character) a subtitle to be added to the figure. Default is NULL.
+#'
+#' @import ggplot2
 #'
 #' @export
-plot_bln_rothc_ts <- function(dt){
+plot_bln_rothc_ts <- function(dt,ptitle = NULL, psubtitle = NULL, lpos= c(0.2,0.8)){
 
   # test plot BLN for a single field
   # dt <- bln_rothc_field(B_LU_BRP = c(3732,265,3732),
   #                       A_SOM_LOI = 4.5,
   #                       A_CLAY_MI = 15,
   #                       scen= c('BAU','ALL','CLT','BAUIMPR'))
+
+  # add visual bindings
+  scenario = pscen = A_SOM_LOI = NULL
 
   # checkmate on input file
   checkmate::assert_true('year' %in% colnames(dt))
@@ -36,8 +44,15 @@ plot_bln_rothc_ts <- function(dt){
                                       'Landgebruiksverandering' = '#56B4E9',
                                       'Huidige landbouwpraktijk' ='#E69F00',
                                       'Betere bemesting' ='#009E73'))+
-        theme(legend.position = 'inside',legend.position.inside = c(0.3,0.8)) +
+        theme(legend.position = 'inside',legend.position.inside = lpos,
+              legend.background = element_rect(fill='transparent'),
+              legend.key = element_rect(fill='transparent'),
+              legend.text = element_text(size = 8),
+              legend.title = element_text(size = 10)) +
         ylab('OS-gehalte (%)') + xlab('jaar')
+
+  if(!is.null(ptitle)){p1 <- p1 + labs(title = ptitle)}
+  if(!is.null(psubtitle)){p1 <- p1 + labs(subtitle = psubtitle)}
 
   # return plot
   return(p1)
@@ -49,31 +64,41 @@ plot_bln_rothc_ts <- function(dt){
 #' @param dt.region (data.table) data.table with a spatial geometry for a given region to be plot on top of the fields. Optional.
 #' @param parm (character) one of the BLN indicator or scores to be plotted
 #' @param pbreak (vector) a vector to categorize the input in classes. Default is NULL.
-#' @param blabel (vector) a vector with label names used for the legend. Default is NULL.
+#' @param plabel (vector) a vector with label names used for the legend. Default is NULL.
+#' @param pregio_level (vector) a vector with names used for the regio stats. Order defines plotting order. Default is NULL.
+#' @param pregio_label (vector) a vector with label names used for the regio stats. Default is NULL.
 #' @param ptitle (character) a title to be added to the figure. Default is NULL.
 #' @param psubtitle (character) a subtitle to be added to the figure. Default is NULL.
 #' @param rev (boolean) a boolean argument to reverse the color mapping. Default is FALSE.
 #' @param lpos (vector) a two dimensional vector to position the legend inside the plot. Default c(0.2,0.8).
+#' @param ptype (character) a figure type. options: map, mapplusstats
 #'
-#' @import sf
 #' @import ggplot2
+#' @import patchwork
 #'
 #' @export
 plot_bln_map <- function(dt.scores, dt.region = NULL, parm, pbreak = NULL, plabel = NULL,
-                           ptitle = NULL, psubtitle = NULL, rev = FALSE,lpos= c(0.2,0.8)){
+                         pregio_level = NULL,pregio_label = NULL,
+                         ptitle = NULL, psubtitle = NULL, rev = FALSE,lpos= c(0.2,0.8),
+                         ptype = 'map'){
+
+  # add visual bindings
+  var = geom = . = regio = fieldarea = vclass = parea = area_tot = NULL
 
   # set breaks
   if(is.null(pbreak)){pbreak <- c(-1, 0.5, 0.7, 0.8, 10)}
   if(is.null(plabel)){plabel <- c('<5','5-7','7-8','>8')}
 
-  # checkmate
-  checkmate::assert_true(grepl('geom',colnames(dt.scores)))
+  # checkmate input variables
+  checkmate::assert_character(ptype,len=1)
+  checkmate::assert_subset(ptype,choices = c('map','mapplusstats'))
+  checkmate::assert_true(sum(grepl('geom',colnames(dt.scores)))>0)
   if(!is.null(dt.region)){checkmate::assert_true(grepl('geom',colnames(dt.region)))}
 
   # select the variable and convert into class
   setDT(dt.scores)
   dt.sel <- dt.scores[, .(var = get(parm), geom)]
-  dt.sel <- dt.sel[!is.na(var), vclas := cut(var, breaks = pbreak, label = plabel)]
+  dt.sel <- dt.sel[!is.na(var), vclass := cut(var, breaks = pbreak, label = plabel)]
 
   # add figure title and title of the legend
   if(is.null(ptitle)){ptitle <- paste0('Bodemkwaliteit')}
@@ -84,8 +109,7 @@ plot_bln_map <- function(dt.scores, dt.region = NULL, parm, pbreak = NULL, plabe
 
   # plot the map
   pp1 <- ggplot() +
-        geom_sf(data = dt.sel, aes(fill = cut(var, pbreak,labels = plabel),
-                                   color = cut(var, pbreak,labels = plabel))) +
+        geom_sf(data = dt.sel, aes(fill = vclass,color = vclass)) +
         geom_sf(data = dt.region, color='black', fill = NA) +
         scale_color_viridis_d(name = lname, end = 1, na.translate = F, direction = if(rev){-1} else {1}, limits = plabel) +
         scale_fill_viridis_d(name = lname, end = 1, na.translate = F, direction = if(rev){-1} else {1}, limits = plabel) +
@@ -96,6 +120,48 @@ plot_bln_map <- function(dt.scores, dt.region = NULL, parm, pbreak = NULL, plabe
               legend.position.inside = lpos,
               legend.text = element_text(size = 8),
               legend.title = element_text(size = 10))
+
+  # estimate map with area score per sub-region
+  if(sum(grepl('region|regio|gebied',colnames(dt.scores)))>0){
+
+    # set deelgebied
+    dgs <- colnames(dt.scores)[grepl('region|regio|gebied',colnames(dt.scores))]
+    dt.scores[, regio := get(dgs)]
+
+    # set regional names
+    if(is.null(pregio_level)){pregio_level <- unique(dt.scores$regio)}
+    if(is.null(pregio_label)){pregio_label <- paste0('R',1:length(pregio_level))}
+
+    # estimate field area per field
+    dt.scores[,fieldarea := round(as.numeric(sf::st_area(geom))/10000,2)]
+
+    # classify the variable to be plotted
+    dt.sel2 <- dt.scores[, .(var = get(parm), fieldarea,regio)]
+    dt.sel2 <- dt.sel2[!is.na(var), vclass := cut(var, breaks = pbreak, label = plabel)]
+
+    # estimate area per class per regio
+    dt.sel2 <- dt.sel2[, list(area_tot = sum(fieldarea, na.rm = T)), by = .(regio, vclass)]
+    dt.sel2[, parea := round(area_tot*100/sum(area_tot),2),by='regio']
+
+    # change labels for regions
+    dt.sel2[, regio := factor(regio,levels = pregio_level,labels = pregio_label)]
+
+    # plot the bar chart
+    pp2 <- ggplot(dt.sel2, aes(fill = vclass, y = parea, x = regio)) +
+          geom_bar(stat = "identity") +
+          xlab('') +
+          theme_bw() +
+          scale_fill_viridis_d(end = 1, direction = if(rev){1} else {-1}, na.translate = F) +
+          ylab('Percentage perceelareaal per klasse') +
+          theme(legend.position = 'none',legend.direction = 'horizontal') +
+          ggtitle('Percentage perceelareaal per klasse per regio') +
+          theme(legend.text = element_text(size = 8),
+                legend.title = element_text(size = 10))
+
+    # add field area per class per regio as duoplot
+    if(ptype=='mapplusstats'){pp1 <- pp1 | pp2}
+  }
+
 
   # return figure
   return(pp1)
@@ -113,9 +179,14 @@ plot_bln_map <- function(dt.scores, dt.region = NULL, parm, pbreak = NULL, plabe
 #' @param lpos (vector) a two dimensional vector to position the legend inside the plot. Default c(0.2,0.8).
 #' @param ptype (character) a figure type. options: scores, knelpunten
 #'
+#' @import ggplot2
+#'
 #' @export
-plot_bln_boxplot <- function(dt, pesd = NULL, ptitle = NULL, psubtitle = NULL,
+plot_bln_boxplot <- function(dt, pesd = 'crop', ptitle = NULL, psubtitle = NULL,
                              plegend = TRUE,pgroup = NULL, lpos= c(0.2,0.8),ptype='scores'){
+
+  # add visual bindings
+  jaar = b_soiltype_agr = soiltype = variable = ess_cat = ess_cat_grouped = knelpunt = group = NULL
 
   # reformat the BLN input data.table (with all indicators and scores as columns)
 
@@ -138,9 +209,9 @@ plot_bln_boxplot <- function(dt, pesd = NULL, ptitle = NULL, psubtitle = NULL,
 
   # add soil type if present
   if('b_soiltype_agr' %in% colnames(dt)){
-    dtp[gsub("dekzand|duinzand|dalgrond|^zand",b_soiltype_agr),soiltype :=  'zand']
-    dtp[gsub("rivierklei|zeeklei|maasklei",b_soiltype_agr),soiltype :=  'klei']
-    dtp[gsub("moerige_klei",b_soiltype_agr),soiltype :=  'veen']
+    dtp[grepl("dekzand|duinzand|dalgrond|^zand",b_soiltype_agr),soiltype :=  'zand']
+    dtp[grepl("rivierklei|zeeklei|maasklei",b_soiltype_agr),soiltype :=  'klei']
+    dtp[grepl("moerige_klei",b_soiltype_agr),soiltype :=  'veen']
   }
 
   # select columns for melting
@@ -224,7 +295,7 @@ plot_bln_boxplot <- function(dt, pesd = NULL, ptitle = NULL, psubtitle = NULL,
   if(grepl('water',pesd)){dtp3 <- mdt[grepl('wat',ess_cat_grouped)]} else {dtp3 <- NULL}
   if(grepl('nue|kringloop|kringlopen|nutrient',pesd)){dtp4 <- mdt[grepl('kring',ess_cat_grouped)]} else {dtp4 <- NULL}
   if(grepl('score',pesd)){dtp5 <- mdt[grepl('score',ess_cat_grouped)]} else {dtp5 <- NULL}
-  pdt <- rbind(dtp1,dtp2,dtp3,dpt4,dtp5)
+  pdt <- rbind(dtp1,dtp2,dtp3,dtp4,dtp5)
 
   # remove all mising values
   pdt <- pdt[!is.na(value)]
@@ -251,7 +322,9 @@ plot_bln_boxplot <- function(dt, pesd = NULL, ptitle = NULL, psubtitle = NULL,
       theme(axis.text = element_text(colour = "black", size = 9)) +
       theme(axis.ticks = element_line())
     if(!is.null(pgroup)){p1 <- p1 + facet_wrap(.~pgroup)}
-    if(!is.null(ptitle)){p1 <- p1 + ggtitle(ptitle)}
+    if(!is.null(ptitle)){p1 <- p1 + labs(title = ptitle)}
+    if(!is.null(psubtitle)){p1 <- p1 + labs(subtitle = psubtitle)}
+
   }
 
   # plot number of BLN bottlenecks
