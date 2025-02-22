@@ -22,7 +22,9 @@ Imports:
     future.apply,
     progressr,
     future,
-    parallelly
+    parallelly,
+    ggplot2,
+    patchwork
 License: 
     GPL-3
 URL: https://github.com/AgroCares/BLN
@@ -36,7 +38,5 @@ Suggests:
     rmarkdown,
     covr,
     sf,
-    ggplot2,
-    patchwork,
     carboncastr
 VignetteBuilder: knitr
