@@ -2,6 +2,7 @@
 
 ## Added
 * github page added via pgkdown to build package website plus articles
+* github actions checking pull requests
 
 # BLN 0.7.0 2025-02-22
 
