@@ -10,6 +10,8 @@ bln_rothc_multicore(
   B_GWL_GLG,
   A_SOM_LOI,
   A_CLAY_MI,
+  scen,
+  simyears = 50,
   quiet = TRUE
 )
 }
@@ -23,6 +25,10 @@ bln_rothc_multicore(
 \item{A_SOM_LOI}{(numeric) value for the soil organic matter content of the soil}
 
 \item{A_CLAY_MI}{(numeric) value for the clay content of the soil}
+
+\item{scen}{(character) scenarios to be simulated. Options include BAU, BAUIMPR,CLT and ALL.}
+
+\item{simyears}{(integer) value for the amount of years to simulate, default is 50 years}
 
 \item{quiet}{(boolean) showing progress bar for calculation RothC C-saturation for each field}
 }

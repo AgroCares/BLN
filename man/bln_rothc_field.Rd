@@ -10,6 +10,7 @@ bln_rothc_field(
   A_CLAY_MI,
   simyears = 50,
   init = FALSE,
+  scen = c("BAU", "ALL"),
   spinup = 10
 )
 }
@@ -23,6 +24,8 @@ bln_rothc_field(
 \item{simyears}{(integer) value for the amount of years to simulate, default is 50 years}
 
 \item{init}{(boolean) use internal analytical solution for initialisation from carboncastr}
+
+\item{scen}{(character) scenarios to be simulated. Options include BAU, BAUIMPR,CLT and ALL.}
 
 \item{spinup}{(numeric) the spinup period that is used for initialisation model}
 }

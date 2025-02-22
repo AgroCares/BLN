@@ -141,3 +141,69 @@ test_that("bln_clim_rothc works", {
     tolerance = 0.1
   )
 })
+
+test_that("bln_rothc_field works", {
+
+  out <- bln_rothc_field(A_SOM_LOI = 7.92,
+                         A_CLAY_MI = 3.5,
+                         B_LU_BRP = 3732,
+                         simyears = 50,
+                         init = TRUE,
+                         scen = c("BAU", "ALL"),
+                         spinup = 10
+                        )
+
+  # test for potato crop on sandy soil
+  expect_equal(dim(out),expected = c(52,3),tolerance = 0.1)
+  expect_equal(colnames(out),expected=c('year','A_SOM_LOI_ALL','A_SOM_LOI_BAU'))
+  expect_equal(as.numeric(out[50,2:3]),c(6.606,6.389),tolerance = 0.01)
+
+  out <- bln_rothc_field(A_SOM_LOI = 7.92,
+                         A_CLAY_MI = 3.5,
+                         B_LU_BRP = 3732,
+                         simyears = 50,
+                         init = TRUE,
+                         scen = c("BAU", "ALL",'CLT'),
+                         spinup = 10
+  )
+
+  # test for potato crop on sandy soil
+  expect_equal(dim(out),expected = c(52,4),tolerance = 0.1)
+  expect_equal(colnames(out),expected=c('year','A_SOM_LOI_ALL','A_SOM_LOI_BAU','A_SOM_LOI_CLT'))
+  expect_equal(as.numeric(out[50,2:4]),c(6.606,6.389,7.4219),tolerance = 0.01)
+
+})
+
+test_that("bln_rothc_multicore works", {
+
+  out <- bln_rothc_multicore(ID = 1:10,
+                             B_LU_BRP = rep(c(3732,265),5),
+                             B_GWL_GLG = rep(95, 10),
+                             A_SOM_LOI = seq(1,15,length.out = 10),
+                             A_CLAY_MI = rep(4.5,10),
+                             scen = c('BAU','ALL'),
+                             quiet = FALSE)
+
+  # test for potato crop on sandy soil
+  expect_equal(dim(out),expected = c(10,3),tolerance = 0.1)
+  expect_equal(colnames(out),expected=c('ID','A_SOM_LOI_BAU','A_SOM_LOI_ALL'))
+  expect_equal(as.numeric(out[10,2:3]),c(15.04,15.691),tolerance = 0.01)
+
+  out <- bln_rothc_multicore(ID = 1:10,
+                             B_LU_BRP = rep(c(3732,265),5),
+                             B_GWL_GLG = rep(95, 10),
+                             A_SOM_LOI = seq(1,15,length.out = 10),
+                             A_CLAY_MI = rep(4.5,10),
+                             scen = c('BAU','ALL', 'BAUIMPR','CLT'),
+                             quiet = FALSE)
+
+  # test for potato crop on sandy soil
+  expect_equal(dim(out),expected = c(10,5),tolerance = 0.1)
+  expect_equal(colnames(out),expected=c('ID','A_SOM_LOI_BAU','A_SOM_LOI_ALL','A_SOM_LOI_BAUIMPR','A_SOM_LOI_CLT'))
+  expect_equal(as.numeric(out[10,2:5]),c(15.04,15.691,15.691,13.829),tolerance = 0.01)
+
+
+})
+
+
+
