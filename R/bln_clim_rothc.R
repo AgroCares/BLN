@@ -170,12 +170,14 @@ bln_clim_rothc <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI,quiet = FAL
 #' @param A_CLAY_MI (numeric) value for the clay content of the soil
 #' @param simyears (integer) value for the amount of years to simulate, default is 50 years
 #' @param init (boolean) use internal analytical solution for initialisation from carboncastr
+#' @param scen (character) scenarios to be simulated. Options include BAU, BAUIMPR,CLT and ALL.
 #' @param spinup (numeric) the spinup period that is used for initialisation model
 #'
 #' @import data.table
 #'
 #' @export
-bln_rothc_field <- function(B_LU_BRP, A_SOM_LOI, A_CLAY_MI, simyears = 50, init = FALSE,spinup = 10){
+bln_rothc_field <- function(B_LU_BRP, A_SOM_LOI, A_CLAY_MI, simyears = 50, init = FALSE,
+                            scen = c('BAU','ALL'),spinup = 10){
 
   # check of availability of SoilCastor package.
   if (system.file(package = 'carboncastr') == '') {stop('The package carboncastr is not installed. The function bln_rothc_field can not (yet) be used.')}
@@ -190,10 +192,7 @@ bln_rothc_field <- function(B_LU_BRP, A_SOM_LOI, A_CLAY_MI, simyears = 50, init 
   # run simulations for the desire scenarios
   sim <- list(); count <- 0
 
-  # run the RothC model for two scenarios: BAU and ALL
-  scen = c('BAU','ALL')
-
-  # run the scenarios in a for loop
+  # run the RothC model for two scenarios by default: BAU and ALL
   for(i in scen){
 
     # add counter
