@@ -51,7 +51,7 @@ bln_clim_somers <- function(ID,B_SOILTYPE_AGR,A_SOM_LOI,B_SOMERS_BC,B_DRAIN_SP,B
   dt[, year := 1:.N,by='ID']
 
   # subset only a single year for peaty soils
-  dt2 <- dt[year==1 & (A_SOM_LOI >= 20 | B_SOILTYPE_AGR == 'veen')]
+  dt2 <- dt[year==1]
 
   # check if there are peat soils present
   if(nrow(dt2) >0 ){
