@@ -2,6 +2,7 @@
 
 ## Fixed
 * error in crop rotation assignment in `rothc_scenario`, #BLN-11
+* add `carboncastr` dependency to suggests
 
 # BLN 0.8.0 2025-02-22
 
