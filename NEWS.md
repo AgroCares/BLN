@@ -1,3 +1,8 @@
+# BLN 0.8.1 2025-03-12
+
+## Fixed
+* error in crop rotation assignment in `rothc_scenario`, #BLN-11
+
 # BLN 0.8.0 2025-02-22
 
 ## Added
