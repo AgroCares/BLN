@@ -170,7 +170,7 @@ test_that("bln_rothc_field works", {
   # test for potato crop on sandy soil
   expect_equal(dim(out),expected = c(52,4),tolerance = 0.1)
   expect_equal(colnames(out),expected=c('year','A_SOM_LOI_ALL','A_SOM_LOI_BAU','A_SOM_LOI_CLT'))
-  expect_equal(as.numeric(out[50,2:4]),c(6.606,6.389,7.4219),tolerance = 0.01)
+  expect_equal(as.numeric(out[50,2:4]),c(6.65,6.44,6.38),tolerance = 0.01)
 
 })
 
@@ -200,7 +200,7 @@ test_that("bln_rothc_multicore works", {
   # test for potato crop on sandy soil
   expect_equal(dim(out),expected = c(10,5),tolerance = 0.1)
   expect_equal(colnames(out),expected=c('ID','A_SOM_LOI_BAU','A_SOM_LOI_ALL','A_SOM_LOI_BAUIMPR','A_SOM_LOI_CLT'))
-  expect_equal(as.numeric(out[10,2:5]),c(15.04,15.691,15.691,13.829),tolerance = 0.01)
+  expect_equal(as.numeric(out[10,2:5]),c(15.04447,15.691,15.691,15.43029),tolerance = 0.01)
 
 
 })

@@ -395,8 +395,8 @@ rothc_scenario <- function(B_LU_BRP, scen){
   if(scen == 'CLT'){
 
     # adapt crop input
-    if(luse == 'GLD'){B_LU_BRP <- rep(233,length(B_LU_BRP))}
-    if(luse == 'BLD'){B_LU_BRP <- rep(265,length(B_LU_BRP))}
+    if(luse == 'BLD'){B_LU_BRP <- rep(233,length(B_LU_BRP))}
+    if(luse == 'GLD'){B_LU_BRP <- rep(265,length(B_LU_BRP))}
 
     # Set crop rotation
     rotation <- copy(dt)

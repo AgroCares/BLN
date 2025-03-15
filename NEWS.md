@@ -1,3 +1,9 @@
+# BLN 0.8.1 2025-03-12
+
+## Fixed
+* error in crop rotation assignment in `rothc_scenario`, #BLN-11
+* add `carboncastr` dependency to suggests
+
 # BLN 0.8.0 2025-02-22
 
 ## Added
@@ -17,7 +23,7 @@
 * plot function `plot_bln_boxplot` to plot classic boxplots for BLN scores, aggregated per ESD type
 * test script `test-bln_plots` for testing plot functions
 
-# Fixed
+## Fixed
 * adapt inconcistent number of simyears in multicore and default RothC calculation in `bln_clim_rothc` 
 
 # BLN 0.6.0 2025-02-18
