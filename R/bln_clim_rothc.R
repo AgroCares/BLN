@@ -217,17 +217,16 @@ bln_rothc_field <- function(B_LU_BRP, A_SOM_LOI, A_CLAY_MI, simyears = 50, init 
     set.seed(123)
 
     # Run simulation
-    result <- carboncastr::cc_rothc_sim(crops = rotation,
-                                        A_SOM_LOI = this.som,
-                                        A_CLAY_MI = this.clay,
-                                        A_DEPTH = 0.3,
-                                        cf_yield = if(i=='BAU') {1} else {1.05},
-                                        M_TILLAGE_SYSTEM = "CT",
-                                        weather = NULL,
-                                        rothc_amendment = amendment,
-                                        rothc_parms = list(simyears = simyears + spinup,
-                                                           c_fractions = pool_fractions,
-                                                           initialize = init))
+    result <- bln_rothc_sim(A_SOM_LOI = this.som,
+                            A_CLAY_MI = this.clay,
+                            A_DEPTH = 0.3,
+                            cf_yield = if(i=='BAU') {1} else {1.05},
+                            M_TILLAGE_SYSTEM = "CT",
+                            rothc_rotation = rotation,
+                            rothc_amendment = amendment,
+                            rothc_parms = list(simyears = simyears + spinup,
+                                               c_fractions = pool_fractions,
+                                               initialize = init))
     # set startyear to zero
     result[,year := year - min(year)]
 
@@ -282,11 +281,11 @@ rothc_initialise <- function(B_LU_BRP,A_SOM_LOI,A_CLAY_MI){
   parms <- list(simyears = 150,unit = 'psomperfraction')
 
   # Run initialization run for 30 years
-  this.result <- carboncastr::cc_rothc_sim(crops = rotation,
-                                           A_SOM_LOI = A_SOM_LOI,
-                                           A_CLAY_MI = A_CLAY_MI,
-                                           rothc_amendment = amendment,
-                                           rothc_parms = parms)
+  this.result <- bln_rothc_sim(A_SOM_LOI = A_SOM_LOI,
+                               A_CLAY_MI = A_CLAY_MI,
+                               rothc_rotation = rotation,
+                               rothc_amendment = amendment,
+                               rothc_parms = parms)
 
   # take last two rotations
   this.result.fin <- this.result[year > max(year)-2*nrow(rotation),lapply(.SD,mean)]

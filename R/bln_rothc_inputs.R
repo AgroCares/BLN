@@ -323,7 +323,7 @@ bln_rothc_input_amendment <- function(dt = NULL,B_LU_BRP = NULL){
   checkmate::assert_integerish(B_LU_BRP, any.missing = FALSE, null.ok = TRUE, min.len = 1)
   checkmate::assert_subset(B_LU_BRP, choices = unique(BLN::bln_crops$crop_code), empty.ok = TRUE)
   checkmate::assert_data_table(dt,null.ok = TRUE)
-  checkmate::assert_subset(colnames(dt),choices = c("P_NAME", "year","month","P_OM","P_HC","p_p2o5", "P_DOSE"), empty.ok = FALSE)
+  checkmate::assert_subset(colnames(dt),choices = c("P_NAME", "year","month","P_OM","P_HC","p_p2o5", "P_DOSE"), empty.ok = TRUE)
   checkmate::assert_true(!(is.null(dt) & is.null(B_LU_BRP)))
 
   # set default crop table in case that dt is missing

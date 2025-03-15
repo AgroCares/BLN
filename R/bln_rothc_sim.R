@@ -31,6 +31,7 @@
 #' These have to be in a list called 'rothc_parms'.
 #'
 #' @import deSolve
+#'
 #' @export
 bln_rothc_sim <- function(A_SOM_LOI,
                           A_CLAY_MI,
@@ -41,6 +42,9 @@ bln_rothc_sim <- function(A_SOM_LOI,
                           rothc_rotation = NULL,
                           rothc_amendment = NULL,
                           rothc_parms = list(simyears = 50, init = FALSE,spinup = 10,method='adams')){
+
+  # add internal table
+  blnp <- BLN::bln_parms
 
   # add checks
   checkmate::assert_numeric(A_SOM_LOI, lower = blnp[code == "A_SOM_LOI", value_min], upper = blnp[code == "A_SOM_LOI", value_max],len = 1)
@@ -74,7 +78,7 @@ bln_rothc_sim <- function(A_SOM_LOI,
       if(!is.null(rothc_parms$spinup)){simyears <- simyears + rothc_parms$spinup}
 
       # add checks on units and time scale output for RothC (use defaults)
-      unit <- 'soc'
+      if(is.null(rothc_parms$unit)){unit <- 'soc'} else {unit <- rothc_parms$unit}
       poutput <- 'year'
 
       # add checks on decomposition rates
@@ -157,6 +161,9 @@ bln_rothc_sim <- function(A_SOM_LOI,
       # time correction (is 12 in documentation Chantals' study, not clear why, probably due to fixed time step calculation)
       timecor = 1
 
+      # set rate modifying parameters
+      abc <- rothc.parms$abc
+
       # CDPM pool (ton C / ha)
       cdpm.ini <- rothc.event[var == 'CDPM',list(time,value)]
       cdpm.ini[,cf_abc := abc(time)]
@@ -179,7 +186,6 @@ bln_rothc_sim <- function(A_SOM_LOI,
       dt.soc[biohum.ini <0, cdpm.ini := 0.015 * (toc-ciom.ini)]
       dt.soc[biohum.ini <0, crpm.ini := 0.125 * (toc-ciom.ini)]
       dt.soc[, biohum.ini := toc-ciom.ini - crpm.ini - cdpm.ini]
-
 
       # CBIO and CHUM pool
       dt.soc[,cbio.ini := biohum.ini / (1 + k3 / k4)]
@@ -220,10 +226,13 @@ bln_rothc_sim <- function(A_SOM_LOI,
            CBIO = rothc.ini$CBIO0,
            CHUM = rothc.ini$CHUM0)
 
+    # set random seed
+    set.seed(123)
+
     # run the model
     out <- deSolve::ode(y = y,
                         times = rothc.times,
-                        BLN::bln_rothc,
+                        bln_rothc,
                         parms = rothc.parms,
                         events=list(data=rothc.event),
                         method = method,
@@ -239,27 +248,55 @@ bln_rothc_sim <- function(A_SOM_LOI,
     if(poutput=='year'){out <- out[time %in% 0:simyears]}
 
     # select type output
-    if(unit=='soc') {rothc.soc <- out[,list(year=time,soc)]}
-    if(unit=='all'){rothc.soc <- out[,list(year = time,soc,CDPM,CRPM,CBIO,CHUM,CIOM = dt.soc$CIOM0)]}
+    if(unit=='soc') {
 
-  # prepare output format
+      # subset the RothC simulation result
+      rothc.soc <- out[,list(year=time,soc)]
 
-    # estimate bulk density
-    rothc.soc[,bd := mean(dt.soc$bd)]
-    rothc.soc[,A_CLAY_MI := mean(dt.soc$this.clay)]
-    rothc.soc[,A_DEPTH := A_DEPTH]
+      # estimate bulk density
+      rothc.soc[,bd := mean(dt.soc$bd)]
+      rothc.soc[,A_CLAY_MI := mean(dt.soc$this.clay)]
+      rothc.soc[,A_DEPTH := A_DEPTH]
 
-    # set C stocks back to OS%
-    rothc.soc[,A_SOM_LOI := soc * 100 * 2 / (bd * B_DEPTH * 100 * 100)]
+      # set C stocks back to OS%
+      rothc.soc[,A_SOM_LOI := soc * 100 * 2 / (bd * B_DEPTH * 100 * 100)]
 
-    # Correct A_SOM_LOI for sampling depth
-    rothc.soc[A_DEPTH < 0.3 & A_CLAY_MI <= 10, A_SOM_LOI := A_SOM_LOI / (1 - 0.19 * ((0.20 - (pmax(0.10, A_DEPTH) - 0.10))/ 0.20))]
-    rothc.soc[A_DEPTH < 0.3 & A_CLAY_MI > 10, A_SOM_LOI := A_SOM_LOI / (1 - 0.33 * ((0.20 - (pmax(0.10, A_DEPTH) - 0.10))/ 0.20))]
+      # Correct A_SOM_LOI for sampling depth
+      rothc.soc[A_DEPTH < 0.3 & A_CLAY_MI <= 10, A_SOM_LOI := A_SOM_LOI / (1 - 0.19 * ((0.20 - (pmax(0.10, A_DEPTH) - 0.10))/ 0.20))]
+      rothc.soc[A_DEPTH < 0.3 & A_CLAY_MI > 10, A_SOM_LOI := A_SOM_LOI / (1 - 0.33 * ((0.20 - (pmax(0.10, A_DEPTH) - 0.10))/ 0.20))]
 
-    # select output variables
-    out <- rothc.soc[,list(year,A_SOM_LOI)]
+      # select output variables
+      out <- rothc.soc[,list(year,A_SOM_LOI)]
 
-    # update year
+    } else if (unit == 'psomperfraction'){
+
+      # subset the RothC simulation result
+      rothc.soc <- copy(out)
+
+      # estimate bulk density
+      rothc.soc[,bd := mean(dt.soc$bd)]
+      rothc.soc[,A_CLAY_MI := mean(dt.soc$this.clay)]
+      rothc.soc[,A_DEPTH := A_DEPTH]
+      rothc.soc[,CIOM := dt.soc$CIOM0]
+
+      # do unit conversion for all pools, convert to %SOM
+      cols <- c('soc','CDPM','CRPM','CBIO','CHUM','CIOM')
+      rothc.soc[,c(cols) := lapply(.SD,function(x) x * 100 * 2 / (bd * B_DEPTH * 100 * 100)),.SDcols = cols]
+
+      # Correct soc for sampling depth
+      rothc.soc[A_DEPTH < 0.3 & A_CLAY_MI <= 10, soc := soc / (1 - 0.19 * ((0.20 - (pmax(0.10, A_DEPTH) - 0.10))/ 0.20))]
+      rothc.soc[A_DEPTH < 0.3 & A_CLAY_MI > 10, soc := soc / (1 - 0.33 * ((0.20 - (pmax(0.10, A_DEPTH) - 0.10))/ 0.20))]
+
+      # select output variables
+      out <- rothc.soc[,.(year = time,A_SOM_LOI = soc,CDPM,CRPM,CBIO,CHUM,CIOM)]
+
+    } else if (unit=='all'){
+
+      rothc.soc <- out[,list(year = time,soc,CDPM,CRPM,CBIO,CHUM,CIOM = dt.soc$CIOM0)]
+
+    }
+
+  # update year
     # out[,year := year + rotation[1,year] - 1]
 
   # return output
