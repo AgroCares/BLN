@@ -23,6 +23,7 @@ Imports:
     progressr,
     future,
     parallelly,
+    deSolve,
     ggplot2,
     patchwork
 License: 
@@ -38,8 +39,5 @@ Suggests:
     knitr,
     rmarkdown,
     covr,
-    sf,
-    carboncastr
-Remotes:
-    AgroCares/carboncastr
+    sf
 VignetteBuilder: knitr

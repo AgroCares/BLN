@@ -29,7 +29,7 @@ bln_clim_rothc <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI,quiet = FAL
   if(length(ID)>1){checkmate::assert_true(length(ID) == arg.length)}
   checkmate::assert_logical(quiet)
 
-  # make internal table (set clay to 75 max given checkmate in carboncastr)
+  # make internal table (set clay to 75 max given checkmate)
   dt <- data.table(id = 1:length(ID),
                    ID = ID,
                    B_LU_BRP = B_LU_BRP,
@@ -65,78 +65,66 @@ bln_clim_rothc <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI,quiet = FAL
   # subset the mineral soils
   dt.min <- dt[stype == 'mineral']
 
-  # check of availability of SoilCastor package. If not available, set to NA
-  if (system.file(package = 'carboncastr') == '') {
 
-    # give one warning when carboncastr is not installed
-    warning('The package carboncastr is not installed. The indicator i_c_rothc is set to NA and not used to assess the contribution of soils to carbon sequestration')
+  # run RothC to estimate max carbon storage (averaged per field)
+  if(mc & nrow(dt.min) >0){
 
-    # set value of BAU and ALL to zero
-    dt.cs <- data.table(ID = dt.min$ID,A_SOM_LOI_ALL=0,A_SOM_LOI_BAU = 0)
+    # calculation multicore
+    dt.cs <- BLN::bln_rothc_multicore(ID = dt.min$ID,
+                                      B_LU_BRP = dt.min$B_LU_BRP,
+                                      B_GWL_GLG = dt.min$B_GWL_GLG,
+                                      A_SOM_LOI = dt.min$A_SOM_LOI,
+                                      A_CLAY_MI = dt.min$A_CLAY_MI,
+                                      scen = c('BAU','ALL'),
+                                      simyears = 100,
+                                      quiet = quiet)
 
-  }  else {
+    # sink() to get back to console
 
-    # run RothC to estimate max carbon storage (averaged per field)
-    if(mc & nrow(dt.min) >0){
+  } else if(mc == FALSE & nrow(dt.min) > 0){
 
-      # calculation multicore
-      dt.cs <- BLN::bln_rothc_multicore(ID = dt.min$ID,
-                                        B_LU_BRP = dt.min$B_LU_BRP,
-                                        B_GWL_GLG = dt.min$B_GWL_GLG,
-                                        A_SOM_LOI = dt.min$A_SOM_LOI,
-                                        A_CLAY_MI = dt.min$A_CLAY_MI,
-                                        scen = c('BAU','ALL'),
-                                        simyears = 100,
-                                        quiet = quiet)
+    # add progress bar
+    if(!quiet) {pb = txtProgressBar(min = 0, max = length(unique(dt$ID)), initial = 0)}
 
-      # sink() to get back to console
-
-    } else if(mc == FALSE & nrow(dt.min) > 0){
-
-      # add progress bar
-      if(!quiet) {pb = txtProgressBar(min = 0, max = length(unique(dt$ID)), initial = 0)}
-
-      # set initial settings
-      stepi <- 0 ; out <- list()
+    # set initial settings
+    stepi <- 0 ; out <- list()
 
 
-      # run RothC to simulate current and potential SOC per field
-      for(i in unique(dt.min$ID)){
+    # run RothC to simulate current and potential SOC per field
+    for(i in unique(dt.min$ID)){
 
-        # subset the dataset
-        stepi = stepi + 1
-        this.brp <- dt.min[ID==i,B_LU_BRP]
-        this.som <- dt.min[ID==i,A_SOM_LOI]
-        this.clay <- dt.min[ID==i,A_CLAY_MI]
+      # subset the dataset
+      stepi = stepi + 1
+      this.brp <- dt.min[ID==i,B_LU_BRP]
+      this.som <- dt.min[ID==i,A_SOM_LOI]
+      this.clay <- dt.min[ID==i,A_CLAY_MI]
 
-        # run the RothC model for mineral soils using fixed scenarios BAU and ALL
-        dt.rothc <- bln_rothc_field(this.brp, this.som, this.clay,
-                                    simyears = 100,init = FALSE,spinup = 10,
-                                    scen = c('BAU','ALL'))
+      # run the RothC model for mineral soils using fixed scenarios BAU and ALL
+      dt.rothc <- bln_rothc_field(this.brp, this.som, this.clay,
+                                  simyears = 100,init = FALSE,spinup = 10,
+                                  scen = c('BAU','ALL'))
 
-        # take the mean of the last 10 years
-        dt.prc <- dt.rothc[year > max(year) - 10,lapply(.SD,mean)]
+      # take the mean of the last 10 years
+      dt.prc <- dt.rothc[year > max(year) - 10,lapply(.SD,mean)]
 
-        # save in list
-        out[[stepi]] <- data.table(ID=i,
-                                   A_SOM_LOI_BAU = round(dt.prc$A_SOM_LOI_BAU,4),
-                                   A_SOM_LOI_ALL = round(dt.prc$A_SOM_LOI_ALL,4))
-        # show progressbar
-        if(!quiet) {setTxtProgressBar(pb,stepi)}
-      }
-
-      # close progress bar
-      if(!quiet) {close(pb)}
-
-      # combine all sites in a data.table again
-      dt.cs <- rbindlist(out)
-
-    } else {
-
-      # if not mineral soils present
-      dt.cs <- data.table(ID=-999,A_SOM_LOI_ALL=0,A_SOM_LOI_BAU = 0)
+      # save in list
+      out[[stepi]] <- data.table(ID=i,
+                                 A_SOM_LOI_BAU = round(dt.prc$A_SOM_LOI_BAU,4),
+                                 A_SOM_LOI_ALL = round(dt.prc$A_SOM_LOI_ALL,4))
+      # show progressbar
+      if(!quiet) {setTxtProgressBar(pb,stepi)}
     }
 
+    # close progress bar
+    if(!quiet) {close(pb)}
+
+    # combine all sites in a data.table again
+    dt.cs <- rbindlist(out)
+
+  } else {
+
+    # if not mineral soils present
+    dt.cs <- data.table(ID=-999,A_SOM_LOI_ALL=0,A_SOM_LOI_BAU = 0)
   }
 
 
@@ -172,7 +160,7 @@ bln_clim_rothc <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI,quiet = FAL
 #' @param A_SOM_LOI (numeric) value for the soil organic matter content of the soil
 #' @param A_CLAY_MI (numeric) value for the clay content of the soil
 #' @param simyears (integer) value for the amount of years to simulate, default is 50 years
-#' @param init (boolean) use internal analytical solution for initialisation from carboncastr
+#' @param init (boolean) use internal analytical solution for initialisation RothC
 #' @param scen (character) scenarios to be simulated. Options include BAU, BAUIMPR,CLT and ALL.
 #' @param spinup (numeric) the spinup period that is used for initialisation model
 #'
@@ -181,9 +169,6 @@ bln_clim_rothc <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI,quiet = FAL
 #' @export
 bln_rothc_field <- function(B_LU_BRP, A_SOM_LOI, A_CLAY_MI, simyears = 50, init = FALSE,
                             scen = c('BAU','ALL'),spinup = 10){
-
-  # check of availability of SoilCastor package.
-  if (system.file(package = 'carboncastr') == '') {stop('The package carboncastr is not installed. The function bln_rothc_field can not (yet) be used.')}
 
   # check on inputs
   checkmate::assert_numeric(simyears,len=1,lower=15)
@@ -267,10 +252,6 @@ rothc_initialise <- function(B_LU_BRP,A_SOM_LOI,A_CLAY_MI){
 
   # add visual bindings
   . = CIOM = CDPM = CRPM = CBIO = NULL
-
-  # check whether carboncastr is present
-  if (system.file(package = 'carboncastr') == '') {stop('The package carboncastr is not installed. The function rothc_initialise can not (yet) be used.')}
-
 
   # Prepare input for scenario Business As Usual
   scen.inp <- rothc_scenario(B_LU_BRP = B_LU_BRP, scen = 'BAU')
@@ -511,9 +492,6 @@ rothc_parallel <- function(this.xs, dt.c, scen, simyears = 50,p = NULL,final = T
   # set visual binding
   xs = NULL
 
-  # check of availability of SoilCastor package.
-  if (system.file(package = 'carboncastr') == '') {stop('The package carboncastr is not installed. The function rothc_parallel can not (yet) be used.')}
-
   # get simulation data
   sim.dt <- dt.c[xs == this.xs]
 
@@ -597,7 +575,6 @@ bln_rothc_multicore <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI, scen,
   if (system.file(package = 'future') == '') {stop('multicore processing requires future to be installed')}
   if (system.file(package = 'future.apply') == '') {stop('multicore processing requires the package future.apply to be installed')}
   if (system.file(package = 'parallelly') == '') {stop('multicore processing requires the package parallelly to be installed')}
-  if (system.file(package = 'carboncastr') == '') {stop('The package carboncastr is not installed. The function bln_rothc_multicore can not (yet) be used.')}
 
   # Check inputs
   arg.length <- max(length(B_LU_BRP), length(A_SOM_LOI), length(A_CLAY_MI))
@@ -613,7 +590,7 @@ bln_rothc_multicore <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI, scen,
   if(length(ID)>1){checkmate::assert_true(length(ID) == arg.length)}
   checkmate::assert_logical(quiet)
 
-  #make internal table (set clay to 75 max given checkmate in carboncastr)
+  #make internal table (set clay to 75 max given checkmate)
   dt.c <- data.table(ID = ID,
                      B_LU_BRP = B_LU_BRP,
                      B_GWL_GLG = B_GWL_GLG,
@@ -647,7 +624,7 @@ bln_rothc_multicore <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI, scen,
                                            scen = scen,
                                            simyears = simyears,
                                            future.seed = TRUE,
-                                           future.packages = c('BLN','carboncastr'))
+                                           future.packages = c('BLN'))
   })
 
   # close cluster
