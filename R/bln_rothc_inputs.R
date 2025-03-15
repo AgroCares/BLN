@@ -96,19 +96,21 @@ bln_rothc_input_crop <- function(dt = NULL,B_LU_BRP = NULL,cf_yield){
 #'
 #' @param dt (data.table) Table with crop rotation and related crop properties for Carbon input.
 #' @param B_LU_BRP (numeric) The crop code
+#' @param B_DEPTH (numeric) Depth of the cultivated soil layer (m), simulation depth. Default set to 0.3.
 #' @param A_CLAY_MI (numeric) The clay content of the soil (\%)
 #' @param simyears (numeric) Amount of years for which the simulation should run, default: 50 years
+#' @param cf_yield (numeric) A yield correction factor (fraction) if yield is higher than regional average
 #'
 #' @details
 #' To run this function, the dt requires as input: B_LU (a crop id), B_LU_NAME (a crop name, optional), B_LU_EOM (the effective organic matter content, kg/ha), B_LU_EOM_RESIDUE (the effective organic matter content for crop residues, kg/ha), and the B_LU_HC (the humification coeffient,-).
 #' if dt is NULL, then the crop input will be prepared using function \link{rothc_scenario} using scenario 'BAU'
 #'
 #' @export
-bln_rothc_input_rmf <- function(dt = NULL,B_LU_BRP = NULL, A_CLAY_MI, simyears){
+bln_rothc_input_rmf <- function(dt = NULL,B_LU_BRP = NULL, B_DEPTH = 0.3, A_CLAY_MI, simyears,cf_yield){
 
   # add visual bindings
-  cf_yield = B_LU = crop_name = M_RENEWAL = B_LU_MAKKINK = B_LU_NAME = M_GREEN_TIMING = NULL
-  mcf = crop_cover = crflt = time = cf_temp = temp = tsmdmax = this.clay = B_DEPTH = NULL
+  B_LU = crop_name = M_RENEWAL = B_LU_MAKKINK = B_LU_NAME = M_GREEN_TIMING = NULL
+  mcf = crop_cover = crflt = time = cf_temp = temp = tsmdmax = NULL
   tsmdmax_cor = et_act = et_pot = smd = prec = hv = acc_smd = acc_smd2 = cf_moist = cf_soilcover = NULL
   cf_renewal = cf_combi = id = yr_rep = NULL
 
@@ -229,7 +231,7 @@ bln_rothc_input_rmf <- function(dt = NULL,B_LU_BRP = NULL, A_CLAY_MI, simyears){
     dt.weather[, cf_temp :=  47.9/(1+exp(106/(temp + 18.3)))]
 
     # add maximal top soil moisture deficit (TSMD) and bare soil moisture deficit
-    dt.weather[, tsmdmax := -(20 + 1.3 * this.clay - 0.01 * (this.clay^2)) * B_DEPTH / 0.23]
+    dt.weather[, tsmdmax := -(20 + 1.3 * A_CLAY_MI - 0.01 * (A_CLAY_MI^2)) * B_DEPTH / 0.23]
 
     # add weather data and reorder on time
     dt.cc <- merge(dt.cc,dt.weather,by='month')

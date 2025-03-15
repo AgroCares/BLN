@@ -509,12 +509,12 @@ rothc_parallel <- function(this.xs, dt.c, scen, simyears = 50,p = NULL,final = T
 
     # run RothC
     out <- bln_rothc_field(B_LU_BRP = sim.dt$B_LU_BRP,
-                                A_SOM_LOI = this.som,
-                                A_CLAY_MI =  this.clay,
-                                simyears = simyears,
-                                init = FALSE,
-                                scen = scen,
-                                spinup = 10)
+                            A_SOM_LOI = this.som,
+                            A_CLAY_MI =  this.clay,
+                            simyears = simyears,
+                            init = FALSE,
+                            scen = scen,
+                            spinup = 10)
     out[,xs := this.xs]
 
     # if final is true select only last prediction

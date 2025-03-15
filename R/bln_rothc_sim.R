@@ -44,7 +44,7 @@ bln_rothc_sim <- function(A_SOM_LOI,
                           rothc_parms = list(simyears = 50, init = FALSE,spinup = 10,method='adams')){
 
   # add visual bindings
-  code = value_min = value_max = this.clay = this.som = a_depth = dens.sand = dens.clay = cf = bd = toc = NULL
+  code = value_min = value_max = a_depth = dens.sand = dens.clay = cf = bd = toc = NULL
   b_depth = var = time = cf_abc = ciom.ini = biohum.ini = cbio.ini = chum.ini = CIOM0 = CDPM0 = CRPM0 = CBIO0 = CHUM0 = NULL
   soc = CDPM = CRPM = CBIO = CHUM = CIOM = bd = . = NULL
 
@@ -73,7 +73,7 @@ bln_rothc_sim <- function(A_SOM_LOI,
   # rothC model parameters
 
       # add check on method solver
-      if(is.null(rothc_parms$method)){method <- 'adams'}
+      if(is.null(rothc_parms$method)){method <- 'adams'} else {method <- 'adams'}
 
       # add check on initialise
       if(is.null(rothc_parms$initialize)){initialize <- TRUE} else {initialize <- rothc_parms$initialize}
@@ -121,35 +121,35 @@ bln_rothc_sim <- function(A_SOM_LOI,
   # prepare the RothC model inputs (see: bln_rothc_inputs.R)
 
     # make rate modifying factors input database
-    dt.rmf <- bln_rothc_input_rmf(dt = dt.crop,A_CLAY_MI = this.clay, simyears = simyears)
+    dt.rmf <- bln_rothc_input_rmf(dt = dt.crop,A_CLAY_MI = A_CLAY_MI, B_DEPTH = B_DEPTH,simyears = simyears, cf_yield = cf_yield)
 
     # combine RothC input parameters
-    rothc.parms <- list(dec_rates = list(k1=k2,k2=k2,k3=k3,k4=k4), R1 = dt.rmf$R1, abc = dt.rmf$abc, d = dt.rmf$d)
+    rothc.parms <- list(k1 = k1,k2 = k2, k3=k3, k4=k4, R1 = dt.rmf$R1, abc = dt.rmf$abc, d = dt.rmf$d)
 
     # prepare EVENT database with all C inputs over time (see: bln_rothc_events.R)
-    rothc.event <- bln_rothc_event(crops = dt.crop,amendment = dt.org,A_CLAY_MI = this.clay,simyears = simyears)
+    rothc.event <- bln_rothc_event(crops = dt.crop,amendment = dt.org,A_CLAY_MI = A_CLAY_MI,simyears = simyears)
 
   # initialize the RothC pools (kg C / ha)
 
     # make internal data.table
-    dt.soc <- data.table(this.som = this.som,this.clay = this.clay,a_depth = A_DEPTH,b_depth = B_DEPTH)
+    dt.soc <- data.table(A_SOM_LOI = A_SOM_LOI,A_CLAY_MI = A_CLAY_MI,a_depth = A_DEPTH,b_depth = B_DEPTH)
 
     # Correct A_SOM_LOI for sampling depth
-    dt.soc[a_depth < 0.3 & this.clay <= 10, this.som := this.som * (1 - 0.19 * ((0.20 - (pmax(0.10, a_depth) - 0.10))/ 0.20))]
-    dt.soc[a_depth < 0.3 & this.clay > 10, this.som := this.som * (1 - 0.33 * ((0.20 - (pmax(0.10, a_depth) - 0.10))/ 0.20))]
+    dt.soc[a_depth < 0.3 & A_CLAY_MI <= 10, A_SOM_LOI := A_SOM_LOI * (1 - 0.19 * ((0.20 - (pmax(0.10, a_depth) - 0.10))/ 0.20))]
+    dt.soc[a_depth < 0.3 & A_CLAY_MI > 10, A_SOM_LOI := A_SOM_LOI * (1 - 0.33 * ((0.20 - (pmax(0.10, a_depth) - 0.10))/ 0.20))]
 
     # calculate soil texture dependent density
-    dt.soc[, dens.sand := (1 / (0.02525 * this.som + 0.6541)) * 1000]
-    dt.soc[, dens.clay :=  (0.00000067*this.som^4 - 0.00007792*this.som^3 + 0.00314712*this.som^2 - 0.06039523*this.som + 1.33932206) * 1000]
+    dt.soc[, dens.sand := (1 / (0.02525 * A_SOM_LOI + 0.6541)) * 1000]
+    dt.soc[, dens.clay :=  (0.00000067*A_SOM_LOI^4 - 0.00007792*A_SOM_LOI^3 + 0.00314712*A_SOM_LOI^2 - 0.06039523*A_SOM_LOI + 1.33932206) * 1000]
 
     # fraction clay correction
-    dt.soc[, cf := pmin(1, this.clay/25)]
+    dt.soc[, cf := pmin(1, A_CLAY_MI/25)]
 
     # clay dependent density
     dt.soc[, bd := cf * dens.clay + (1-cf) * dens.sand]
 
     # calculate total organic carbon (kg C / ha)
-    dt.soc[,toc := this.som * 0.5 * bd * b_depth * 100 * 100 / 100]
+    dt.soc[,toc := A_SOM_LOI * 0.5 * bd * b_depth * 100 * 100 / 100]
 
     # set the default initialisation to the one used in BodemCoolstof
     if(initialize == TRUE){
@@ -254,7 +254,7 @@ bln_rothc_sim <- function(A_SOM_LOI,
 
       # estimate bulk density
       rothc.soc[,bd := mean(dt.soc$bd)]
-      rothc.soc[,A_CLAY_MI := mean(dt.soc$this.clay)]
+      rothc.soc[,A_CLAY_MI := mean(dt.soc$A_CLAY_MI)]
       rothc.soc[,A_DEPTH := A_DEPTH]
 
       # set C stocks back to OS%
@@ -274,7 +274,7 @@ bln_rothc_sim <- function(A_SOM_LOI,
 
       # estimate bulk density
       rothc.soc[,bd := mean(dt.soc$bd)]
-      rothc.soc[,A_CLAY_MI := mean(dt.soc$this.clay)]
+      rothc.soc[,A_CLAY_MI := mean(dt.soc$A_CLAY_MI)]
       rothc.soc[,A_DEPTH := A_DEPTH]
       rothc.soc[,CIOM := dt.soc$CIOM0]
 
