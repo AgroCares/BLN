@@ -40,6 +40,7 @@
 <url><loc>https://agrocares.github.io/BLN/reference/bln_input_description.html</loc></url>
 <url><loc>https://agrocares.github.io/BLN/reference/bln_lsw.html</loc></url>
 <url><loc>https://agrocares.github.io/BLN/reference/bln_lsw_farm_hf.html</loc></url>
+<url><loc>https://agrocares.github.io/BLN/reference/bln_makkink.html</loc></url>
 <url><loc>https://agrocares.github.io/BLN/reference/bln_nut_nitrogen.html</loc></url>
 <url><loc>https://agrocares.github.io/BLN/reference/bln_nut_nue.html</loc></url>
 <url><loc>https://agrocares.github.io/BLN/reference/bln_nut_phosphorus.html</loc></url>
@@ -57,8 +58,16 @@
 <url><loc>https://agrocares.github.io/BLN/reference/bln_p_windererosion.html</loc></url>
 <url><loc>https://agrocares.github.io/BLN/reference/bln_p_workability.html</loc></url>
 <url><loc>https://agrocares.github.io/BLN/reference/bln_parms.html</loc></url>
+<url><loc>https://agrocares.github.io/BLN/reference/bln_rothc.html</loc></url>
+<url><loc>https://agrocares.github.io/BLN/reference/bln_rothc_event.html</loc></url>
+<url><loc>https://agrocares.github.io/BLN/reference/bln_rothc_event_amendment.html</loc></url>
+<url><loc>https://agrocares.github.io/BLN/reference/bln_rothc_event_crop.html</loc></url>
 <url><loc>https://agrocares.github.io/BLN/reference/bln_rothc_field.html</loc></url>
+<url><loc>https://agrocares.github.io/BLN/reference/bln_rothc_input_amendment.html</loc></url>
+<url><loc>https://agrocares.github.io/BLN/reference/bln_rothc_input_crop.html</loc></url>
+<url><loc>https://agrocares.github.io/BLN/reference/bln_rothc_input_rmf.html</loc></url>
 <url><loc>https://agrocares.github.io/BLN/reference/bln_rothc_multicore.html</loc></url>
+<url><loc>https://agrocares.github.io/BLN/reference/bln_rothc_sim.html</loc></url>
 <url><loc>https://agrocares.github.io/BLN/reference/bln_scen_croprotation.html</loc></url>
 <url><loc>https://agrocares.github.io/BLN/reference/bln_soiltype.html</loc></url>
 <url><loc>https://agrocares.github.io/BLN/reference/bln_somers.html</loc></url>
