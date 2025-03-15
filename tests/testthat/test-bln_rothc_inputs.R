@@ -63,7 +63,7 @@ test_that("bln_rothc_input_rmf works", {
 
   # run bln_rothc_input_crop
   dt.crop <- bln_rothc_input_crop(dt = rothc_rotation,B_LU_BRP = NULL,cf_yield = 1)
-  out <- bln_rothc_input_rmf(dt = dt.crop,B_LU_BRP = NULL,A_CLAY_MI=4.5)
+  out <- bln_rothc_input_rmf(dt = dt.crop,B_LU_BRP = NULL,A_CLAY_MI=4.5,simyears=50,cf_yield=1)
 
   # test dimensions and value
   expect_equal(length(out),expected = 3)

@@ -16,7 +16,7 @@ test_that("bln_rothc_sim works", {
                        M_TILLAGE_SYSTEM = 'CT',
                        rothc_rotation = rothc_rotation,
                        rothc_amendment = rothc_amendment,
-                       rothc_parms = list(simyears = 50, init = FALSE,spinup = 10,method='adams'))
+                       rothc_parms = list(simyears = 50, init = FALSE,spinup = 10, method ='adams'))
 
   # test dimensions and value
   expect_equal(dim(out),expected = c(61,2),tolerance = 0.1)

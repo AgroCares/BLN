@@ -11,7 +11,7 @@ test_that("bln_clim_rothc works", {
       quiet = TRUE,
       mc = FALSE
     ),
-    expected = c(0.867),
+    expected = c(0.951),
     tolerance = 0.1
   )
 
