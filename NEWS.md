@@ -1,7 +1,7 @@
 # BLN 0.9.0 2025-03-15
 
 ## Changed
-* remove dependency on private package `carboncastr`
+* remove dependency on private package `carboncastr`, #BLN-10
 * update `bln_rothc_field` and `rothc_initialise`
 * package table `bln_crops` expanded with `B_LU_MAKKINK` and `B_LU`
 
