@@ -1,3 +1,19 @@
+# BLN 0.9.0 2025-03-15
+
+## Changed
+* remove dependency on private package `carboncastr`
+* update `bln_rothc_field` and `rothc_initialise`
+* package table `bln_crops` expanded with `B_LU_MAKKINK` and `B_LU`
+
+## Added
+* function `bln_rothc_sim` to simulate evolution of SOC as function of crop rotation and amendment
+* function `bln_rothc` with differential equations for RothC modelling
+* function `bln_rothc_input_rmf`, `bln_rothc_input_crop` and `bln_rothc_input_amendment` to facilitate and process RothC inputs
+* function `bln_rothc_event`, `bln_rothc_event_crop` and `bln_rothc_event_amendment` to facilitate and process RothC events
+* test functions for rothc events, inputs and simulation
+* package table `bln_makkink`
+
+
 # BLN 0.8.1 2025-03-12
 
 ## Fixed
