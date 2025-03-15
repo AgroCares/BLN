@@ -4,16 +4,27 @@
 \alias{bln_rothc_input_rmf}
 \title{Estimate the rate modifying factors for the RothC modelling}
 \usage{
-bln_rothc_input_rmf(dt = NULL, B_LU_BRP = NULL, A_CLAY_MI, simyears)
+bln_rothc_input_rmf(
+  dt = NULL,
+  B_LU_BRP = NULL,
+  B_DEPTH = 0.3,
+  A_CLAY_MI,
+  simyears,
+  cf_yield
+)
 }
 \arguments{
 \item{dt}{(data.table) Table with crop rotation and related crop properties for Carbon input.}
 
 \item{B_LU_BRP}{(numeric) The crop code}
 
+\item{B_DEPTH}{(numeric) Depth of the cultivated soil layer (m), simulation depth. Default set to 0.3.}
+
 \item{A_CLAY_MI}{(numeric) The clay content of the soil (\%)}
 
 \item{simyears}{(numeric) Amount of years for which the simulation should run, default: 50 years}
+
+\item{cf_yield}{(numeric) A yield correction factor (fraction) if yield is higher than regional average}
 }
 \description{
 This function prepares the rate modifying factors for RothC given crop cover
