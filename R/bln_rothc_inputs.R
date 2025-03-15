@@ -16,6 +16,11 @@
 #' @export
 bln_rothc_input_crop <- function(dt = NULL,B_LU_BRP = NULL,cf_yield){
 
+  # add visual bindings
+  M_GREEN_TIMING = M_CROPRESIDUE = M_IRRIGATION = M_RENEWAL = NULL
+  CF_YIELD = YEAR = crft = B_LU = B_LU_EOM = fr_dpm_rpm = B_LU_HC = NULL
+  cin_crop = cin_res= B_LU_EOM_RESIDUE = cin_crop_dpm = cin_crop_rpm = cin_res_dpm = cin_res_rpm = NULL
+
   # check B_LU_BRP or crop table
   checkmate::assert_integerish(B_LU_BRP, any.missing = FALSE, null.ok = TRUE, min.len = 1)
   checkmate::assert_subset(B_LU_BRP, choices = unique(BLN::bln_crops$crop_code), empty.ok = TRUE)
@@ -92,13 +97,20 @@ bln_rothc_input_crop <- function(dt = NULL,B_LU_BRP = NULL,cf_yield){
 #' @param dt (data.table) Table with crop rotation and related crop properties for Carbon input.
 #' @param B_LU_BRP (numeric) The crop code
 #' @param A_CLAY_MI (numeric) The clay content of the soil (\%)
+#' @param simyears (numeric) Amount of years for which the simulation should run, default: 50 years
 #'
 #' @details
 #' To run this function, the dt requires as input: B_LU (a crop id), B_LU_NAME (a crop name, optional), B_LU_EOM (the effective organic matter content, kg/ha), B_LU_EOM_RESIDUE (the effective organic matter content for crop residues, kg/ha), and the B_LU_HC (the humification coeffient,-).
 #' if dt is NULL, then the crop input will be prepared using function \link{rothc_scenario} using scenario 'BAU'
 #'
 #' @export
-bln_rothc_input_rmf <- function(dt = NULL,B_LU_BRP = NULL, A_CLAY_MI){
+bln_rothc_input_rmf <- function(dt = NULL,B_LU_BRP = NULL, A_CLAY_MI, simyears){
+
+  # add visual bindings
+  cf_yield = B_LU = crop_name = M_RENEWAL = B_LU_MAKKINK = B_LU_NAME = M_GREEN_TIMING = NULL
+  mcf = crop_cover = crflt = time = cf_temp = temp = tsmdmax = this.clay = B_DEPTH = NULL
+  tsmdmax_cor = et_act = et_pot = smd = prec = hv = acc_smd = acc_smd2 = cf_moist = cf_soilcover = NULL
+  cf_renewal = cf_combi = id = yr_rep = NULL
 
   # check B_LU_BRP or crop table
   checkmate::assert_integerish(B_LU_BRP, any.missing = FALSE, null.ok = TRUE, min.len = 1)
@@ -318,6 +330,9 @@ bln_rothc_input_rmf <- function(dt = NULL,B_LU_BRP = NULL, A_CLAY_MI){
 #'
 #' @export
 bln_rothc_input_amendment <- function(dt = NULL,B_LU_BRP = NULL){
+
+  # add visual bindings
+  fr_dpm_rpm = P_HC = cin_tot = P_DOSE = P_OM = cin_hum = cin_dpm = P_NAME = p_p2o5 = cin_rpm = NULL
 
   # check B_LU_BRP or crop table
   checkmate::assert_integerish(B_LU_BRP, any.missing = FALSE, null.ok = TRUE, min.len = 1)

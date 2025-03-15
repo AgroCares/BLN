@@ -43,6 +43,11 @@ bln_rothc_sim <- function(A_SOM_LOI,
                           rothc_amendment = NULL,
                           rothc_parms = list(simyears = 50, init = FALSE,spinup = 10,method='adams')){
 
+  # add visual bindings
+  code = value_min = value_max = this.clay = this.som = a_depth = dens.sand = dens.clay = cf = bd = toc = NULL
+  b_depth = var = time = cf_abc = ciom.ini = biohum.ini = cbio.ini = chum.ini = CIOM0 = CDPM0 = CRPM0 = CBIO0 = CHUM0 = NULL
+  soc = CDPM = CRPM = CBIO = CHUM = CIOM = bd = . = NULL
+
   # add internal table
   blnp <- BLN::bln_parms
 
@@ -97,12 +102,6 @@ bln_rothc_sim <- function(A_SOM_LOI,
       if('ST' %in% M_TILLAGE_SYSTEM){k4 = 0.9 * k4}
 
       # add checks on C distribution over pools
-      if(initialize){
-
-        # initialise the C fractions
-        c_fractions <- as.list(BLN::rothc_initialise(B_LU_BRP = b_lu_brp,A_SOM_LOI = this.som,A_CLAY_MI = this.clay))
-
-      } else {
 
         # set defaults equal to input
         c_fractions <- list(fr_IOM = 0.049,fr_DPM = 0.015, fr_RPM = 0.125, fr_BIO = 0.015)
@@ -117,12 +116,12 @@ bln_rothc_sim <- function(A_SOM_LOI,
           if('fr_BIO' %in% rcp){c_fractions$fr_BIO <- rothc_parms$c_fractions[['fr_BIO']]}
 
         }
-      }
+
 
   # prepare the RothC model inputs (see: bln_rothc_inputs.R)
 
     # make rate modifying factors input database
-    dt.rmf <- bln_rothc_input_rmf(dt = dt.crop,A_CLAY_MI = this.clay)
+    dt.rmf <- bln_rothc_input_rmf(dt = dt.crop,A_CLAY_MI = this.clay, simyears = simyears)
 
     # combine RothC input parameters
     rothc.parms <- list(dec_rates = list(k1=k2,k2=k2,k3=k3,k4=k4), R1 = dt.rmf$R1, abc = dt.rmf$abc, d = dt.rmf$d)
@@ -153,7 +152,7 @@ bln_rothc_sim <- function(A_SOM_LOI,
     dt.soc[,toc := this.som * 0.5 * bd * b_depth * 100 * 100 / 100]
 
     # set the default initialisation to the one used in BodemCoolstof
-    if(TRUE){
+    if(initialize == TRUE){
 
       # set TOC to ton C / ha
       dt.soc[, toc := toc * 0.001]
@@ -201,10 +200,10 @@ bln_rothc_sim <- function(A_SOM_LOI,
     } else {
 
       # Calculate carbon pools based on default distribution (kg C / ha)
-      dt.soc[,CIOM0 := c_fractions[1] * ((toc*0.001)^1.139) * 1000]
-      dt.soc[,CDPM0 := c_fractions[2] * (toc-CIOM0)]
-      dt.soc[,CRPM0 := c_fractions[3] * (toc-CIOM0)]
-      dt.soc[,CBIO0 := c_fractions[4] * (toc-CIOM0)]
+      dt.soc[,CIOM0 := c_fractions$fr_IOM * ((toc*0.001)^1.139) * 1000]
+      dt.soc[,CDPM0 := c_fractions$fr_DPM * (toc-CIOM0)]
+      dt.soc[,CRPM0 := c_fractions$fr_RPM * (toc-CIOM0)]
+      dt.soc[,CBIO0 := c_fractions$fr_BIO * (toc-CIOM0)]
       dt.soc[,CHUM0 := toc-CIOM0-CDPM0-CRPM0-CBIO0]
 
     }
@@ -307,6 +306,10 @@ bln_rothc_sim <- function(A_SOM_LOI,
 #' RothC calculation motor
 #'
 #' Set of differential equations to calculate the evolutotion of Soil Organic Carbon using the RothC model.
+#'
+#' @param y state variables to run RothC
+#' @param time time to print output
+#' @param parms parameters to run RothC, includes rate modifying functions and constants R1, abc, and d
 #'
 #' @import deSolve
 #'

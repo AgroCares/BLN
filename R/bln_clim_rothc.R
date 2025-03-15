@@ -259,7 +259,7 @@ rothc_initialise <- function(B_LU_BRP,A_SOM_LOI,A_CLAY_MI){
   amendment <- scen.inp$amendment
 
   # Set model parameters
-  parms <- list(simyears = 150,unit = 'psomperfraction')
+  parms <- list(simyears = 150,unit = 'psomperfraction', initialize = TRUE)
 
   # Run initialization run for 30 years
   this.result <- bln_rothc_sim(A_SOM_LOI = A_SOM_LOI,

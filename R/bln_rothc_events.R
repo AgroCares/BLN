@@ -10,6 +10,9 @@
 #' @export
 bln_rothc_event <- function(crops,amendment,A_CLAY_MI,simyears){
 
+  # add visual bindings
+  id = time = yr_rep = NULL
+
   # estimate default crop rotation plan, the building block
   event.crop <- bln_rothc_event_crop(crops = crops, A_CLAY_MI)
 
@@ -62,7 +65,7 @@ bln_rothc_event_crop <- function(crops,A_CLAY_MI){
   crop_name = B_LU = NULL
   M_GREEN_TIMING = M_CROPRESIDUE = green_eom = NULL
   crflt = cin_dpm = cin_crop_dpm = cin_res_dpm = cin_rpm = cin_crop_rpm = cin_res_rpm = NULL
-  cin_crop = tcf = method = cf_yield = NULL
+  cin_crop = tcf = method = cf_yield = crop_code = time = NULL
 
   # check inputs
   arg.length <- nrow(crops)
@@ -72,7 +75,7 @@ bln_rothc_event_crop <- function(crops,A_CLAY_MI){
   checkmate::assert_true(sum(c('M_GREEN_TIMING','M_CROPRESIDUE','cf_yield') %in% colnames(crops)) == 3)
   checkmate::assert_numeric(crops$cf_yield,lower = 0, upper = 2.0, any.missing = FALSE, len = arg.length)
   checkmate::assert_character(crops$M_GREEN_TIMING, any.missing = FALSE, len = arg.length)
-  checkmate::assert_subset(crops$M_GREEN_TIMING, choices = pandex::enum_opts('M_GREEN_TIMING'))
+  checkmate::assert_subset(crops$M_GREEN_TIMING, choices = c("august","september", "october","november","never"))
   checkmate::assert_logical(crops$M_CROPRESIDUE,any.missing = FALSE, len = arg.length)
   checkmate::assert_integerish(crops$year,any.missing = FALSE, len = arg.length)
 
@@ -186,7 +189,7 @@ bln_rothc_event_crop <- function(crops,A_CLAY_MI){
 #' @param amendment (data.table) A table with the following column names: year, month, cin_tot, cin_hum, cin_dpm, cin_rpm and the fraction eoc over p (fr_eoc_p). Month is optional.
 #'
 #' @details This function increases temporal detail for time series of C inputs of organic amendments.
-#' The inputs for organic amendments are organised in the data.table amendment, where the carbon inputs has the unit kg C / ha, being calculated by \link{ccr_update_amendment_nl}.
+#' The inputs for organic amendments are organised in the data.table amendment, where the carbon inputs has the unit kg C / ha.
 #'
 #' The output is an EVENT object.
 #'
@@ -195,8 +198,8 @@ bln_rothc_event_amendment <- function(crops,amendment = NULL){
 
   # add visual bindings
   B_LU = B_LU_NAME = p_cat = fre_eoc_p = crflt = tcf = NULL
-  cin_hum = cin_rpm = cin_dpm = method = NULL
-  fr_eoc_p = NULL
+  cin_hum = cin_rpm = cin_dpm = method = crop_code = crop_name = NULL
+  fr_eoc_p = time = NULL
 
   # make local copy
   dt <- copy(amendment)
