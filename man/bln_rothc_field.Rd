@@ -23,7 +23,7 @@ bln_rothc_field(
 
 \item{simyears}{(integer) value for the amount of years to simulate, default is 50 years}
 
-\item{init}{(boolean) use internal analytical solution for initialisation from carboncastr}
+\item{init}{(boolean) use internal analytical solution for initialisation RothC}
 
 \item{scen}{(character) scenarios to be simulated. Options include BAU, BAUIMPR,CLT and ALL.}
 
