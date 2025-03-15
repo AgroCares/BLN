@@ -11,10 +11,10 @@
 bln_rothc_event <- function(crops,amendment,A_CLAY_MI,simyears){
 
   # estimate default crop rotation plan, the building block
-  event.crop <- bln_event_crop(crops = crops, A_CLAY_MI)
+  event.crop <- bln_rothc_event_crop(crops = crops, A_CLAY_MI)
 
   # estimate Carbon input via manure, compost and organic residues
-  event.man <- bln_event_amendment(crops = crops,amendment = amendment)
+  event.man <- bln_rothc_event_amendment(crops = crops,amendment = amendment)
 
   # create event
   rothc.event <- rbind(event.crop,event.man)
@@ -56,7 +56,7 @@ bln_rothc_event <- function(crops,amendment,A_CLAY_MI,simyears){
 #' @param A_CLAY_MI (numeric) The clay content of the soil (\%).
 #'
 #' @export
-bln_event_crop <- function(crops,A_CLAY_MI){
+bln_rothc_event_crop <- function(crops,A_CLAY_MI){
 
   # add visual bindings
   crop_name = B_LU = NULL
@@ -191,7 +191,7 @@ bln_event_crop <- function(crops,A_CLAY_MI){
 #' The output is an EVENT object.
 #'
 #' @export
-bln_event_amendment <- function(crops,amendment = NULL){
+bln_rothc_event_amendment <- function(crops,amendment = NULL){
 
   # add visual bindings
   B_LU = B_LU_NAME = p_cat = fre_eoc_p = crflt = tcf = NULL
