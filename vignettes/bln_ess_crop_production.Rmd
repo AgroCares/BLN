@@ -32,15 +32,15 @@ library(BLN)
 ## 1. introduction
 
 ### Background
-Facilitating and promoting crop production is one of the ecosystem services a soil supplies. The Dutch soil assessment scheme BLN, being an abbreviation for `Bodemindicatorenset Landbouwgronden Nederland`, strongly depends on the [Open Soil Index Framework](https://pubs.acs.org/doi/10.1021/acs.est.2c04516#), a presucessor of the BLN. The Open Soil Index is currently in use by farmers and farm advisors to facilitate sustainable soil management. In addition, governments, banks, regional governments, agricultural laboratories and other stakeholders are using this framework to monitor soil health and valorise appropriate soil management measures. For more information on the OSI, see: [the OBIC package]([OBIC]).
+Facilitating and promoting crop production is one of the ecosystem services a soil supplies. The Dutch soil assessment scheme BLN, being an abbreviation for `Bodemindicatorenset Landbouwgronden Nederland`, strongly depends on the [Open Soil Index Framework](https://pubs.acs.org/doi/10.1021/acs.est.2c04516#), a predecessor of the BLN. The Open Soil Index is currently in use by farmers and farm advisors to facilitate sustainable soil management. In addition, (regional) governments, banks, agricultural laboratories and other stakeholders are using this framework to monitor soil health and valorise appropriate soil management measures. For more information on the OSI, see: [the OBIC package]([OBIC]).
 
 
 ### The Soil Assessment Framework
-Soil quality is defined as the capacity of a soil to fulfill the desired soil functions under varying conditions for a combination of purposes (and services) such as food production, efficient nutrient cycling, and preservation of biodiversity. This vignette is focussing on the ecosystem service food production. Lets start with some definitions:
+Soil quality is defined as the capacity of a soil to fulfil the desired soil functions under varying conditions for a combination of purposes (and services) such as food production, efficient nutrient cycling, and preservation of biodiversity. This vignette is focussing on the ecosystem service food production. Lets start with some definitions:
 
-* Soil functions are quantitative relationships evaluating how soil properties alone or in combination with each other contribute to crop produciton. 
+* Soil functions are quantitative relationships evaluating how soil properties alone or in combination with each other contribute to crop production. 
 * Soil indicators are the result of an evaluation scoring methodology transforming the output of soil functions to a qualitative category (low to high) or a numeric grade (1-10). 
-* Soil and field properties are characteristics of a soil (or field) that are used to quantify the soil functions. These characteristics may have been analyzed in the laboratory as well as those resulting from the location of the field in the landscape. For example, the groundwater level, the variation in ground level, the slope, and the presence of drainage are soil properties. 
+* Soil and field properties are characteristics of a soil (or field) that are used to quantify the soil functions. These characteristics may have been analysed in the laboratory as well as those resulting from the location of the field in the landscape. For example, the groundwater level, the variation in ground level, the slope, and the presence of drainage are soil properties. 
 * Soil management includes all measures that land users or farmers can take to improve or adapt soil quality for a specific purpose. This has a direct influence on (measurable) soil properties. 
 
 Within the boundary condition of context (i.e. continuation of crop rotation scheme in next decade) and objective (i.e. sustainable crop production), soil properties are quantified based on routinely available soil analyses, and field properties. The soil properties are in conjunction with each other used to quantify a number of soil functions. These functions can be clustered around the three relevant aspects of soil, namely:
@@ -119,7 +119,7 @@ Below a short snapshot of the `bln_farm_hf` is given:
 
 In this example all optional input variables are set to the lowest score (for visuals soil assessment). Since soil quality can only be evaluated given its use, the crop rotation (being the sequence of crops cultivated over time) determines also which soil properties and which soil functions are relevant and how they are evaluated given a desired threshold value.
 
-Note that `bln_farm_hf` is a data.table, a modern and fast variant of a data frame [data.table]. It's particularly useful for large datasets because it only prints a selection of the dataset and calculations done on a data.table are extremely fast. You can learn more about data.tables at [this link](https://CRAN.R-project.org/package=data.table/vignettes/datatable-intro.html) ; in particular you can convert data frames to data.tables with as.data.table().
+Note that `bln_farm_hf` is a data.table, a modern and fast variant of a data.frame. It's particularly useful for large datasets because it only prints a selection of the dataset and calculations done on a data.table are extremely fast. You can learn more about data.tables at [this link](https://CRAN.R-project.org/package=data.table/vignettes/datatable-intro.html); in particular you can convert data frames to data.tables with `data.table::as.data.table()`.
 
 #### Running BLN for a single field
 The main function to evaluate the quality of the soil is `bln_field()` as well as `bln_field_dt()`. Both are wrappers around the the following steps (where the latter requires a data.table as input and the former does not):
@@ -149,12 +149,12 @@ knitr::include_graphics('../man/figures/OBIC_score_integratie_2.png')
 
 <br />
 
-An example of both wrapper functions is illustrated below. The soil has an BLN score of 0.79 indicating a relatively good quality to continue the current crop rotation plan. A value of one means that the soil quality is optimum for the continuation of the cropping plan whereas a value of zero means that there are substantial bottlenecks that need to be solved. Note that the BLN is automatically also calculating scores for other ecosystem services not elaborated in this vignette.
+An example of both wrapper functions are illustrated below. The soil has an BLN score of 0.79 indicating a relatively good quality to continue the current crop rotation plan. A value of one means that the soil quality is optimum for the continuation of the cropping plan whereas a value of zero means that there are substantial bottlenecks that need to be solved. Note that the BLN is automatically also calculating scores for other ecosystem services not elaborated in this vignette.
 
 
 ```{r, sim1, echo=TRUE}
   
-  # select the data for de Mare farm
+  # select the data for de Marke farm
   dt <- copy(BLN::bln_farm_hf)
   dt <- dt[id==1]
   
@@ -277,18 +277,18 @@ The total N supply is evaluated via a parabolic scoring function with an optimum
 <br />
 
 #### Phosphorus Availability Index
-Phosphate (P) is present in the soil in both inorganic and organic. Inorganic P present in the soil solution is directly available for plant uptake. The amount of P in the soil solution is small compared to the total P supply of the soil. Organic P is only available to the plant after decomposition by micro-organisms. The undissolved inorganic and organic P compounds can be divided into labile and stable compounds:
+Phosphate (P) is present in the soil in both inorganic and organic form. Inorganic P present in the soil solution is directly available for plant uptake. The amount of P in the soil solution is small compared to the total P supply of the soil. Organic P is only available to the plant after decomposition by micro-organisms. The undissolved inorganic and organic P compounds can be divided into labile and stable compounds:
 
 * The labile P fraction is in equilibrium with the P in solution and is the main source of P re-supply to the soil solution. Labile inorganic P compounds include P bound to the surface of iron and aluminium (hydr-) oxides, and iron (Fe), aluminium (Al) and calcium phosphates. In acid and neutral soils, P availability is mainly determined by its binding to Fe and Al (hydr-) oxides. In calcareous soils, P is usually associated with calcium (Ca).
 * The stable P compounds are usually poorly soluble and therefore poorly available to plants. Stable inorganic P compounds include P-containing soil minerals (e.g. apatite).
 
-The phosphorus supply of an agricultural soil can be derived from methods measuring either a capacity or an intensity of P pools in soil or a combination of both. The latter approach is followed for grassland and maize fields, where the optimum P supply is derived from multiple field experiments across the Netherlands. For arable farming systems, the phosphorus supply is derived from one measured P pool reflecting the P status as well as controlling the crop response to P inputs. The availability is highly controlled by chemical adsorption and desorption equilibria and affected by the iron and aluminum oxides content of soils as well as the availability of oxygen. A phosphorus supply around 4.8 (unitless index, for maize and grassland fields) and 45 (mg P2O5 per liter, for arable fields) is optimal for crop production.
+The phosphorus supply of an agricultural soil can be derived from methods measuring either a capacity or an intensity of P pools in soil or a combination of both. The latter approach is followed for grassland and maize fields, where the optimum P supply is derived from multiple field experiments across the Netherlands. For arable farming systems, the phosphorus supply is derived from one measured P pool reflecting the P status as well as controlling the crop response to P inputs. The availability is highly controlled by chemical adsorption and desorption equilibria and affected by the iron and aluminium oxides content of soils as well as the availability of oxygen. A phosphorus supply around 4.8 (unitless index, for maize and grassland fields) and 45 (mg P~2~O~5~ per liter, for arable fields) is optimal for crop production.
 
-To assess the capacity of soils to supply P, one can make use of the function `bln_c_posphor`. The function requires the following input: the BRP crop code and P concentration measured via extraction of ammonium lactate (A_P_AL), water (A_P_WA) or 0.01M CaCl2 (A_P_CC). 
+To assess the capacity of soils to supply P, one can make use of the function `bln_c_posphor`. The function requires the following input: the BRP crop code and P concentration measured via extraction of ammonium lactate (A_P_AL) and either water (A_P_WA) for arable cultivation or 0.01M CaCl~2~ (A_P_CC) for grass and maize cultivations. 
 
 For more details, see `?bln_c_posphor`. 
 
-An example of this function is illustrated below for both an arable and a grassland field with one levels of A_P_AL (being sufficient for crop growth) en varying levels of A_P_CC. 
+An example of this function is illustrated below for both an arable and a grassland field with one level of A_P_AL (being sufficient for crop growth) en varying levels of A_P_CC. 
 
 <br />
 
@@ -332,7 +332,8 @@ An example of this function is illustrated below for both an arable and a grassl
 
 
 #### Potassium supply
-Like N and P, potassium (K) an important element for crop growth. Potassium is almost exclusively present in the soil in mineral form. The amount of K in the soil can be divided into 4 fractions:
+Like N and P, potassium (K) is an important element for crop growth. Potassium is almost exclusively present in the soil in mineral form. The amount of K in the soil can be divided into 4 fractions:
+
 * K^+- ions in the soil solution; completely and directly available to the plant, but insufficient to cover the needs of the crop
 * K-exchangeable; K adsorbed to the clay and humus particles (adsorption complex; CEC). The exchange between K in the soil solution and K adsorbed occurs rapidly: within minutes to 24 hours
 * K-fixed or bound (in clay soils); the K enclosed in the clay plates. Exchange between K-fixed and K-soil solution takes days to months
