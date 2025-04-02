@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
-```{r setup}
+```{r setup, echo=FALSE}
 library(BLN)
 ```
 
@@ -39,7 +39,7 @@ Note also that by default the function is not (re)calculating the C saturation v
 
 All input variables are described below:
 
-```{r table input}
+```{r table input, echo=FALSE}
 desc <- BLN::bln_input_description
 knitr::kable(desc)
 ```
@@ -50,7 +50,7 @@ When the function bln_field has been used to assess the quality of the soil, the
 All output variables are listed in the table below:
 
 
-```{r table output}
+```{r table output, echo=FALSE}
 outdesc <- BLN::bln_output_description
 knitr::kable(outdesc)
 ```
