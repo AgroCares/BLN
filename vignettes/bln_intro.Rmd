@@ -41,7 +41,7 @@ We start with some (virtual) data being collected for one of the research farms 
 
 ```{r make-plot,echo=TRUE, fig.height= 6, fig.width=6.8,fig.align='center'}
 
-# select the data for de Mare farm
+# select the data for de Marke farm
 s1 <- copy(BLN::bln_farm_hf)
 
 # make a spatial object from the farm, only latest year
@@ -199,7 +199,7 @@ out <- BLN::bln_field(ID = dt.field$id,
 ```
 
 
-To simplify, one can also use a data.table as input. In that case use the function `bln_field_dt()`. The function checks whether all desired input variables are present. By default is the option to calculate the C saturation with RothC switched off. Again, the illustration below shows the use of `bln_field_dt` to retreive the BLN indicators. For the interpretation of each of the 35 soil indicators, one can have a look at the `vignette("bln_column_description")`
+To simplify, one can also use a data.table as input. In that case use the function `bln_field_dt()`. The function checks whether all desired input variables are present. By default is the option to calculate the C saturation with RothC switched off. Again, the illustration below shows the use of `bln_field_dt` to retrieve the BLN indicators. For the interpretation of each of the 35 soil indicators, one can have a look at the `vignette("bln_column_description")`
 
 
 ```{r make-sim2,fig.width = 7, fig.height = 4,fig.fullwidth = TRUE,echo=TRUE}
