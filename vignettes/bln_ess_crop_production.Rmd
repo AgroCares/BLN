@@ -503,12 +503,12 @@ An example of this function is illustrated below for both an arable and a grassl
 
 
 #### Soil Acidity
-The pH is a measure of the acidity of the soil. The pH influences the soil quality and crop growth, among others through availability of nutrients and (heavy) metals and activity of soil life. In addition, the pH also influences various soil functions such as nutrient buffering and aggregate stability. The optimum soil pH for crop growth differs per crop. Potatoes prefer a lower pH and cereals, maize, sugar beet, and field vegetables a higher pH. Organic matter reduces the negative effect of pH on crop growth. On sandy soils with an organic matter content of 15%, the desired pH can be up to half a unit lower than on low organic matter content soils. On clay soils the desired pH is higher than on sandy soils. With a clay percentage above 10, the desired pH is half a unit higher than with low clay percentages.
+The pH is a measure of the acidity of the soil. The pH influences the soil quality and crop growth, among others through availability of nutrients and (heavy) metals and activity of soil life. In addition, the pH also influences various soil functions such as nutrient buffering and aggregate stability. The optimum soil pH for crop growth differs per crop. Potatoes prefer a lower pH whilst cereals, maize, sugar beet, and field vegetables a higher pH. Organic matter reduces the negative effect of pH on crop growth. On sandy soils with an organic matter content of 15%, the desired pH can be up to half a unit lower than on low organic matter content soils. On clay soils the desired pH is higher than on sandy soils. With a clay percentage above 10, the desired pH is half a unit higher than with low clay percentages.
 
 The optimum pH is determined in historical field experiments given crop rotation plan, soil texture, soil organic matter, and initial pH. 
-The assessment of the current soil pH can be done via the function `i_c_ph`. The function requires the following input variables: land use (B_LU_BRP), soil type (B_SOILTYPE_AGR), soil organic matter (A_SOM_LOI), clay content (A_CLAY_MI) and the pH measured in CaCl~2~ (A_PH_CC).
+The assessment of the current soil pH can be done via the function `bln_c_ph`. The function requires the following input variables: land use (B_LU_BRP), soil type (B_SOILTYPE_AGR), soil organic matter (A_SOM_LOI), clay content (A_CLAY_MI) and the pH measured in CaCl~2~ (A_PH_CC).
 
-For more details, see `?i_c_ph`. 
+For more details, see `?bln_c_ph`. 
 
 An example of this function is illustrated below for both an arable and a grassland field over a predefined range in initial pH from 3 to 7.
 
@@ -555,7 +555,7 @@ An example of this function is illustrated below for both an arable and a grassl
 
 
 #### OBIC indicators not used
-From the OBIC calculator three indicators reflecting soil chemical functions are not used in the BLN. These include the availability and buffering of zinc and copper on the one hand, and the cation exchange capacity as factor controlling the availability of cations. 
+From the OBIC calculator three indicators reflecting soil chemical functions are not used in the BLN. These are the availability and buffering of zinc and copper, and the cation exchange capacity as factor controlling the availability of cations. 
 
 
 ### 3.2 Physical soil functions
