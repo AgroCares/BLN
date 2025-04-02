@@ -559,7 +559,7 @@ From the OBIC calculator three indicators reflecting soil chemical functions are
 
 
 ### 3.2 Physical soil functions
-The BLN evaluates also a series of physical soil functions related to the supply of water and the rootability of the top and subsoil. The different soil physical functions are illustrated and explained below. Soil physical functions include the capacity of soils to retain and supply water, to resist wind erosion, topsoil sealing, subsoil compaction, and to deliver bearing capacity for mechanic activities. 
+The BLN also evaluates a series of physical soil functions related to the supply of water and the rootability of the top and subsoil. The different soil physical functions are illustrated and explained below. Soil physical functions include the capacity of soils to retain and supply water, to resist wind erosion, topsoil sealing, subsoil compaction, and to deliver bearing capacity for mechanised activities such as sowing or plowing. 
 
 #### Water Stress due to drought or wetness
 The supply of water is of uttermost importance for crop development. The water supply depends on weather conditions and the capacity of soils to buffer and supply water during the growing season. Using long-term field experiments for multiple crops, empirical relationships between soil texture, ground water levels, and yield depressions due to drought or too wet conditions have been developed (Van Bakel, 2005; Huinink, 2018). Within OBIC the crop yield response to drought stress or wetnessstress can be estimated via the function `bln_p_droughtstress` or `bln_p_wetnessstress`, requiring as input a soil code (representing unique combinations of soil type and geohydrological conditions controlling water availability), crop type, and groundwater level.
@@ -657,8 +657,7 @@ An example of these functions is illustrated below for an arable soil with varia
                aes(x = A_CLAY_MI, y = i_p_se, color = luse,group = luse)) + 
         geom_line() + geom_point(size=3) +  theme_bw() + scale_fill_viridis_d()+ scale_color_viridis_d()+ 
         ylab('Soil Sealing (-)') + xlab('Clay content (%)') + ylim(0,1)+
-        theme(legend.position = c(0.8,0.2),
-              plot.title = element_text(size=10),
+        theme(plot.title = element_text(size=10),
               legend.text = element_text(size=10)) + 
         ggtitle('Soil sealing given SOM and clay content') +
         guides(color = guide_legend(title="land use"))
@@ -668,14 +667,13 @@ An example of these functions is illustrated below for an arable soil with varia
                aes(x = A_CLAY_MI, y = i_p_du, color = luse)) + 
         geom_line() + geom_point(size=3) +  theme_bw() + scale_fill_viridis_d()+ scale_color_viridis_d()+ 
         ylab('Wind Erodibility (-)') + xlab('Clay content (%)') + ylim(0,1)+
-        theme(legend.position = c(0.8,0.2),
-              plot.title = element_text(size=10),
+        theme(plot.title = element_text(size=10),
               legend.text = element_text(size=10)) + 
         ggtitle('Wind erodibility given soil texture and landuse') +
         guides(color = guide_legend(title="land use"))
   
   # plot side by side
-  p1 + p2
+  p1 + p2 + plot_layout(guides = "collect")
 ```
 
 
@@ -714,10 +712,12 @@ To illustrate how both functions are evaluated, we firstly show the dependency o
   dt.test2[, i_p_as := bln_p_aggstability(B_SOILTYPE_AGR, A_SOM_LOI, A_K_CO_PO, A_CA_CO_PO, A_MG_CO_PO)]
    
   # plot output crumbleabilty
-  p1 <- ggplot(data = dt.test1,aes(x = A_CLAY_MI, y = i_p_cr,color=landuse)) + 
+  p1 <- ggplot(data = dt.test1,
+               aes(x = A_CLAY_MI, y = i_p_cr,color=landuse)) + 
         geom_line() + geom_point(size=3) +  theme_bw() + scale_fill_viridis_d()+ scale_color_viridis_d()+ 
         ylab('Crumbleability score') + xlab('Clay content (%)') + #ylim(0,1)+
-        theme(legend.position = c(0.2,0.2),
+        theme(legend.position = "inside",
+              legend.position.inside = c(0.2,0.2),
               plot.title = element_text(size=10),
               legend.text = element_text(size=10)) + 
     ggtitle('Soil crumbleability given SOM and clay content')   
@@ -728,7 +728,8 @@ To illustrate how both functions are evaluated, we firstly show the dependency o
         geom_point(size=2) + theme_bw() + scale_fill_viridis_d()+ scale_colour_viridis_b()+ 
         ylab('Aggregate stability score (-)') + xlab('Calcium ocuppation') + ylim(0,1)+
         theme(plot.title = element_text(size=10),
-              legend.position = c(0.6,0.2),
+              legend.position = "inside",
+              legend.position.inside = c(0.6,0.2),
               legend.text = element_text(size=10),
               legend.title = element_text(size=10)) +
     ggtitle('Aggregate stability given variation in Ca, Mg and K')+
