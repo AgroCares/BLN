@@ -339,9 +339,9 @@ Like N and P, potassium (K) is an important element for crop growth. Potassium i
 * K-fixed or bound (in clay soils); the K enclosed in the clay plates. Exchange between K-fixed and K-soil solution takes days to months
 * K-mineral or K rock; becomes available through weathering. The amount of K that becomes available through weathering during a growing season is too small to be of agricultural interest.
 
-The K supply is strongly controlled by the distribution of K over the possible K pools in soil, being controlled by adsorption and desorption processes, the cation exchange capacity of the soil and competing ions in soil solution and present at the exchange complex. Building on agronomic research from the last decade, the K supply is quantified for grasslands using the plant available K fraction (measured via CaCl2-extraction, K-CaCl2) as well as the CEC. For maize it is quantified using K-CaCl2 and for arable fields its quantified from K-CaCl2 and the CEC while accounting for the clay content, the organic matter content and the pH of the soil. 
+The K supply is strongly controlled by the distribution of K over the possible K pools in soil, being controlled by adsorption and desorption processes, the cation exchange capacity of the soil and competing ions in soil solution and present at the exchange complex. Building on agronomic research from the last decade, the K supply is quantified for grasslands using the plant available K fraction (measured via CaCl~2~`-extraction, K-CaCl~2~) as well as the CEC. For maize it is quantified using K-CaCl~2~ and for arable fields its quantified from K-CaCl~2~ and the CEC while accounting for the clay content, the organic matter content and the pH of the soil. 
 
-To assess the capacity of soils to supply K, one can make use of the function `bln_c_potassium`. The function requires the following input: the BRP crop code, the soil type, the organic matter content, the clay content, the pH, the cation exchange capacity (CEC), the occupation of the CEC with potassium (%) and the directly available concentration of K as determined with a soil extraction with 0.01M CaCl2. 
+To assess the capacity of soils to supply K, one can make use of the function `bln_c_potassium`. The function requires the following input: the BRP crop code, the soil type, the organic matter content, the clay content, the pH, the cation exchange capacity (CEC), the occupation of the CEC with potassium (%) and the directly available concentration of K as determined with a soil extraction with 0.01M CaCl~2~. 
 
 For more details, see `?bln_c_potassium`. 
 
@@ -393,7 +393,7 @@ An example of this function is illustrated below for both an arable and a grassl
 
 
 #### Sulfur supply
-Sulfur (S) is needed - along with nitrogen - for the formation of proteins in the plant. Whether S supply from the soil is sufficient for optimal production and quality depends on the crop's S requirements and the S supply in the soil. The S supply is  determined by soil processes and external sulfur supplies to the soil.
+Sulfur (S) is needed - along with nitrogen - for the formation of proteins in the plant. Whether S supply from the soil is sufficient for optimal production and quality depends on the crop's S requirement and the S supply in the soil. The S supply is  determined by soil processes and external sulfur supplies to the soil.
 
 The amount of sulfur in the soil that is available for crop uptake is determined by the mineral sulfur supply remaining in the soil after winter (Smin), mineralization of sulfur in the soil during the growing season (sulfur supply capacity), sulfur deposition, sulfur supply by irrigation during cultivation, capillary rise of sulfur-containing groundwater, and by possible losses. Sulfur supply, capillary rise, and Smin are quantitatively the most important inputs of sulfur. However, all three can vary considerably. The contribution from sulfur deposition is only minor throughout the Netherlands. A substantial amount of sulfur can also be supplied through irrigation with sulfurous spring water. This supply, however, varies greatly, depending on the amount sprayed and the sulfur content of the water.
 
@@ -447,11 +447,11 @@ An example of this function is illustrated below for both an arable and a grassl
 
 
 #### Magnesium supply
-Magnesium is an important element for crop growth, livestock health, and livestock productivity. Deficiencies for magnesium often occur on sandy soils with low organic matter and low pH. The supply of Mg for arable fields as well as grassland fields on sandy soils is directly related to the plant available Mg-content (Mg-CaCl2). For grassland fields on clay and peat soils the Mg-supply is indirectly quantified given the required composition of the grass (for intake by cows) and depends on the CEC, the organic matter and clay content, pH, as well as the K-availability assessed by K-CaCl2 and K-CEC. 
+Magnesium is an important element for crop growth, livestock health, and livestock productivity. Deficiencies for magnesium often occur on sandy soils with low organic matter and low pH. The supply of Mg for arable fields as well as grassland fields on sandy soils is directly related to the plant available Mg-content (Mg-CaCl~2~). For grassland fields on clay and peat soils the Mg-supply is indirectly quantified given the required composition of the grass (for intake by cows) and depends on the CEC, the organic matter and clay content, pH, as well as the K-availability assessed by K-CaCl~2~ and K-CEC. 
 
-To assess the Mg supplying capacity of the soil, one can make use of the function `i_c_mg`. The function requires the following input: the BRP crop code, the soil type, the organic matter content, the clay content, the pH, the cation exchange capacity (CEC), the occupation of the CEC with potassium (%) and the directly available concentration of both Mg and K as determined with a soil extraction with 0.01M CaCl2. 
+To assess the Mg supplying capacity of the soil, one can make use of the function `bln_c_magnesium`. The function requires the following input: the BRP crop code, the soil type, the organic matter content, the clay content, the pH, the cation exchange capacity (CEC), the occupation of the CEC with potassium (%) and the directly available concentration of both Mg and K as determined with a soil extraction with 0.01M CaCl~2~. 
 
-For more details, see `?i_c_mg`. 
+For more details, see `?bln_c_magnesium`. 
 
 An example of this function is illustrated below for both an arable and a grassland field.
 
@@ -506,7 +506,7 @@ An example of this function is illustrated below for both an arable and a grassl
 The pH is a measure of the acidity of the soil. The pH influences the soil quality and crop growth, among others through availability of nutrients and (heavy) metals and activity of soil life. In addition, the pH also influences various soil functions such as nutrient buffering and aggregate stability. The optimum soil pH for crop growth differs per crop. Potatoes prefer a lower pH and cereals, maize, sugar beet, and field vegetables a higher pH. Organic matter reduces the negative effect of pH on crop growth. On sandy soils with an organic matter content of 15%, the desired pH can be up to half a unit lower than on low organic matter content soils. On clay soils the desired pH is higher than on sandy soils. With a clay percentage above 10, the desired pH is half a unit higher than with low clay percentages.
 
 The optimum pH is determined in historical field experiments given crop rotation plan, soil texture, soil organic matter, and initial pH. 
-The assessment of the current soil pH can be done via the function `i_c_ph`. The function requires the following input variables: land use (B_LU_BRP), soil type (B_SOILTYPE_AGR), soil organic matter (A_SOM_LOI), clay content (A_CLAY_MI) and the pH measured in CaCl2 (A_PH_CC).
+The assessment of the current soil pH can be done via the function `i_c_ph`. The function requires the following input variables: land use (B_LU_BRP), soil type (B_SOILTYPE_AGR), soil organic matter (A_SOM_LOI), clay content (A_CLAY_MI) and the pH measured in CaCl~2~ (A_PH_CC).
 
 For more details, see `?i_c_ph`. 
 
