@@ -2,7 +2,7 @@
 % Please edit documentation in R/bln_gw_recharge.R
 \name{bln_wat_groundwater_recharge}
 \alias{bln_wat_groundwater_recharge}
-\title{Function to calculate and evaluate the groundwater recharche in view of the soils' function to retain water}
+\title{Function to calculate and evaluate the groundwater recharge in view of the soils' function to retain water}
 \usage{
 bln_wat_groundwater_recharge(
   ID,
@@ -39,5 +39,20 @@ bln_wat_groundwater_recharge(
 \item{M_GREEN}{(boolean) A soil measure. Are catch crops sown after main crop (optional, option: yes or no)}
 }
 \description{
-Function to calculate and evaluate the groundwater recharche in view of the soils' function to retain water
+Function to calculate and evaluate the groundwater recharge in view of the soils' function to retain water
+}
+\examples{
+bln_wat_groundwater_recharge(
+ID = 15,
+B_LU_BRP = c(233,259,2014,308),
+B_SC_WENR = rep(11,4),
+B_GWL_CLASS = rep('GtVI',4),
+B_DRAIN = rep(TRUE,4),
+A_CLAY_MI = rep(20,4),
+A_SAND_MI = rep(15,4),
+A_SILT_MI = rep(10,4),
+A_SOM_LOI = c(2,3,5,8),
+M_GREEN = rep(FALSE,4)
+)
+
 }

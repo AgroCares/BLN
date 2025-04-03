@@ -1,4 +1,4 @@
-#' Function to calculate and evaluate the groundwater recharche in view of the soils' function to retain water
+#' Function to calculate and evaluate the groundwater recharge in view of the soils' function to retain water
 #'
 #' @param ID (character) A field id
 #' @param B_LU_BRP (numeric) The crop code
@@ -13,6 +13,20 @@
 #'
 #' @import data.table
 #' @import OBIC
+#'
+#' @examples
+#' bln_wat_groundwater_recharge(
+#' ID = 15,
+#' B_LU_BRP = c(233,259,2014,308),
+#' B_SC_WENR = rep(11,4),
+#' B_GWL_CLASS = rep('GtVI',4),
+#' B_DRAIN = rep(TRUE,4),
+#' A_CLAY_MI = rep(20,4),
+#' A_SAND_MI = rep(15,4),
+#' A_SILT_MI = rep(10,4),
+#' A_SOM_LOI = c(2,3,5,8),
+#' M_GREEN = rep(FALSE,4)
+#' )
 #'
 #' @export
 bln_wat_groundwater_recharge <- function(ID,B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_DRAIN,
