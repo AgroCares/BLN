@@ -1,0 +1,270 @@
+---
+title: "bln_ess_groundwater"
+output: rmarkdown::html_vignette
+bibliography: references.bib
+csl: nmi-csl-nmi-v1_11.csl
+vignette: >
+  %\VignetteIndexEntry{bln_ess_groundwater}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include=FALSE}
+
+# required packages
+require(data.table); require(BLN); require(ggplot2);require(patchwork)
+
+# set some default options for the html page
+knitr::opts_chunk$set(echo = FALSE,
+                      collapse = TRUE,
+                      comment = "#>")
+options(rmarkdown.html_vignette.check_title = FALSE)
+setDTthreads(1)
+
+```
+
+```{r setup}
+library(BLN)
+
+ggplot2::theme_set(
+  theme_bw() +
+  theme(
+    plot.title = element_text(size=10),
+    legend.text = element_text(size=10),
+    axis.text = element_text(size=10, colour = 'black'),
+    legend.position="inside",
+    legend.position.inside = c(0.7,0.2),
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_blank()
+  )
+)
+```
+
+## Introduction
+Groundwater is used as source of drinking water, irrigation, and supply habitats
+with water. Groundwater must continuously be recharged by precipitation which
+infiltrates the soil. Soil plays a pivotal role in ensuring that there is ample
+clean groundwater. Soils may buffer groundwater recharge, filter out nutrients,
+and breakdown (organic) contaminants such as pesticides.
+
+It is important to monitor the soil functions that support groundwater ecosystem
+services. Because agricultural soils cover large areas, and may be subject to 
+operations which hinder soil functions in support of groundwater such as the use
+of large machines that may compact the soil, and the use of manure, fertilisers,
+and pesticides.
+
+The BLN evaluates the following soil functions:
+
+* groundwater recharge
+* buffering of nitrogen in soil water
+* buffering of pesticides
+
+## Groundwater recharge
+Groundwater recharge is evaluated with the `bln_wat_groundwater_recharge` and
+`bln_bbwp_bw` functions. These are akin to the functions `I_H_GWR` and 
+`S_BBWP_WB` in the OBIC and BBWP packages [@verweij_obic_2023; @bbwp2023].
+
+The first function, `bln_wat_groundwater_recharge`, evaluates how well water can
+infiltrate and seep down to the groundwater. This is affected by the soil's 
+cultivation (B_LU_BRP), the risk of soil compaction (B_SC_WENR), groundwater level
+(B_GWL_CLASS), presence of drains, soil texture, and the use of green manure.
+
+The second function, `bln_bbwp_bw`, evaluates how well a soil can hold onto water
+such that it has sufficient time to infiltrate. This also depends on the 
+cultivation, groundwater level and soil texture but is unaffected by soil
+compaction risk. Instead, this function uses considers whether the soil is 
+located in a drought-prone area and the HELP code corresponding to the fields 
+location [@van_Bakel2005]. These HELP codes relate to the water needs of types
+of landuse.
+
+See examples of these BLN functions below.
+
+```{r groundwater recharge function demo, echo=TRUE}
+water_recharge <- bln_wat_groundwater_recharge(
+      ID = 15,
+      B_LU_BRP = 259,
+      B_SC_WENR = 3,
+      B_GWL_CLASS = 'GtVI',
+      B_DRAIN = TRUE,
+      A_CLAY_MI = 20,
+      A_SAND_MI = 65,
+      A_SILT_MI = 10,
+      A_SOM_LOI = 5,
+      M_GREEN = FALSE
+      )
+
+water_buffering <- bln_bbwp_bw(
+      ID = 15,
+      B_LU_BRP = 259,
+      B_HELP_WENR = 'Mn25C',
+      B_GWL_CLASS = 'GtVI',
+      B_AREA_DROUGHT = TRUE,
+      A_CLAY_MI = 20,
+      A_SAND_MI = 65,
+      A_SILT_MI = 10,
+      A_SOM_LOI = 5,
+      penalty = TRUE
+      )
+```
+
+Below we illustrate how these indicators react to changes in soil texture,
+groundwater level, and crop type.
+
+```{r groundwater recharge sensitivty figures, fig.width=7, fig.height=10, cache=TRUE}
+# create table with variety in texture ====
+dt.tex <- data.table(
+  ID = 15,
+  B_LU_BRP = rep(259,20),
+  B_SC_WENR = rep(3,20),
+  B_GWL_CLASS = rep('GtIII', 20),
+  B_DRAIN = rep(TRUE,20),
+  A_CLAY_MI = rep(seq(1,46,5), 2),
+  A_SAND_MI = rep(seq(84,39,-5),2),
+  A_SILT_MI = rep(10,20),
+  A_SOM_LOI = c(rep(0.5,10), rep(5,10)),
+  M_GREEN = rep(FALSE,20),
+  B_HELP_WENR = rep('Mn25C',20),
+  B_AREA_DROUGHT = rep(TRUE,20)
+)
+
+dt.tex[,i_gw_gwr := bln_wat_groundwater_recharge(ID,B_LU_BRP, B_SC_WENR, B_GWL_CLASS,
+                                                 B_DRAIN, A_CLAY_MI,A_SAND_MI,
+                                                 A_SILT_MI, A_SOM_LOI, M_GREEN)]
+
+dt.tex[,i_gw_wb := bln_bbwp_bw(ID,B_LU_BRP, B_HELP_WENR, B_GWL_CLASS, B_AREA_DROUGHT,
+                               A_CLAY_MI, A_SAND_MI, A_SILT_MI, A_SOM_LOI)]
+
+# make A_SOM_LOI factor for easier plotting
+dt.tex[,A_SOM_LOI := as.factor(A_SOM_LOI)]
+
+p.recharge <- ggplot(
+  data = dt.tex,
+  mapping = aes(x = A_CLAY_MI, y = i_gw_gwr, col = A_SOM_LOI)
+  ) +
+  geom_point(size = 3) +
+  geom_line() +
+  ylim(0,1) +
+  scale_color_viridis_d() +
+  ylab("Groundwater recharge score") +
+  xlab("Percentage clay") +
+  guides(colour = guide_legend("% organic matter")) +
+  ggtitle("Effect of soil texture on groundwater recharge.")
+
+p.buffer <- ggplot(
+  data = dt.tex,
+  mapping = aes(x = A_CLAY_MI, y = i_gw_wb, col = A_SOM_LOI)
+) +
+  geom_point(size = 3) +
+  geom_line() +
+  ylim(0,1) +
+  scale_color_viridis_d() +
+  ylab("Groundwater buffering score") +
+  xlab("Percentage clay") +
+  guides(colour = guide_legend("% organic matter")) +
+  ggtitle("Effect of soil texture on groundwater buffering.")
+
+# create table with variety in groundwaterclass ====
+dt.gwl <-  data.table(
+  ID = 15,
+  B_LU_BRP = rep(259, 16),
+  B_SC_WENR = rep(3, 16),
+  B_GWL_CLASS = rep(c('GtI', 'GtII', 'GtIII', 'GtIV', 'GtV', 'GtVI', 'GtVII', 'GtVIII'), 2),
+  B_DRAIN = c(rep(FALSE, 8), rep(TRUE, 8)),
+  A_CLAY_MI = rep(15, 16),
+  A_SAND_MI = rep(73, 16),
+  A_SILT_MI = rep(10, 16),
+  A_SOM_LOI = rep(2, 16),
+  M_GREEN = rep(FALSE, 16),
+  B_HELP_WENR = rep('Mn25C', 16),
+  B_AREA_DROUGHT = rep(TRUE, 16)
+)
+
+dt.gwl[,i_gw_gwr := bln_wat_groundwater_recharge(ID,B_LU_BRP, B_SC_WENR, B_GWL_CLASS,
+                                                 B_DRAIN, A_CLAY_MI,A_SAND_MI,
+                                                 A_SILT_MI, A_SOM_LOI, M_GREEN)]
+
+dt.gwl[,i_gw_wb := bln_bbwp_bw(ID,B_LU_BRP, B_HELP_WENR, B_GWL_CLASS, B_AREA_DROUGHT,
+                               A_CLAY_MI, A_SAND_MI, A_SILT_MI, A_SOM_LOI)]
+
+p.gwl <-ggplot(
+  data = dt.gwl,
+  mapping = aes(x = B_GWL_CLASS, y = i_gw_gwr, fill = B_DRAIN, group = B_DRAIN)
+) +
+  geom_col(position = 'dodge') +
+  ylim(0, 1) +
+  scale_fill_viridis_d() +
+  ylab('Groundwater recharge score') +
+  xlab('Groundwater class') +
+  guides(fill = guide_legend(title = 'Drain presence')) +
+  ggtitle("Effect of groundwaterclass and drainage on\ngroundwater recharge score")
+
+p.gwlbuf <- ggplot(
+  data = dt.gwl,
+  mapping = aes(x = B_GWL_CLASS, y = i_gw_wb, fill = B_DRAIN, group = B_DRAIN)
+) +
+  geom_col(position = 'dodge') +
+  ylim(0, 1) +
+  scale_fill_viridis_d() +
+  ylab('Groundwater recharge score') +
+  xlab('Groundwater class') +
+  guides(fill = guide_legend(title = 'Drain presence')) +
+  ggtitle("Effect of groundwaterclass and drainage on\nsoilwater buffering score")
+
+# make crop table ====
+dt.crop <- data.table(
+    ID = 15,
+  B_LU_BRP = c(259, 2014, 265),
+  B_SC_WENR = rep(3, 3),
+  B_GWL_CLASS = rep('GtIV', 3),
+  B_DRAIN = rep(FALSE, 3),
+  A_CLAY_MI = rep(15, 3),
+  A_SAND_MI = rep(73, 3),
+  A_SILT_MI = rep(10, 3),
+  A_SOM_LOI = rep(2, 3),
+  M_GREEN = rep(FALSE, 3),
+  B_HELP_WENR = rep('Mn25C', 3),
+  B_AREA_DROUGHT = rep(TRUE, 3),
+  Crop = c("silage maize", 'ware potato', 'grassland')
+)
+
+dt.crop[,i_gw_gwr := bln_wat_groundwater_recharge(ID,B_LU_BRP, B_SC_WENR, B_GWL_CLASS,
+                                                 B_DRAIN, A_CLAY_MI,A_SAND_MI,
+                                                 A_SILT_MI, A_SOM_LOI, M_GREEN)]
+
+dt.crop[,i_gw_wb := bln_bbwp_bw(ID,B_LU_BRP, B_HELP_WENR, B_GWL_CLASS, B_AREA_DROUGHT,
+                               A_CLAY_MI, A_SAND_MI, A_SILT_MI, A_SOM_LOI)]
+
+p.cropr <- ggplot(
+  data = dt.crop,
+  mapping = aes(x = Crop, y = i_gw_gwr, group = Crop)
+) +
+  geom_col(position = 'dodge') +
+  ylim(0, 1) +
+  ylab('Groundwater recharge score') +
+  xlab('Crop') +
+  ggtitle("Effect of crop on recharge score")
+
+p.cropb <- ggplot(
+  data = dt.crop,
+  mapping = aes(x = Crop, y = i_gw_wb, group = Crop)
+) +
+  geom_col(position = 'dodge') +
+  ylim(0, 1) +
+  ylab('Groundwater recharge score') +
+  xlab('Crop') +
+  ggtitle("Effect of crop on soilwaterbuffering score")
+  
+(p.recharge + p.buffer) /
+  (p.gwl + p.gwlbuf)/
+  (p.cropr + p.cropb)
+```
+
+
+## Nutrient buffering
+
+
+## Contaminant buffering
+
+
+
+## References
