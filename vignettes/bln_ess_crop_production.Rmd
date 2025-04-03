@@ -4,6 +4,7 @@ author: 'Gerard H. Ros'
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: references.bib
+csl: nmi-csl-nmi-v1_11.csl
 vignette: >
   %\VignetteIndexEntry{BLN assessment for crop production}
   %\VignetteEngine{knitr::rmarkdown}
