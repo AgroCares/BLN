@@ -27,7 +27,7 @@ The required input columns are specified in `BLN::bln_input_description` and can
 
 Note that not all parameters are required. Optional parameters incude:
 
-* measurements retreived from the Soil Condition Score, a manual soil profile assessment. These include all input variables ending with `_BCS`.
+* measurements retrieved from the Soil Condition Score, a manual soil profile assessment. These include all input variables ending with `_BCS`.
 * variables related to soil management measures. These include all input variables starting with `M_`
 * variables related to the targets for N and P being defined per Local Surface Water (LSW). These include the variables B_LSW_ID (set at NA), B_CT_PSW_MAX (set at 0.5), B_CT_NSW_MAX (set at 5.0) and the data.table with mean properties per LSW (object LSW, set at NULL). 
 
