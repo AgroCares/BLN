@@ -47,3 +47,21 @@ bln_bbwp_ngw(
 \description{
 This function gives the NGW score of the BBWP framework
 }
+\examples{
+bln_bbwp_ngw(
+ID = 15,
+B_LU_BRP = 3732,
+B_SOILTYPE_AGR = 'dekzand',
+B_SC_WENR = 902,
+B_AER_CBS = 'LG14',
+B_GWP = FALSE,
+B_GWL_CLASS = 'GtVI',
+A_SOM_LOI = 7.92,
+A_N_RT = 2300,
+B_N_RT = NA_real_,
+B_N_RT_SD = NA_real_,
+penalty = TRUE
+)
+
+
+}

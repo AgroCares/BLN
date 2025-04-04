@@ -18,6 +18,23 @@
 #' @import data.table
 #' @import OBIC
 #'
+#' @examples
+#' bln_bbwp_ngw(
+#' ID = 15,
+#' B_LU_BRP = 3732,
+#' B_SOILTYPE_AGR = 'dekzand',
+#' B_SC_WENR = 902,
+#' B_AER_CBS = 'LG14',
+#' B_GWP = FALSE,
+#' B_GWL_CLASS = 'GtVI',
+#' A_SOM_LOI = 7.92,
+#' A_N_RT = 2300,
+#' B_N_RT = NA_real_,
+#' B_N_RT_SD = NA_real_,
+#' penalty = TRUE
+#' )
+#'
+#'
 #' @export
 bln_bbwp_ngw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GWP,B_GWL_CLASS,A_SOM_LOI,A_N_RT,
                          B_N_RT = NA_real_,B_N_RT_SD = NA_real_, penalty = TRUE){
