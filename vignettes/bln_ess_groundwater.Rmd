@@ -110,7 +110,7 @@ water_buffering <- bln_bbwp_bw(
 Below we illustrate how these indicators react to changes in soil texture,
 groundwater level, and crop type.
 
-```{r groundwater recharge sensitivty figures, fig.width=7, fig.height=10, cache=TRUE}
+```{r groundwater recharge sensitivty figures, fig.width=8, fig.height=10, cache=TRUE}
 # create table with variety in texture ====
 dt.tex <- data.table(
   ID = 15,
@@ -213,18 +213,19 @@ p.gwlbuf <- ggplot(
 # make crop table ====
 dt.crop <- data.table(
     ID = 15,
-  B_LU_BRP = c(259, 2014, 265),
-  B_SC_WENR = rep(3, 3),
-  B_GWL_CLASS = rep('GtIV', 3),
-  B_DRAIN = rep(FALSE, 3),
-  A_CLAY_MI = rep(15, 3),
-  A_SAND_MI = rep(73, 3),
-  A_SILT_MI = rep(10, 3),
-  A_SOM_LOI = rep(2, 3),
-  M_GREEN = rep(FALSE, 3),
-  B_HELP_WENR = rep('Mn25C', 3),
-  B_AREA_DROUGHT = rep(TRUE, 3),
-  Crop = c("silage maize", 'ware potato', 'grassland')
+  B_LU_BRP = c(256, 259, 2014, 265),
+  B_SC_WENR = rep(3, 4),
+  B_GWL_CLASS = rep('GtIV', 4),
+  B_DRAIN = rep(FALSE, 4),
+  A_CLAY_MI = rep(15, 4),
+  A_SAND_MI = rep(73, 4),
+  A_SILT_MI = rep(10, 4),
+  A_SOM_LOI = rep(2, 4),
+  M_GREEN = rep(FALSE, 4),
+  B_HELP_WENR = rep('Mn25C', 4),
+  B_AREA_DROUGHT = rep(TRUE, 4),
+  Crop = factor(c("sugarbeet", "silage maize", 'ware potato', 'permanent grassland'),
+                levels = c("sugarbeet", "silage maize", "permanent grassland", "ware potato"))
 )
 
 dt.crop[,i_gw_gwr := bln_wat_groundwater_recharge(ID,B_LU_BRP, B_SC_WENR, B_GWL_CLASS,
@@ -236,27 +237,31 @@ dt.crop[,i_gw_wb := bln_bbwp_bw(ID,B_LU_BRP, B_HELP_WENR, B_GWL_CLASS, B_AREA_DR
 
 p.cropr <- ggplot(
   data = dt.crop,
-  mapping = aes(x = Crop, y = i_gw_gwr, group = Crop)
+  mapping = aes(x = Crop, y = i_gw_gwr, group = Crop, fill = Crop)
 ) +
   geom_col(position = 'dodge') +
   ylim(0, 1) +
   ylab('Groundwater recharge score') +
-  xlab('Crop') +
-  ggtitle("Effect of crop on recharge score")
+  ggtitle("Effect of crop on recharge score") +
+  theme(legend.position = "none") +
+  scale_fill_viridis_d() +
+  coord_flip()
 
 p.cropb <- ggplot(
   data = dt.crop,
-  mapping = aes(x = Crop, y = i_gw_wb, group = Crop)
+  mapping = aes(x = Crop, y = i_gw_wb, group = Crop, fill = Crop)
 ) +
   geom_col(position = 'dodge') +
   ylim(0, 1) +
-  ylab('Groundwater recharge score') +
-  xlab('Crop') +
-  ggtitle("Effect of crop on soilwaterbuffering score")
+  ylab('Groundwater buffering score') +
+  ggtitle("Effect of crop on soilwaterbuffering score") +
+  theme(legend.position = "none") +
+  scale_fill_viridis_d() +
+  coord_flip()
   
 (p.recharge + p.buffer) /
   (p.gwl + p.gwlbuf)/
-  (p.cropr + p.cropb)
+  (p.cropr / p.cropb)
 ```
 
 ## Nutrient buffering
@@ -494,48 +499,78 @@ p.cn <- ggplot(
 (p.cn+ p.som )/ p.nrt 
 ```
 
+The risk of leaching nitrogen to groundwater (i_gw_nlea) is primarily determined
+by the soil type (as seen above) and crop (see below). The function used to 
+calculate this indicator corrects for situations where supply of P and K and the 
+pH are optimal. In such situations, the risk of leaching is reduced as crops are
+likely to take up more nitrogen under ideal conditions.
 
+```{r, demo N leaching for different crops, fig.height=4, fig.width=7}
+# make data
+dt <- data.table(
+  ID = 15,
+  B_LU_BRP = rep(c(256, 259, 265, 2014), 3),
+  B_SOILTYPE_AGR = c(rep('dekzand', 4), rep('zeeklei', 4), rep("veen", 4)),
+  B_GWL_CLASS = rep('GtIV',  12),
+  B_AER_CBS = rep('LG06',  12),
+  B_SC_WENR = rep(11,  12),
+  B_FERT_NORM_FR = rep(1,  12),
+  B_N_RT = NA_real_,
+  B_N_RT_SD = NA_real_,
+  B_GWP = FALSE,
+  A_SOM_LOI = rep(0.5, 12),
+  A_N_RT = rep(2500,  12),
+  A_CN_FR = rep(10,  12),
+  penalty = TRUE,
+  A_CLAY_MI = rep(10, 12),
+  A_SAND_MI = rep(70, 12),
+  A_SILT_MI = rep(20, 12),
+  A_P_AL = rep(25, 12),
+  A_P_WA = rep(24, 12),
+  A_P_CC = rep(1.5, 12),
+  A_PH_CC = rep(5.6, 12),
+  A_CEC_CO = rep(122, 12),
+  A_K_CC = rep(95, 12),
+  A_K_CO_PO = rep(1.6, 12),
+  M_GREEN = FALSE
+)
 
-```{r, eval=F}
-# dt
-# dt <- data.table(
-#   ID = 15,
-#   B_LU_BRP = c(rep(233, 3), rep(259, 3), rep(2014, 3), rep(308, 3)),
-#   B_SOILTYPE_AGR = rep('dekzand', 12),
-#   B_GWL_CLASS = rep('GtIV', 12),
-#   B_AER_CBS = rep('LG06', 12),
-#   B_SC_WENR = rep(11, 12),
-#   B_FERT_NORM_FR = rep(1, 12),
-#   B_N_RT = NA_real_,
-#   B_N_RT_SD = NA_real_,
-#   B_GWP = FALSE,
-#   A_SOM_LOI = rep(0.5, 12),
-#   A_N_RT = rep(2500, 12),
-#   A_CN_FR = rep(15, 12),
-#   penalty = TRUE
-# )
-#     # groundwater quantity and quality: nitrogen retention (I_E_NGW, from OBI)
-#     # dt[, i_gw_nret := bln_wat_nretention_gw(ID, B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS, B_GWL_CLASS, A_SOM_LOI, A_N_RT,A_CN_FR)]
-# 
-#     # dt[, i_gw_ngw := bln_bbwp_ngw(ID,B_LU_BRP, B_SOILTYPE_AGR, B_SC_WENR,
-#                                   # B_AER_CBS, B_GWP,B_GWL_CLASS, A_SOM_LOI, A_N_RT,
-#                                   # B_N_RT, B_N_RT_SD,penalty = TRUE)]
-# 
-#     
-#     
-#     
-#     
-#     
-#     
-#     
-#     
-#     
-#     # groundwater quantity and quality: nitrogen leaching (I_H_NGW, from OBI). M_GREEN FALSE (YF: otherwise too strong impact)
-    dt[, i_gw_nlea := bln_wat_nrisk_gw(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,
-                                       B_GWL_CLASS,B_SC_WENR,B_FERT_NORM_FR = B_FERT_NORM_FR,
-                                       A_CLAY_MI,A_SAND_MI, A_SILT_MI, A_SOM_LOI,A_P_AL, A_P_WA, A_P_CC,
-                                       A_PH_CC, A_CEC_CO,A_K_CO_PO, A_K_CC,
-                                       M_GREEN = FALSE)]
+# calc N retention
+dt[, i_gw_nret := bln_wat_nretention_gw(ID, B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS,
+                                        B_GWL_CLASS, A_SOM_LOI, A_N_RT,A_CN_FR)]
+dt[, i_gw_ngw := bln_bbwp_ngw(ID,B_LU_BRP, B_SOILTYPE_AGR, B_SC_WENR, B_AER_CBS,
+                              B_GWP,B_GWL_CLASS, A_SOM_LOI, A_N_RT, B_N_RT,
+                              B_N_RT_SD,penalty = TRUE)]
+dt[, i_gw_nlea := bln_wat_nrisk_gw(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,
+                                   B_GWL_CLASS,B_SC_WENR,B_FERT_NORM_FR = B_FERT_NORM_FR,
+                                   A_CLAY_MI,A_SAND_MI, A_SILT_MI, A_SOM_LOI,A_P_AL, A_P_WA, A_P_CC,
+                                   A_PH_CC, A_CEC_CO,A_K_CO_PO, A_K_CC,
+                                   M_GREEN = FALSE)]
+
+# translate labels
+dt[B_SOILTYPE_AGR == 'dekzand', soiltype := "sand"]
+dt[B_SOILTYPE_AGR == 'veen', soiltype := "peat"]
+dt[B_SOILTYPE_AGR == 'zeeklei', soiltype := "clay"]
+
+dt[B_LU_BRP == 256, cropname := "sugarbeet"]
+dt[B_LU_BRP == 259, cropname := "silage maize"]
+dt[B_LU_BRP == 265, cropname := "permanent grassland"]
+dt[B_LU_BRP == 2014, cropname := "ware potato"]
+dt[,cropname := factor(cropname,levels = c("sugarbeet", "silage maize", "permanent grassland", "ware potato"))]
+
+ggplot(
+  data = dt,
+  mapping = aes(y = i_gw_nlea,
+                x = cropname,
+                fill = cropname)
+) +
+  geom_col() +
+  facet_wrap(facets = "soiltype", ncol = 1) +
+  ylab("N leaching risk (i_gw_nlea)") +
+  xlab("") +
+  coord_flip() +
+  scale_fill_viridis_d() +
+  theme(legend.position = "none")
 ```
 
 ## Contaminant buffering
