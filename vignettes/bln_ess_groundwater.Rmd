@@ -61,8 +61,8 @@ The BLN evaluates the following soil functions:
 
 ## Groundwater recharge
 Groundwater recharge is evaluated with the `bln_wat_groundwater_recharge` and
-`bln_bbwp_bw` functions. These are akin to the functions `I_H_GWR` and 
-`S_BBWP_WB` in the OBIC and BBWP packages [@verweij_obic_2023; @bbwp2023].
+`bln_bbwp_bw` functions. These evaluations are also used separately in the OBIC
+and BBWP packages [@verweij_obic_2023; @bbwp2023].
 
 The first function, `bln_wat_groundwater_recharge`, evaluates how well water can
 infiltrate and seep down to the groundwater. This is affected by the soil's 
@@ -259,9 +259,284 @@ p.cropb <- ggplot(
   (p.cropr + p.cropb)
 ```
 
-
 ## Nutrient buffering
+Nutrient buffering is the capacity of the soil to retain nutrients such that
+they remain available to plants and avoid leaching to groundwater.
+In the BLN, this is evaluated with the functions `bln_wat_nretention_gw`,
+`bln_bbwp_ngw`, and `bln_wat_nrisk_gw`. The first two assess nitrogen retention
+and the third scores the risk of nitrogen leaching.These evaluations are also 
+used separately in the OBIC and BBWP packages [@verweij_obic_2023; @bbwp2023].
 
+Retention of nitrogen by the soil is mainly governed by soil type
+and soil nutrient contents. Soils more vulnerable to leaching such as sandy ones,
+have higher risks and score lower if all else stays the same. See the differences
+for sand, peat, and clay when soil organic matter = 1.7%, total nitrogen = 2500 
+mg N kg^-1^, and the C:N ratio is 10.
+
+```{r nitrogen retention demo soiltype, fig.width=7, fig.height=3, cache=TRUE}
+# make data
+dt <- data.table(
+  ID = 15,
+  B_LU_BRP = rep(259,3),
+  B_SOILTYPE_AGR = c('dekzand', 'veen', 'zeeklei'),
+  B_GWL_CLASS = rep('GtIV',3),
+  B_AER_CBS = rep('LG06',3),
+  B_SC_WENR = rep(11,3),
+  B_FERT_NORM_FR = rep(1,3),
+  B_N_RT = NA_real_,
+  B_N_RT_SD = NA_real_,
+  B_GWP = FALSE,
+  A_SOM_LOI = rep(1.7, 3),
+  A_N_RT = rep(2500, 3),
+  A_CN_FR = rep(10, 3),
+  penalty = TRUE,
+  A_CLAY_MI = rep(10,3),
+  A_SAND_MI = rep(70, 3),
+  A_SILT_MI = rep(20, 3),
+  A_P_AL = rep(25, 3),
+  A_P_WA = rep(24, 3),
+  A_P_CC = rep(1.5, 3),
+  A_PH_CC = rep(5.6, 3),
+  A_CEC_CO = rep(122, 3),
+  A_K_CC = rep(95, 3),
+  A_K_CO_PO = rep(1.6, 3),
+  M_GREEN = FALSE
+)
+
+# calc N retention
+dt[, i_gw_nret := bln_wat_nretention_gw(ID, B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS,
+                                        B_GWL_CLASS, A_SOM_LOI, A_N_RT,A_CN_FR)]
+dt[, i_gw_ngw := bln_bbwp_ngw(ID,B_LU_BRP, B_SOILTYPE_AGR, B_SC_WENR, B_AER_CBS,
+                              B_GWP,B_GWL_CLASS, A_SOM_LOI, A_N_RT, B_N_RT,
+                              B_N_RT_SD,penalty = TRUE)]
+dt[, i_gw_nlea := bln_wat_nrisk_gw(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,
+                                   B_GWL_CLASS,B_SC_WENR,B_FERT_NORM_FR = B_FERT_NORM_FR,
+                                   A_CLAY_MI,A_SAND_MI, A_SILT_MI, A_SOM_LOI,A_P_AL, A_P_WA, A_P_CC,
+                                   A_PH_CC, A_CEC_CO,A_K_CO_PO, A_K_CC,
+                                   M_GREEN = FALSE)]
+
+# translate
+dt[B_SOILTYPE_AGR == 'dekzand', soiltype := "sand"]
+dt[B_SOILTYPE_AGR == 'veen', soiltype := "peat"]
+dt[B_SOILTYPE_AGR == 'zeeklei', soiltype := "clay"]
+
+p.nret <- ggplot(data = dt,
+                 mapping = aes(x = factor(soiltype), y = i_gw_nret)) +
+  geom_col() +
+  ylim(0, 1) +
+  xlab('Soiltype') +
+  ylab("Score") +
+  ggtitle("N retention")
+
+p.nbuf <- ggplot(
+  data = dt,
+  mapping = aes(x = factor(soiltype), y = i_gw_nret)
+) +
+  geom_col() +
+  ylim(0, 1) +
+  xlab('Soiltype') +
+  ylab("Score") +
+  ggtitle("N buffering")
+
+p.nleach <- ggplot(
+  data = dt,
+  mapping = aes(x = factor(soiltype), y = i_gw_nlea)
+) +
+  geom_col() +
+  ylim(0, 1) +
+  xlab('Soiltype') +
+  ylab("Score") +
+  ggtitle("N leaching")
+
+p.nret + p.nbuf + p.nleach
+
+```
+
+The soil organic matter content, C:N ratio and total soil nitrogen can also affect
+the N retention score (i_gw_nret) and risk of N leaching to groundwater 
+(i_gw_ngw and i_gw_nlea).
+
+```{r N retention demo N content, fig.height=4, fig.width=7, chache = TRUE}
+# Organic matter demo =====
+# make data
+dt <- data.table(
+  ID = 15,
+  B_LU_BRP = rep(259, 8),
+  B_SOILTYPE_AGR = rep('dekzand',  8),
+  B_GWL_CLASS = rep('GtIV',  8),
+  B_AER_CBS = rep('LG06',  8),
+  B_SC_WENR = rep(11,  8),
+  B_FERT_NORM_FR = rep(1,  8),
+  B_N_RT = NA_real_,
+  B_N_RT_SD = NA_real_,
+  B_GWP = FALSE,
+  A_SOM_LOI = seq(0.5, 4, 0.5),
+  A_N_RT = rep(2500,  8),
+  A_CN_FR = rep(10,  8),
+  penalty = TRUE,
+  A_CLAY_MI = rep(10, 8),
+  A_SAND_MI = rep(70, 8),
+  A_SILT_MI = rep(20, 8),
+  A_P_AL = rep(25, 8),
+  A_P_WA = rep(24, 8),
+  A_P_CC = rep(1.5, 8),
+  A_PH_CC = rep(5.6, 8),
+  A_CEC_CO = rep(122, 8),
+  A_K_CC = rep(95, 8),
+  A_K_CO_PO = rep(1.6, 8),
+  M_GREEN = FALSE
+)
+
+# calc N retention
+dt[, i_gw_nret := bln_wat_nretention_gw(ID, B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS,
+                                        B_GWL_CLASS, A_SOM_LOI, A_N_RT,A_CN_FR)]
+dt[, i_gw_ngw := bln_bbwp_ngw(ID,B_LU_BRP, B_SOILTYPE_AGR, B_SC_WENR, B_AER_CBS,
+                              B_GWP,B_GWL_CLASS, A_SOM_LOI, A_N_RT, B_N_RT,
+                              B_N_RT_SD,penalty = TRUE)]
+dt[, i_gw_nlea := bln_wat_nrisk_gw(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,
+                                   B_GWL_CLASS,B_SC_WENR,B_FERT_NORM_FR = B_FERT_NORM_FR,
+                                   A_CLAY_MI,A_SAND_MI, A_SILT_MI, A_SOM_LOI,A_P_AL, A_P_WA, A_P_CC,
+                                   A_PH_CC, A_CEC_CO,A_K_CO_PO, A_K_CC,
+                                   M_GREEN = FALSE)]
+
+dtm <- melt(dt, value.name = 'score',
+            variable.name = 'indicator',
+            measure.vars = c("i_gw_nret", "i_gw_ngw", "i_gw_nlea"))
+dtm[, indicator := factor(indicator, levels = c("i_gw_nret", "i_gw_nlea", "i_gw_ngw"))] # use factors with levels so each indicator is the same colour in each plot
+
+p.som <- ggplot(
+  data = dtm,
+  mapping = aes(x = A_SOM_LOI, y = score, colour = indicator)
+) +
+  geom_point() +
+  geom_line() +
+  ylim(0, 1) +
+  xlab("Percentage soil organic matter") +
+  ylab("N retention score") +
+  scale_colour_viridis_d() +
+  theme(legend.position = "right")
+
+# variying A_N_RT ====
+dt <- data.table(
+  ID = 15,
+  B_LU_BRP = rep(259, 8),
+  B_SOILTYPE_AGR = rep('dekzand',  8),
+  B_GWL_CLASS = rep('GtIV',  8),
+  B_AER_CBS = rep('LG06',  8),
+  B_SC_WENR = rep(11,  8),
+  B_FERT_NORM_FR = rep(1,  8),
+  B_N_RT = NA_real_,
+  B_N_RT_SD = NA_real_,
+  B_GWP = FALSE,
+  A_SOM_LOI = rep(1.5, 8),
+  A_N_RT = seq(500, 16000,  2000),
+  A_CN_FR = rep(10,  8),
+  penalty = TRUE
+)
+
+# calc N retention
+dt[, i_gw_nret := bln_wat_nretention_gw(ID, B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS,
+                                        B_GWL_CLASS, A_SOM_LOI, A_N_RT,A_CN_FR)]
+dt[, i_gw_ngw := bln_bbwp_ngw(ID,B_LU_BRP, B_SOILTYPE_AGR, B_SC_WENR, B_AER_CBS,
+                              B_GWP,B_GWL_CLASS, A_SOM_LOI, A_N_RT, B_N_RT,
+                              B_N_RT_SD,penalty = TRUE)]
+
+dtm <- melt(dt, value.name = 'score',
+            variable.name = 'indicator',
+            measure.vars = c("i_gw_nret", "i_gw_ngw"))
+dtm[, indicator := factor(indicator, levels = c("i_gw_nret", "i_gw_ngw"))]
+
+p.nrt <- ggplot(
+  data = dtm,
+  mapping = aes(x = A_N_RT, y = score, col = indicator)
+) +
+  geom_point() +
+  geom_line() +
+  ylim(0, 1) +
+  xlab(expression("Total nitrogen mg kg"^-1~ "soil")) +
+  ylab("Score") +
+  scale_colour_viridis_d() +
+  theme(legend.position = "right")
+
+# variying CN ratio ====
+dt <- data.table(
+  ID = 15,
+  B_LU_BRP = rep(259, 16),
+  B_SOILTYPE_AGR = rep('dekzand',  16),
+  B_GWL_CLASS = rep('GtIV',  16),
+  B_AER_CBS = rep('LG06',  16),
+  B_SC_WENR = rep(11,  16),
+  B_FERT_NORM_FR = rep(1,  16),
+  B_N_RT = NA_real_,
+  B_N_RT_SD = NA_real_,
+  B_GWP = FALSE,
+  A_SOM_LOI = rep(1.5, 16),
+  A_N_RT = rep(7000, 16),
+  A_CN_FR = seq(5, 12.5, 0.5),
+  penalty = TRUE
+)
+
+# calc N retention
+dt[, i_gw_nret := bln_wat_nretention_gw(ID, B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS,
+                                        B_GWL_CLASS, A_SOM_LOI, A_N_RT,A_CN_FR)]
+p.cn <- ggplot(
+  data = dt,
+  mapping = aes(x = A_CN_FR, y = i_gw_nret, colour = "#440154")
+) +
+  geom_point() +
+  geom_line() +
+  ylim(0, 1) +
+  xlab("C:N ratio") +
+  ylab("N retention score") +
+  scale_colour_viridis_d() +
+  theme(legend.position = 'none')
+
+(p.cn+ p.som )/ p.nrt 
+```
+
+
+
+```{r, eval=F}
+# dt
+# dt <- data.table(
+#   ID = 15,
+#   B_LU_BRP = c(rep(233, 3), rep(259, 3), rep(2014, 3), rep(308, 3)),
+#   B_SOILTYPE_AGR = rep('dekzand', 12),
+#   B_GWL_CLASS = rep('GtIV', 12),
+#   B_AER_CBS = rep('LG06', 12),
+#   B_SC_WENR = rep(11, 12),
+#   B_FERT_NORM_FR = rep(1, 12),
+#   B_N_RT = NA_real_,
+#   B_N_RT_SD = NA_real_,
+#   B_GWP = FALSE,
+#   A_SOM_LOI = rep(0.5, 12),
+#   A_N_RT = rep(2500, 12),
+#   A_CN_FR = rep(15, 12),
+#   penalty = TRUE
+# )
+#     # groundwater quantity and quality: nitrogen retention (I_E_NGW, from OBI)
+#     # dt[, i_gw_nret := bln_wat_nretention_gw(ID, B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS, B_GWL_CLASS, A_SOM_LOI, A_N_RT,A_CN_FR)]
+# 
+#     # dt[, i_gw_ngw := bln_bbwp_ngw(ID,B_LU_BRP, B_SOILTYPE_AGR, B_SC_WENR,
+#                                   # B_AER_CBS, B_GWP,B_GWL_CLASS, A_SOM_LOI, A_N_RT,
+#                                   # B_N_RT, B_N_RT_SD,penalty = TRUE)]
+# 
+#     
+#     
+#     
+#     
+#     
+#     
+#     
+#     
+#     
+#     # groundwater quantity and quality: nitrogen leaching (I_H_NGW, from OBI). M_GREEN FALSE (YF: otherwise too strong impact)
+    dt[, i_gw_nlea := bln_wat_nrisk_gw(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,
+                                       B_GWL_CLASS,B_SC_WENR,B_FERT_NORM_FR = B_FERT_NORM_FR,
+                                       A_CLAY_MI,A_SAND_MI, A_SILT_MI, A_SOM_LOI,A_P_AL, A_P_WA, A_P_CC,
+                                       A_PH_CC, A_CEC_CO,A_K_CO_PO, A_K_CC,
+                                       M_GREEN = FALSE)]
+```
 
 ## Contaminant buffering
 
