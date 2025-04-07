@@ -574,7 +574,94 @@ ggplot(
 ```
 
 ## Contaminant buffering
+BLN has one function to score the risk of groundwater pollution with pesticides.
+This function, `bln_wat_pesticide` estimates the likelihood that a persistent
+pesticide penetrates in the soil below 1 metres. Because this function scores a
+risk, a poor score does not necessarily mean that groundwater is or will be 
+contaminated as the function does not take management or actual precipitation 
+into account. The function uses `BLN::bln_calc_psp` to determine a precipitation
+surplus, this depends on the cultivated crop and whether green manure was grown. 
+The other driving variable for this indicator is soil organic matter content.
+@vandenDool2021 describe the function in more detail and describe a demonstration 
+in practice. They based the development of the function on the formula described
+by @Tiktak2006.
 
+```{r Pesticide demo, fig.height=4, fig.width=7}
 
+dt.dz <- data.table(
+  ID = 15,
+  B_LU_BRP = 233,
+  B_SOILTYPE_AGR = 'dekzand',
+  soiltype = "sand",
+  A_SOM_LOI = seq(1.2, 8.2, 0.2),
+  A_CLAY_MI = 20,
+  A_SAND_MI = 15,
+  A_SILT_MI = 10,
+  M_PESTICIDES_DST = FALSE,
+  M_MECHWEEDS = FALSE,
+  M_GREEN = FALSE
+  )
+
+dt.zk <- data.table(
+  ID = 15,
+  B_LU_BRP = 233,
+  B_SOILTYPE_AGR = 'zeeklei',
+  soiltype = "marine clay",
+  A_SOM_LOI = seq(1.0, 8.0, 0.2),
+  A_CLAY_MI = 20,
+  A_SAND_MI = 15,
+  A_SILT_MI = 10,
+  M_PESTICIDES_DST = FALSE,
+  M_MECHWEEDS = FALSE,
+  M_GREEN = FALSE
+  )
+
+dt.ve <- data.table(
+  ID = 15,
+  B_LU_BRP = 233,
+  B_SOILTYPE_AGR = 'veen',
+  soiltype = "peat",
+  A_SOM_LOI = seq(1.9, 19.9, 0.2),
+  A_CLAY_MI = 20,
+  A_SAND_MI = 15,
+  A_SILT_MI = 10,
+  M_PESTICIDES_DST = FALSE,
+  M_MECHWEEDS = FALSE,
+  M_GREEN = FALSE
+  )
+
+dt.da <- data.table(
+  ID = 15,
+  B_LU_BRP = 233,
+  B_SOILTYPE_AGR = 'dekzand',
+  soiltype = "peaty sand",
+  A_SOM_LOI = seq(2.1, 19.7, 0.2),
+  A_CLAY_MI = 20,
+  A_SAND_MI = 15,
+  A_SILT_MI = 10,
+  M_PESTICIDES_DST = FALSE,
+  M_MECHWEEDS = FALSE,
+  M_GREEN = FALSE
+  )
+
+dt <- rbindlist(list(dt.dz, dt.zk, dt.ve, dt.da))
+
+# groundwater quantity and quality: pesticide leaching (I_H_PEST,from OBI)
+dt[, i_gw_pest := bln_wat_pesticide(ID,B_LU_BRP, B_SOILTYPE_AGR, A_CLAY_MI, A_SAND_MI, A_SILT_MI,
+                                    A_SOM_LOI, M_GREEN, M_MECHWEEDS, M_PESTICIDES_DST)]
+
+ggplot(
+  data = dt[A_SOM_LOI <=15],
+  mapping = aes(x = A_SOM_LOI, y = i_gw_pest, colour = soiltype)
+) +
+  geom_line(size = 1.5) +
+  scale_colour_manual(values = palette.colors(palette = "Okabe-Ito")[2:6]) +
+  xlab("Soil organic matter, %") +
+  ylab("Pesticide risk score") +
+  ylim(0,1) +
+  xlim(0,15)
+  
+
+```
 
 ## References
