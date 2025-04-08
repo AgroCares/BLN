@@ -41,7 +41,7 @@ ggplot2::theme_set(
 ```
 
 ## Introduction
-Groundwater is used as source of drinking water, irrigation, and supply habitats
+Groundwater is used as source of drinking water, irrigation, and to supply natural habitats
 with water. Groundwater must continuously be recharged by precipitation which
 infiltrates the soil. Soil plays a pivotal role in ensuring that there is ample
 clean groundwater. Soils may buffer groundwater recharge, filter out nutrients,
@@ -68,11 +68,13 @@ The first function, `bln_wat_groundwater_recharge`, evaluates how well water can
 infiltrate and seep down to the groundwater. This is affected by the soil's 
 cultivation (B_LU_BRP), the risk of soil compaction (B_SC_WENR), groundwater level
 (B_GWL_CLASS), presence of drains, soil texture, and the use of green manure.
+With these inputs, the function calculates soil permeability and the risks of
+sealing and soil compaction, both of which hamper groundwater recharge.
 
 The second function, `bln_bbwp_bw`, evaluates how well a soil can hold onto water
 such that it has sufficient time to infiltrate. This also depends on the 
 cultivation, groundwater level and soil texture but is unaffected by soil
-compaction risk. Instead, this function uses considers whether the soil is 
+compaction risk. Instead, this function considers whether the soil is 
 located in a drought-prone area and the HELP code corresponding to the fields 
 location [@van_Bakel2005]. These HELP codes relate to the water needs of types
 of landuse.
@@ -141,8 +143,8 @@ p.recharge <- ggplot(
   data = dt.tex,
   mapping = aes(x = A_CLAY_MI, y = i_gw_gwr, col = A_SOM_LOI)
   ) +
-  geom_point(size = 3) +
   geom_line() +
+  geom_point(size = 3) +
   ylim(0,1) +
   scale_color_viridis_d() +
   ylab("Groundwater recharge score") +
@@ -393,6 +395,7 @@ dt <- data.table(
 )
 
 # calc N retention
+cnr <- function(dt){
 dt[, i_gw_nret := bln_wat_nretention_gw(ID, B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS,
                                         B_GWL_CLASS, A_SOM_LOI, A_N_RT,A_CN_FR)]
 dt[, i_gw_ngw := bln_bbwp_ngw(ID,B_LU_BRP, B_SOILTYPE_AGR, B_SC_WENR, B_AER_CBS,
@@ -408,6 +411,11 @@ dtm <- melt(dt, value.name = 'score',
             variable.name = 'indicator',
             measure.vars = c("i_gw_nret", "i_gw_ngw", "i_gw_nlea"))
 dtm[, indicator := factor(indicator, levels = c("i_gw_nret", "i_gw_nlea", "i_gw_ngw"))] # use factors with levels so each indicator is the same colour in each plot
+
+return(dtm)
+}
+
+dtm <- cnr(dt)
 
 p.som <- ggplot(
   data = dtm,
@@ -436,20 +444,22 @@ dt <- data.table(
   A_SOM_LOI = rep(1.5, 8),
   A_N_RT = seq(500, 16000,  2000),
   A_CN_FR = rep(10,  8),
-  penalty = TRUE
+  penalty = TRUE,
+  A_CLAY_MI = rep(10, 8),
+  A_SAND_MI = rep(70, 8),
+  A_SILT_MI = rep(20, 8),
+  A_P_AL = rep(25, 8),
+  A_P_WA = rep(24, 8),
+  A_P_CC = rep(1.5, 8),
+  A_PH_CC = rep(5.6, 8),
+  A_CEC_CO = rep(122, 8),
+  A_K_CC = rep(95, 8),
+  A_K_CO_PO = rep(1.6, 8),
+  M_GREEN = FALSE
 )
 
 # calc N retention
-dt[, i_gw_nret := bln_wat_nretention_gw(ID, B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS,
-                                        B_GWL_CLASS, A_SOM_LOI, A_N_RT,A_CN_FR)]
-dt[, i_gw_ngw := bln_bbwp_ngw(ID,B_LU_BRP, B_SOILTYPE_AGR, B_SC_WENR, B_AER_CBS,
-                              B_GWP,B_GWL_CLASS, A_SOM_LOI, A_N_RT, B_N_RT,
-                              B_N_RT_SD,penalty = TRUE)]
-
-dtm <- melt(dt, value.name = 'score',
-            variable.name = 'indicator',
-            measure.vars = c("i_gw_nret", "i_gw_ngw"))
-dtm[, indicator := factor(indicator, levels = c("i_gw_nret", "i_gw_ngw"))]
+dtm <- cnr(dt)
 
 p.nrt <- ggplot(
   data = dtm,
@@ -478,15 +488,26 @@ dt <- data.table(
   A_SOM_LOI = rep(1.5, 16),
   A_N_RT = rep(7000, 16),
   A_CN_FR = seq(5, 12.5, 0.5),
-  penalty = TRUE
+  penalty = TRUE,
+  A_CLAY_MI = rep(10, 8),
+  A_SAND_MI = rep(70, 8),
+  A_SILT_MI = rep(20, 8),
+  A_P_AL = rep(25, 8),
+  A_P_WA = rep(24, 8),
+  A_P_CC = rep(1.5, 8),
+  A_PH_CC = rep(5.6, 8),
+  A_CEC_CO = rep(122, 8),
+  A_K_CC = rep(95, 8),
+  A_K_CO_PO = rep(1.6, 8),
+  M_GREEN = FALSE
 )
 
 # calc N retention
-dt[, i_gw_nret := bln_wat_nretention_gw(ID, B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS,
-                                        B_GWL_CLASS, A_SOM_LOI, A_N_RT,A_CN_FR)]
+dtm <- cnr(dt)
+
 p.cn <- ggplot(
-  data = dt,
-  mapping = aes(x = A_CN_FR, y = i_gw_nret, colour = "#440154")
+  data = dtm,
+  mapping = aes(x = A_CN_FR, y = score, col = indicator)
 ) +
   geom_point() +
   geom_line() +
@@ -654,7 +675,7 @@ ggplot(
   data = dt[A_SOM_LOI <=15],
   mapping = aes(x = A_SOM_LOI, y = i_gw_pest, colour = soiltype)
 ) +
-  geom_line(size = 1.5) +
+  geom_line(linewidth = 1.5) +
   scale_colour_manual(values = palette.colors(palette = "Okabe-Ito")[2:6]) +
   xlab("Soil organic matter, %") +
   ylab("Pesticide risk score") +
