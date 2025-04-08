@@ -1,3 +1,7 @@
+# BLN 0.9.1 2025-04-08
+## Added
+* improved explanation of which inputs are required for `bln_c_posphor`
+
 # BLN 0.9.0 2025-03-15
 
 ## Changed
