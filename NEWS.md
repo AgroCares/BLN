@@ -1,3 +1,12 @@
+# BLN 0.9.1 2025-04-09
+
+## Added
+* vignette `bln_ess_groundwater` on the estimation of the ESD for water quantity and water purification
+* examples to functions `bln_wat_nretention_gw`,`bln_wat_nrisk_gw`,`bln_wat_groundwater_recharge`, `bln_bbwp_bw` and `bln_bbwp_ngw`
+
+## Changed
+* documentation of tables `bln_output_description` and `bln_input_description`
+
 # BLN 0.9.0 2025-03-15
 
 ## Changed
