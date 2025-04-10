@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">BLN</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,6 +20,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/bln_column_description.html">Description of the input and output for BLN</a></li>
     <li><a class="dropdown-item" href="../articles/bln_ess_crop_production.html">BLN assessment for crop production</a></li>
+    <li><a class="dropdown-item" href="../articles/bln_ess_groundwater.html">bln_ess_groundwater</a></li>
     <li><a class="dropdown-item" href="../articles/bln_intro.html">BLN introduction</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -35,7 +36,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Function to calculate and evaluate the water buffering capacity of soils in view of water retention in soil</h1>
-      <small class="dont-index">Source: <a href="https://github.com/AgroCares/BLN/blob/v0.9.0/R/bln_gw_waterbalance.R" class="external-link"><code>R/bln_gw_waterbalance.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/AgroCares/BLN/blob/main/R/bln_gw_waterbalance.R" class="external-link"><code>R/bln_gw_waterbalance.R</code></a></small>
       <div class="d-none name"><code>bln_bbwp_bw.Rd</code></div>
     </div>
 
@@ -104,6 +105,24 @@
 
 </dl></div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">bln_bbwp_bw</span><span class="op">(</span></span></span>
+<span class="r-in"><span>ID <span class="op">=</span> <span class="fl">15</span>,</span></span>
+<span class="r-in"><span>B_LU_BRP <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">233</span>,<span class="fl">259</span>,<span class="fl">2014</span>,<span class="fl">308</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>B_HELP_WENR <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'gMn53C'</span>, <span class="st">'Mn25C'</span>,<span class="st">'U0102nr108'</span>,<span class="st">'nSn13A'</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>B_GWL_CLASS <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">'GtVI'</span>,<span class="fl">4</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>B_AREA_DROUGHT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">TRUE</span>,<span class="fl">4</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>A_CLAY_MI <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">20</span>,<span class="fl">4</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>A_SAND_MI <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">15</span>,<span class="fl">4</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>A_SILT_MI <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">10</span>,<span class="fl">4</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>A_SOM_LOI <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">3</span>,<span class="fl">5</span>,<span class="fl">8</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>penalty <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9174650 0.9382131 0.9216214 0.9582200</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

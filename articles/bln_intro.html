@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">BLN</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,6 +35,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/bln_column_description.html">Description of the input and output for BLN</a></li>
     <li><a class="dropdown-item" href="../articles/bln_ess_crop_production.html">BLN assessment for crop production</a></li>
+    <li><a class="dropdown-item" href="../articles/bln_ess_groundwater.html">bln_ess_groundwater</a></li>
     <li><a class="dropdown-item" href="../articles/bln_intro.html">BLN introduction</a></li>
   </ul>
 </li>
@@ -62,17 +63,17 @@
                         <h4 data-toc-skip class="author">Gerard H.
 Ros</h4>
             
-            <h4 data-toc-skip class="date">2025-03-15</h4>
+            <h4 data-toc-skip class="date">2025-04-10</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/AgroCares/BLN/blob/v0.9.0/vignettes/bln_intro.Rmd" class="external-link"><code>vignettes/bln_intro.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/AgroCares/BLN/blob/main/vignettes/bln_intro.Rmd" class="external-link"><code>vignettes/bln_intro.Rmd</code></a></small>
       <div class="d-none name"><code>bln_intro.Rmd</code></div>
     </div>
 
     
     
-<div class="section level2">
-<h2 id="bln-introduction">BLN introduction<a class="anchor" aria-label="anchor" href="#bln-introduction"></a>
-</h2>
+<div class="section level3">
+<h3 id="bln-introduction">BLN introduction<a class="anchor" aria-label="anchor" href="#bln-introduction"></a>
+</h3>
 <p>The crucial role of healthy soil in achieving sustainable food
 production and environment is increasingly recognized, as is the
 importance of proper assessment of soil quality. Healthy soils are not
@@ -91,17 +92,17 @@ attributes into indicators and aggregate them into an index, including
 These approaches however are often highly dependent on costly soil
 measures, are difficult to interpret, and not easily applicable across
 spatial scales, ranging from field to regions. To overcome these
-challenges, Ros et al. (2021) introduced a new soil assessment
-framework, being the open soil index (OSI). The OSI builds on extensive
-soil and agronomic research to maintain a direct link to the objective
-(which is sustainable crop production), leverages routine laboratory
-data and public databases to make its large-scale application
-affordable, has a modular design to allow for easy adjustment and
-expansion, is developed in an open-source environment to assure
-transparency, and provides advice for field-level farming practices. In
-this way, OSI strives to provide an operational soil assessment that
-valorizes soil health and therewith promote sustainable soil
-management.</p>
+challenges, <span class="citation">Ros et al. (2022)</span> introduced a
+new soil assessment framework, being the open soil index (OSI). The OSI
+builds on extensive soil and agronomic research to maintain a direct
+link to the objective (which is sustainable crop production), leverages
+routine laboratory data and public databases to make its large-scale
+application affordable, has a modular design to allow for easy
+adjustment and expansion, is developed in an open-source environment to
+assure transparency, and provides advice for field-level farming
+practices. In this way, OSI strives to provide an operational soil
+assessment that valorizes soil health and therewith promote sustainable
+soil management.</p>
 <p>From 2021 onwards, soil scientists, agronomy researchers, farm
 advisors and extension service providers collaborated to expand the OSI
 approach to include multiple ecosystem services. Where the OSI strongly
@@ -121,16 +122,16 @@ and implemented in this BLN R package. This tutorial gives a short
 explanation of the package focussing on the main functionalities of the
 R package.</p>
 </div>
-<div class="section level2">
-<h2 id="importing-dataset-for-research-farm">Importing dataset for research farm<a class="anchor" aria-label="anchor" href="#importing-dataset-for-research-farm"></a>
-</h2>
+<div class="section level3">
+<h3 id="importing-dataset-for-research-farm">Importing dataset for research farm<a class="anchor" aria-label="anchor" href="#importing-dataset-for-research-farm"></a>
+</h3>
 <p>We start with some (virtual) data being collected for one of the
 research farms in the Netherlands: de Marke. This husbandry farm is
 located in the Eastern part of the Netherlands, characterised by drought
 sensitive sandy soils, and the main land use is grassland and maize.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co"># select the data for de Mare farm</span></span>
+<span><span class="co"># select the data for de Marke farm</span></span>
 <span><span class="va">s1</span> <span class="op">&lt;-</span> <span class="fu">copy</span><span class="op">(</span><span class="fu">BLN</span><span class="fu">::</span><span class="va"><a href="../reference/bln_farm_hf.html">bln_farm_hf</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># make a spatial object from the farm, only latest year</span></span>
@@ -188,9 +189,9 @@ separate vignette <code><a href="../articles/bln_column_description.html">vignet
 <span><span class="co">#&gt; [73] "B_FERT_NORM_FR"        "B_LU_WATERSTRESS_OBIC" "B_LU_BBWP"            </span></span>
 <span><span class="co">#&gt; [76] "B_LU_CULTCAT4"         "B_LU_SEASON"</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="calculate-bln-for-a-single-field">calculate BLN for a single field<a class="anchor" aria-label="anchor" href="#calculate-bln-for-a-single-field"></a>
-</h2>
+<div class="section level3">
+<h3 id="calculate-bln-for-a-single-field">calculate BLN for a single field<a class="anchor" aria-label="anchor" href="#calculate-bln-for-a-single-field"></a>
+</h3>
 <p>Lets see how to assess the soil quality for a single field. First
 select the first field given a crop rotation scheme for 11 years. This
 is basically a subset of the farm and contains all soil and field
@@ -692,7 +693,7 @@ the function <code><a href="../reference/bln_field_dt.html">bln_field_dt()</a></
 all desired input variables are present. By default is the option to
 calculate the C saturation with RothC switched off. Again, the
 illustration below shows the use of <code>bln_field_dt</code> to
-retreive the BLN indicators. For the interpretation of each of the 35
+retrieve the BLN indicators. For the interpretation of each of the 35
 soil indicators, one can have a look at the
 <code><a href="../articles/bln_column_description.html">vignette("bln_column_description")</a></code></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -879,15 +880,31 @@ groundwater to the other.</p>
 <span><span class="va">p1</span></span></code></pre></div>
 <p><img src="bln_intro_files/figure-html/make-sim3-1.png" width="652.8" style="display: block; margin: auto;"></p>
 </div>
-<div class="section level2">
-<h2 id="reading-more">Reading more?<a class="anchor" aria-label="anchor" href="#reading-more"></a>
-</h2>
+<div class="section level3">
+<h3 id="reading-more">Reading more?<a class="anchor" aria-label="anchor" href="#reading-more"></a>
+</h3>
 <p>More vignettes will be made available regarding the derivation of all
 soil health indicators, the aggregation methods applied, the derivation
 of optimum land use given the current soil quality assessments, and the
 best management practices to be applied to improve the soil quality. Are
 you interested to contribute, please contact the author(s) of this R
 package. Enjoy!</p>
+</div>
+<div class="section level2">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-Ros2022" class="csl-entry">
+<strong>Ros GH</strong>, <strong>Verweij SE</strong>, <strong>Janssen
+SJC</strong>, <strong>De Haan J</strong>, &amp; <strong>Fujita
+Y</strong> (2022). <em><a href="https://doi.org/10.1021/acs.est.2c04516" class="external-link">An <span>Open</span>
+<span>Soil</span> <span>Health</span> <span>Assessment</span>
+<span>Framework</span> <span>Facilitating</span>
+<span>Sustainable</span> <span>Soil</span>
+<span>Management</span></a></em>. Environmental Science &amp; Technology
+56 (23): 17375–84.
+</div>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

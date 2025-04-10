@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">BLN</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,6 +35,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/bln_column_description.html">Description of the input and output for BLN</a></li>
     <li><a class="dropdown-item" href="../articles/bln_ess_crop_production.html">BLN assessment for crop production</a></li>
+    <li><a class="dropdown-item" href="../articles/bln_ess_groundwater.html">bln_ess_groundwater</a></li>
     <li><a class="dropdown-item" href="../articles/bln_intro.html">BLN introduction</a></li>
   </ul>
 </li>
@@ -62,36 +63,36 @@
                         <h4 data-toc-skip class="author">Gerard H.
 Ros</h4>
             
-            <h4 data-toc-skip class="date">2025-03-15</h4>
+            <h4 data-toc-skip class="date">2025-04-10</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/AgroCares/BLN/blob/v0.9.0/vignettes/bln_ess_crop_production.Rmd" class="external-link"><code>vignettes/bln_ess_crop_production.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/AgroCares/BLN/blob/main/vignettes/bln_ess_crop_production.Rmd" class="external-link"><code>vignettes/bln_ess_crop_production.Rmd</code></a></small>
       <div class="d-none name"><code>bln_ess_crop_production.Rmd</code></div>
     </div>
 
     
     
-<div class="section level2">
-<h2 id="introduction">1. introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
-</h2>
 <div class="section level3">
-<h3 id="background">Background<a class="anchor" aria-label="anchor" href="#background"></a>
+<h3 id="introduction">1. introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h3>
+<div class="section level4">
+<h4 id="background">Background<a class="anchor" aria-label="anchor" href="#background"></a>
+</h4>
 <p>Facilitating and promoting crop production is one of the ecosystem
 services a soil supplies. The Dutch soil assessment scheme BLN, being an
 abbreviation for
 <code>Bodemindicatorenset Landbouwgronden Nederland</code>, strongly
 depends on the <a href="https://pubs.acs.org/doi/10.1021/acs.est.2c04516#" class="external-link">Open Soil Index
-Framework</a>, a presucessor of the BLN. The Open Soil Index is
+Framework</a>, a predecessor of the BLN. The Open Soil Index is
 currently in use by farmers and farm advisors to facilitate sustainable
-soil management. In addition, governments, banks, regional governments,
+soil management. In addition, (regional) governments, banks,
 agricultural laboratories and other stakeholders are using this
 framework to monitor soil health and valorise appropriate soil
 management measures. For more information on the OSI, see: <a href="%5BOBIC%5D">the OBIC package</a>.</p>
 </div>
-<div class="section level3">
-<h3 id="the-soil-assessment-framework">The Soil Assessment Framework<a class="anchor" aria-label="anchor" href="#the-soil-assessment-framework"></a>
-</h3>
-<p>Soil quality is defined as the capacity of a soil to fulfill the
+<div class="section level4">
+<h4 id="the-soil-assessment-framework">The Soil Assessment Framework<a class="anchor" aria-label="anchor" href="#the-soil-assessment-framework"></a>
+</h4>
+<p>Soil quality is defined as the capacity of a soil to fulfil the
 desired soil functions under varying conditions for a combination of
 purposes (and services) such as food production, efficient nutrient
 cycling, and preservation of biodiversity. This vignette is focussing on
@@ -100,13 +101,13 @@ definitions:</p>
 <ul>
 <li>Soil functions are quantitative relationships evaluating how soil
 properties alone or in combination with each other contribute to crop
-produciton.</li>
+production.</li>
 <li>Soil indicators are the result of an evaluation scoring methodology
 transforming the output of soil functions to a qualitative category (low
 to high) or a numeric grade (1-10).</li>
 <li>Soil and field properties are characteristics of a soil (or field)
 that are used to quantify the soil functions. These characteristics may
-have been analyzed in the laboratory as well as those resulting from the
+have been analysed in the laboratory as well as those resulting from the
 location of the field in the landscape. For example, the groundwater
 level, the variation in ground level, the slope, and the presence of
 drainage are soil properties.</li>
@@ -132,15 +133,15 @@ as applied research.</p>
 <p><br></p>
 </div>
 </div>
-<div class="section level2">
-<h2 id="the-bln-calculator">2. The BLN calculator<a class="anchor" aria-label="anchor" href="#the-bln-calculator"></a>
-</h2>
+<div class="section level3">
+<h3 id="the-bln-calculator">2. The BLN calculator<a class="anchor" aria-label="anchor" href="#the-bln-calculator"></a>
+</h3>
 <p>The BLN package makes it possible to evaluate Soil Health for a
 number of aggregated soil functions, evaluating a series of soil
 functions in relation to a “distance to target”.</p>
-<div class="section level4">
-<h4 id="data-fields-of-the-marke">Data: fields of the Marke<a class="anchor" aria-label="anchor" href="#data-fields-of-the-marke"></a>
-</h4>
+<div class="section level5">
+<h5 id="data-fields-of-the-marke">Data: fields of the Marke<a class="anchor" aria-label="anchor" href="#data-fields-of-the-marke"></a>
+</h5>
 <p>To explore the functionality of BLN for the ecosystem service crop
 produciton, we’ll use the dataset <code>bln_farm_hf</code>. The dataset
 contains soil properties from 11 agricultural fields being owned by a
@@ -587,16 +588,16 @@ cultivated over time) determines also which soil properties and which
 soil functions are relevant and how they are evaluated given a desired
 threshold value.</p>
 <p>Note that <code>bln_farm_hf</code> is a data.table, a modern and fast
-variant of a data frame [data.table]. It’s particularly useful for large
-datasets because it only prints a selection of the dataset and
-calculations done on a data.table are extremely fast. You can learn more
-about data.tables at <a href="https://CRAN.R-project.org/package=data.table/vignettes/datatable-intro.html" class="external-link">this
-link</a> ; in particular you can convert data frames to data.tables with
-as.data.table().</p>
+variant of a data.frame. It’s particularly useful for large datasets
+because it only prints a selection of the dataset and calculations done
+on a data.table are extremely fast. You can learn more about data.tables
+at <a href="https://CRAN.R-project.org/package=data.table/vignettes/datatable-intro.html" class="external-link">this
+link</a>; in particular you can convert data frames to data.tables with
+<code><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">data.table::as.data.table()</a></code>.</p>
 </div>
-<div class="section level4">
-<h4 id="running-bln-for-a-single-field">Running BLN for a single field<a class="anchor" aria-label="anchor" href="#running-bln-for-a-single-field"></a>
-</h4>
+<div class="section level5">
+<h5 id="running-bln-for-a-single-field">Running BLN for a single field<a class="anchor" aria-label="anchor" href="#running-bln-for-a-single-field"></a>
+</h5>
 <p>The main function to evaluate the quality of the soil is
 <code><a href="../reference/bln_field.html">bln_field()</a></code> as well as <code><a href="../reference/bln_field_dt.html">bln_field_dt()</a></code>. Both
 are wrappers around the the following steps (where the latter requires a
@@ -638,7 +639,7 @@ aggregated to scores.
 </p>
 </div>
 <p><br></p>
-<p>An example of both wrapper functions is illustrated below. The soil
+<p>An example of both wrapper functions are illustrated below. The soil
 has an BLN score of 0.79 indicating a relatively good quality to
 continue the current crop rotation plan. A value of one means that the
 soil quality is optimum for the continuation of the cropping plan
@@ -648,7 +649,7 @@ calculating scores for other ecosystem services not elaborated in this
 vignette.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  </span>
-<span>  <span class="co"># select the data for de Mare farm</span></span>
+<span>  <span class="co"># select the data for de Marke farm</span></span>
 <span>  <span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu">copy</span><span class="op">(</span><span class="fu">BLN</span><span class="fu">::</span><span class="va"><a href="../reference/bln_farm_hf.html">bln_farm_hf</a></span><span class="op">)</span></span>
 <span>  <span class="va">dt</span> <span class="op">&lt;-</span> <span class="va">dt</span><span class="op">[</span><span class="va">id</span><span class="op">==</span><span class="fl">1</span><span class="op">]</span></span>
 <span>  </span>
@@ -726,25 +727,25 @@ argument of the wrapper functions.</p>
 <p><br></p>
 </div>
 </div>
-<div class="section level2">
-<h2 id="the-evaluated-soil-functions">3. The Evaluated Soil Functions<a class="anchor" aria-label="anchor" href="#the-evaluated-soil-functions"></a>
-</h2>
+<div class="section level3">
+<h3 id="the-evaluated-soil-functions">3. The Evaluated Soil Functions<a class="anchor" aria-label="anchor" href="#the-evaluated-soil-functions"></a>
+</h3>
 <p>To assess the soil quality of an agricultural field, soil properties
 are used to derive so-called soil functions. Theses soil functions
 represent distinct processes in soil supporting the sustainable crop
 development. The soil functions are subsequently evaluated in view of a
 given threshold value. In this section the available soil functions are
 presented and illustrated.</p>
-<div class="section level3">
-<h3 id="chemical-soil-functions">3.1. Chemical soil functions<a class="anchor" aria-label="anchor" href="#chemical-soil-functions"></a>
-</h3>
+<div class="section level4">
+<h4 id="chemical-soil-functions">3.1. Chemical soil functions<a class="anchor" aria-label="anchor" href="#chemical-soil-functions"></a>
+</h4>
 <p>The BLN quantifies and evaluates the capacity of the soil to supply
 nitrogen, phosphorus, potassium, magnesium, and sulpher as well as the
 capacity of the soil to buffer cations and the pH. The functions are
 illustrated and explained below.</p>
-<div class="section level4">
-<h4 id="nitrogen-supplying-capacity">Nitrogen supplying capacity<a class="anchor" aria-label="anchor" href="#nitrogen-supplying-capacity"></a>
-</h4>
+<div class="section level5">
+<h5 id="nitrogen-supplying-capacity">Nitrogen supplying capacity<a class="anchor" aria-label="anchor" href="#nitrogen-supplying-capacity"></a>
+</h5>
 <p>Nitrogen is the nutrient that plants need most and is often the first
 limiting factor for growth. Plants take up nitrogen in mineral form as
 nitrate and ammonium. However, nitrogen is largely present in the soil
@@ -775,13 +776,13 @@ an optimum of 100 kg N / ha in arable fields and 140 kg N / ha in
 grassland fields.</p>
 <p><br></p>
 </div>
-<div class="section level4">
-<h4 id="phosphorus-availability-index">Phosphorus Availability Index<a class="anchor" aria-label="anchor" href="#phosphorus-availability-index"></a>
-</h4>
-<p>Phosphate (P) is present in the soil in both inorganic and organic.
-Inorganic P present in the soil solution is directly available for plant
-uptake. The amount of P in the soil solution is small compared to the
-total P supply of the soil. Organic P is only available to the plant
+<div class="section level5">
+<h5 id="phosphorus-availability-index">Phosphorus Availability Index<a class="anchor" aria-label="anchor" href="#phosphorus-availability-index"></a>
+</h5>
+<p>Phosphate (P) is present in the soil in both inorganic and organic
+form. Inorganic P present in the soil solution is directly available for
+plant uptake. The amount of P in the soil solution is small compared to
+the total P supply of the soil. Organic P is only available to the plant
 after decomposition by micro-organisms. The undissolved inorganic and
 organic P compounds can be divided into labile and stable compounds:</p>
 <ul>
@@ -804,53 +805,60 @@ field experiments across the Netherlands. For arable farming systems,
 the phosphorus supply is derived from one measured P pool reflecting the
 P status as well as controlling the crop response to P inputs. The
 availability is highly controlled by chemical adsorption and desorption
-equilibria and affected by the iron and aluminum oxides content of soils
-as well as the availability of oxygen. A phosphorus supply around 4.8
-(unitless index, for maize and grassland fields) and 45 (mg P2O5 per
-liter, for arable fields) is optimal for crop production.</p>
+equilibria and affected by the iron and aluminium oxides content of
+soils as well as the availability of oxygen. A phosphorus supply around
+4.8 (unitless index, for maize and grassland fields) and 45 (mg
+P<sub>2</sub>O<sub>5</sub> per liter, for arable fields) is optimal for
+crop production.</p>
 <p>To assess the capacity of soils to supply P, one can make use of the
 function <code>bln_c_posphor</code>. The function requires the following
 input: the BRP crop code and P concentration measured via extraction of
-ammonium lactate (A_P_AL), water (A_P_WA) or 0.01M CaCl2 (A_P_CC).</p>
+ammonium lactate (A_P_AL) and either water (A_P_WA) for arable
+cultivation or 0.01M CaCl<sub>2</sub> (A_P_CC) for grass and maize
+cultivations.</p>
 <p>For more details, see <code><a href="../reference/bln_c_posphor.html">?bln_c_posphor</a></code>.</p>
 <p>An example of this function is illustrated below for both an arable
-and a grassland field with one levels of A_P_AL (being sufficient for
+and a grassland field with one level of A_P_AL (being sufficient for
 crop growth) en varying levels of A_P_CC.</p>
 <p><br></p>
 <p><img src="bln_ess_crop_production_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
 </div>
-<div class="section level4">
-<h4 id="potassium-supply">Potassium supply<a class="anchor" aria-label="anchor" href="#potassium-supply"></a>
-</h4>
-<p>Like N and P, potassium (K) an important element for crop growth.
+<div class="section level5">
+<h5 id="potassium-supply">Potassium supply<a class="anchor" aria-label="anchor" href="#potassium-supply"></a>
+</h5>
+<p>Like N and P, potassium (K) is an important element for crop growth.
 Potassium is almost exclusively present in the soil in mineral form. The
-amount of K in the soil can be divided into 4 fractions: * K^+- ions in
-the soil solution; completely and directly available to the plant, but
-insufficient to cover the needs of the crop * K-exchangeable; K adsorbed
-to the clay and humus particles (adsorption complex; CEC). The exchange
-between K in the soil solution and K adsorbed occurs rapidly: within
-minutes to 24 hours * K-fixed or bound (in clay soils); the K enclosed
-in the clay plates. Exchange between K-fixed and K-soil solution takes
-days to months * K-mineral or K rock; becomes available through
-weathering. The amount of K that becomes available through weathering
-during a growing season is too small to be of agricultural interest.</p>
+amount of K in the soil can be divided into 4 fractions:</p>
+<ul>
+<li>K^+- ions in the soil solution; completely and directly available to
+the plant, but insufficient to cover the needs of the crop</li>
+<li>K-exchangeable; K adsorbed to the clay and humus particles
+(adsorption complex; CEC). The exchange between K in the soil solution
+and K adsorbed occurs rapidly: within minutes to 24 hours</li>
+<li>K-fixed or bound (in clay soils); the K enclosed in the clay plates.
+Exchange between K-fixed and K-soil solution takes days to months</li>
+<li>K-mineral or K rock; becomes available through weathering. The
+amount of K that becomes available through weathering during a growing
+season is too small to be of agricultural interest.</li>
+</ul>
 <p>The K supply is strongly controlled by the distribution of K over the
 possible K pools in soil, being controlled by adsorption and desorption
 processes, the cation exchange capacity of the soil and competing ions
 in soil solution and present at the exchange complex. Building on
 agronomic research from the last decade, the K supply is quantified for
 grasslands using the plant available K fraction (measured via
-CaCl2-extraction, K-CaCl2) as well as the CEC. For maize it is
-quantified using K-CaCl2 and for arable fields its quantified from
-K-CaCl2 and the CEC while accounting for the clay content, the organic
-matter content and the pH of the soil.</p>
+CaCl<sub>2</sub>`-extraction, K-CaCl<sub>2</sub>) as well as the CEC.
+For maize it is quantified using K-CaCl<sub>2</sub> and for arable
+fields its quantified from K-CaCl<sub>2</sub> and the CEC while
+accounting for the clay content, the organic matter content and the pH
+of the soil.</p>
 <p>To assess the capacity of soils to supply K, one can make use of the
 function <code>bln_c_potassium</code>. The function requires the
 following input: the BRP crop code, the soil type, the organic matter
 content, the clay content, the pH, the cation exchange capacity (CEC),
 the occupation of the CEC with potassium (%) and the directly available
 concentration of K as determined with a soil extraction with 0.01M
-CaCl2.</p>
+CaCl<sub>2</sub>.</p>
 <p>For more details, see <code><a href="../reference/bln_c_potassium.html">?bln_c_potassium</a></code>.</p>
 <p>An example of this function is illustrated below for both an arable
 and a grassland field, with a sandy texture, a fixed CEC and a fixed
@@ -860,12 +868,12 @@ with also a lower target value.</p>
 <p><br></p>
 <p><img src="bln_ess_crop_production_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
 </div>
-<div class="section level4">
-<h4 id="sulfur-supply">Sulfur supply<a class="anchor" aria-label="anchor" href="#sulfur-supply"></a>
-</h4>
+<div class="section level5">
+<h5 id="sulfur-supply">Sulfur supply<a class="anchor" aria-label="anchor" href="#sulfur-supply"></a>
+</h5>
 <p>Sulfur (S) is needed - along with nitrogen - for the formation of
 proteins in the plant. Whether S supply from the soil is sufficient for
-optimal production and quality depends on the crop’s S requirements and
+optimal production and quality depends on the crop’s S requirement and
 the S supply in the soil. The S supply is determined by soil processes
 and external sulfur supplies to the soil.</p>
 <p>The amount of sulfur in the soil that is available for crop uptake is
@@ -892,40 +900,41 @@ and a grassland field.</p>
 <p><br></p>
 <p><img src="bln_ess_crop_production_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
 </div>
-<div class="section level4">
-<h4 id="magnesium-supply">Magnesium supply<a class="anchor" aria-label="anchor" href="#magnesium-supply"></a>
-</h4>
+<div class="section level5">
+<h5 id="magnesium-supply">Magnesium supply<a class="anchor" aria-label="anchor" href="#magnesium-supply"></a>
+</h5>
 <p>Magnesium is an important element for crop growth, livestock health,
 and livestock productivity. Deficiencies for magnesium often occur on
 sandy soils with low organic matter and low pH. The supply of Mg for
 arable fields as well as grassland fields on sandy soils is directly
-related to the plant available Mg-content (Mg-CaCl2). For grassland
-fields on clay and peat soils the Mg-supply is indirectly quantified
-given the required composition of the grass (for intake by cows) and
-depends on the CEC, the organic matter and clay content, pH, as well as
-the K-availability assessed by K-CaCl2 and K-CEC.</p>
+related to the plant available Mg-content (Mg-CaCl<sub>2</sub>). For
+grassland fields on clay and peat soils the Mg-supply is indirectly
+quantified given the required composition of the grass (for intake by
+cows) and depends on the CEC, the organic matter and clay content, pH,
+as well as the K-availability assessed by K-CaCl<sub>2</sub> and
+K-CEC.</p>
 <p>To assess the Mg supplying capacity of the soil, one can make use of
-the function <code>i_c_mg</code>. The function requires the following
-input: the BRP crop code, the soil type, the organic matter content, the
-clay content, the pH, the cation exchange capacity (CEC), the occupation
-of the CEC with potassium (%) and the directly available concentration
-of both Mg and K as determined with a soil extraction with 0.01M
-CaCl2.</p>
-<p>For more details, see <code>?i_c_mg</code>.</p>
+the function <code>bln_c_magnesium</code>. The function requires the
+following input: the BRP crop code, the soil type, the organic matter
+content, the clay content, the pH, the cation exchange capacity (CEC),
+the occupation of the CEC with potassium (%) and the directly available
+concentration of both Mg and K as determined with a soil extraction with
+0.01M CaCl<sub>2</sub>.</p>
+<p>For more details, see <code><a href="../reference/bln_c_magnesium.html">?bln_c_magnesium</a></code>.</p>
 <p>An example of this function is illustrated below for both an arable
 and a grassland field.</p>
 <p><br></p>
 <p><img src="bln_ess_crop_production_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
 </div>
-<div class="section level4">
-<h4 id="soil-acidity">Soil Acidity<a class="anchor" aria-label="anchor" href="#soil-acidity"></a>
-</h4>
+<div class="section level5">
+<h5 id="soil-acidity">Soil Acidity<a class="anchor" aria-label="anchor" href="#soil-acidity"></a>
+</h5>
 <p>The pH is a measure of the acidity of the soil. The pH influences the
 soil quality and crop growth, among others through availability of
 nutrients and (heavy) metals and activity of soil life. In addition, the
 pH also influences various soil functions such as nutrient buffering and
 aggregate stability. The optimum soil pH for crop growth differs per
-crop. Potatoes prefer a lower pH and cereals, maize, sugar beet, and
+crop. Potatoes prefer a lower pH whilst cereals, maize, sugar beet, and
 field vegetables a higher pH. Organic matter reduces the negative effect
 of pH on crop growth. On sandy soils with an organic matter content of
 15%, the desired pH can be up to half a unit lower than on low organic
@@ -935,50 +944,52 @@ unit higher than with low clay percentages.</p>
 <p>The optimum pH is determined in historical field experiments given
 crop rotation plan, soil texture, soil organic matter, and initial pH.
 The assessment of the current soil pH can be done via the function
-<code>i_c_ph</code>. The function requires the following input
+<code>bln_c_ph</code>. The function requires the following input
 variables: land use (B_LU_BRP), soil type (B_SOILTYPE_AGR), soil organic
 matter (A_SOM_LOI), clay content (A_CLAY_MI) and the pH measured in
-CaCl2 (A_PH_CC).</p>
-<p>For more details, see <code>?i_c_ph</code>.</p>
+CaCl<sub>2</sub> (A_PH_CC).</p>
+<p>For more details, see <code><a href="../reference/bln_c_ph.html">?bln_c_ph</a></code>.</p>
 <p>An example of this function is illustrated below for both an arable
 and a grassland field over a predefined range in initial pH from 3 to
 7.</p>
 <p><br></p>
 <p><img src="bln_ess_crop_production_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
 </div>
-<div class="section level4">
-<h4 id="obic-indicators-not-used">OBIC indicators not used<a class="anchor" aria-label="anchor" href="#obic-indicators-not-used"></a>
-</h4>
+<div class="section level5">
+<h5 id="obic-indicators-not-used">OBIC indicators not used<a class="anchor" aria-label="anchor" href="#obic-indicators-not-used"></a>
+</h5>
 <p>From the OBIC calculator three indicators reflecting soil chemical
-functions are not used in the BLN. These include the availability and
-buffering of zinc and copper on the one hand, and the cation exchange
-capacity as factor controlling the availability of cations.</p>
+functions are not used in the BLN. These are the availability and
+buffering of zinc and copper, and the cation exchange capacity as factor
+controlling the availability of cations.</p>
 </div>
 </div>
-<div class="section level3">
-<h3 id="physical-soil-functions">3.2 Physical soil functions<a class="anchor" aria-label="anchor" href="#physical-soil-functions"></a>
-</h3>
-<p>The BLN evaluates also a series of physical soil functions related to
+<div class="section level4">
+<h4 id="physical-soil-functions">3.2 Physical soil functions<a class="anchor" aria-label="anchor" href="#physical-soil-functions"></a>
+</h4>
+<p>The BLN also evaluates a series of physical soil functions related to
 the supply of water and the rootability of the top and subsoil. The
 different soil physical functions are illustrated and explained below.
 Soil physical functions include the capacity of soils to retain and
 supply water, to resist wind erosion, topsoil sealing, subsoil
-compaction, and to deliver bearing capacity for mechanic activities.</p>
-<div class="section level4">
-<h4 id="water-stress-due-to-drought-or-wetness">Water Stress due to drought or wetness<a class="anchor" aria-label="anchor" href="#water-stress-due-to-drought-or-wetness"></a>
-</h4>
+compaction, and to deliver bearing capacity for mechanised activities
+such as sowing or plowing.</p>
+<div class="section level5">
+<h5 id="water-stress-due-to-drought-or-wetness">Water Stress due to drought or wetness<a class="anchor" aria-label="anchor" href="#water-stress-due-to-drought-or-wetness"></a>
+</h5>
 <p>The supply of water is of uttermost importance for crop development.
 The water supply depends on weather conditions and the capacity of soils
 to buffer and supply water during the growing season. Using long-term
 field experiments for multiple crops, empirical relationships between
 soil texture, ground water levels, and yield depressions due to drought
-or too wet conditions have been developed (Van Bakel, 2005; Huinink,
-2018). Within OBIC the crop yield response to drought stress or
-wetnessstress can be estimated via the function
-<code>bln_p_droughtstress</code> or <code>bln_p_wetnessstress</code>,
-requiring as input a soil code (representing unique combinations of soil
-type and geohydrological conditions controlling water availability),
-crop type, and groundwater level.</p>
+or too wet conditions have been developed <span class="citation">(Van
+Bakel et al., 2005; Huinink, 2018)</span>. Within OBIC the crop yield
+response to drought stress or wetnessstress can be estimated via the
+function <code>bln_p_droughtstress</code> or
+<code>bln_p_wetnessstress</code>, requiring as input a soil code
+(representing unique combinations of soil type and geohydrological
+conditions controlling water availability), crop type, and groundwater
+level.</p>
 <p>For more details, see <code>bln_p_droughtstress</code> and
 <code><a href="../reference/bln_p_wetnessstress.html">?bln_p_wetnessstress</a></code>.</p>
 <p>An example of this function is illustrated below for six different
@@ -989,9 +1000,9 @@ Increasing the groundwater depth results in more drought stress
 <p><br></p>
 <p><img src="bln_ess_crop_production_files/figure-html/unnamed-chunk-10-1.png" width="672"></p>
 </div>
-<div class="section level4">
-<h4 id="sealing-soil-surface-and-wind-erodibility">Sealing Soil Surface and Wind Erodibility<a class="anchor" aria-label="anchor" href="#sealing-soil-surface-and-wind-erodibility"></a>
-</h4>
+<div class="section level5">
+<h5 id="sealing-soil-surface-and-wind-erodibility">Sealing Soil Surface and Wind Erodibility<a class="anchor" aria-label="anchor" href="#sealing-soil-surface-and-wind-erodibility"></a>
+</h5>
 <p>Sealing is the process whereby soil aggregates disintegrate under the
 influence of rain. The impact of raindrops causes a shifting of soil
 particles. In the process, clay and silt particles clog the pores
@@ -1027,17 +1038,11 @@ with variable clay content for both an cropland (with organic matter
 levels of 3.5%) and a grassland soil (with organic matter levels of
 5%).</p>
 <p><br></p>
-<pre><code><span><span class="co">#&gt; Warning: A numeric `legend.position` argument in `theme()` was deprecated in ggplot2</span></span>
-<span><span class="co">#&gt; 3.5.0.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Please use the `legend.position.inside` argument of `theme()` instead.</span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">This warning is displayed once every 8 hours.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">generated.</span></span></span></code></pre>
 <p><img src="bln_ess_crop_production_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
 </div>
-<div class="section level4">
-<h4 id="aggregate-stability-and-crumbleability">Aggregate Stability and Crumbleability<a class="anchor" aria-label="anchor" href="#aggregate-stability-and-crumbleability"></a>
-</h4>
+<div class="section level5">
+<h5 id="aggregate-stability-and-crumbleability">Aggregate Stability and Crumbleability<a class="anchor" aria-label="anchor" href="#aggregate-stability-and-crumbleability"></a>
+</h5>
 <p>Crumbleability is an indication of the ease with which the soil can
 be broken up or crumbled and of the moisture range within which this is
 possible. The crumbleability of a soil is determined by the binding
@@ -1054,9 +1059,10 @@ stability is additionally evaluated given the cation occupation of the
 cation exchange capacity. Clayey soils with 80% Ca, 8% Mg, and about
 3.5% K are recognized as soils with more stable aggregates due to the
 influence of electrostatic bindings of divalent cations. Within BLN, and
-thereby following <span class="citation">[@R-OBIC]</span>, these two
-soil functions are assessed using <code>bln_p_crumbleability</code> and
-<code>bln_p_aggstability</code>.</p>
+thereby following the OBIC package, these two soil functions are
+assessed using <code>bln_p_crumbleability</code> and
+<code>bln_p_aggstability</code> <span class="citation">Verweij et al.
+(2023)</span>.</p>
 <p>For more details, see <code><a href="../reference/bln_p_crumbleability.html">?bln_p_crumbleability</a></code> and
 <code><a href="../reference/bln_p_aggstability.html">?bln_p_aggstability</a></code>.</p>
 <p>To illustrate how both functions are evaluated, we firstly show the
@@ -1073,9 +1079,9 @@ distance to the optimum is the lowest, being around a Ca occupation of
 about 85% of the CEC.</p>
 <p><img src="bln_ess_crop_production_files/figure-html/unnamed-chunk-12-1.png" width="672"></p>
 </div>
-<div class="section level4">
-<h4 id="subsoil-compaction">Subsoil compaction<a class="anchor" aria-label="anchor" href="#subsoil-compaction"></a>
-</h4>
+<div class="section level5">
+<h5 id="subsoil-compaction">Subsoil compaction<a class="anchor" aria-label="anchor" href="#subsoil-compaction"></a>
+</h5>
 <p>Soil compaction is caused by the use of excessively heavy machinery
 or by driving over and/or tilling soil with insufficient bearing
 capacity. Compaction can lead to poor rooting of the soil, limiting the
@@ -1098,18 +1104,19 @@ shrinkage. Strength, land use, and soil properties together determine
 the risk of subsoil compaction. The presence of subsoil compaction is
 derived from a national map with the estimated risk. As such, there is
 no calculation used. Recent field experimental data support the accuracy
-of this risk assessment map.</p>
+of this risk assessment map <span class="citation">(Akker,
+2004)</span>.</p>
 </div>
-<div class="section level4">
-<h4 id="visual-soil-assessment-correction">Visual Soil Assessment Correction<a class="anchor" aria-label="anchor" href="#visual-soil-assessment-correction"></a>
-</h4>
+<div class="section level5">
+<h5 id="visual-soil-assessment-correction">Visual Soil Assessment Correction<a class="anchor" aria-label="anchor" href="#visual-soil-assessment-correction"></a>
+</h5>
 <p>Within the BLN, the estimates of aggregate stability and risk of
 subsoil compaction can be adapted to local site specific insights
-derived from the Visual Soil Assessment Methodology. Visual soil
+derived from the Visual Soil Assessment Methodology <span class="citation">(Sonneveld et al., 2014)</span>. Visual soil
 assessments (VSA) is an assessment of soil quality in the field, by
 digging a hole and assessing several soil quality indicators visually.
 Soil quality indicators are: grass cover, number of roots, number of
-biopores, soil color, soil structure, soil compaction, and number of
+biopores, soil colour, soil structure, soil compaction, and number of
 gray spots. Visual soil assessments are more and more used by farmers in
 the Netherlands, but not specifically developed for various soil
 types.</p>
@@ -1124,7 +1131,7 @@ of visible tracks / rutting or trampling on the land (A_RT_BCS).
 Similarly, the soil aggregate stability is adapted when VSA indicators
 are available for earthworm density (A_EW_BCS), soil structure
 (A_SS_BCS), and presence of cracks in the topsoil (A_C_BCS).</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>    <span class="co"># overwrite soil physical functions for compaction when BCS is available</span></span>
 <span>    <span class="va">dt</span><span class="op">[</span>,<span class="va">D_P_CO</span> <span class="op">:=</span> <span class="op">(</span><span class="fl">3</span> <span class="op">*</span> <span class="va">A_EW_BCS</span> <span class="op">+</span> <span class="fl">3</span> <span class="op">*</span> <span class="va">A_SC_BCS</span> <span class="op">+</span> <span class="fl">3</span> <span class="op">*</span> <span class="va">A_RD_BCS</span>  <span class="op">-</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">A_P_BCS</span> <span class="op">-</span> <span class="va">A_RT_BCS</span><span class="op">)</span><span class="op">/</span><span class="fl">18</span><span class="op">]</span></span>
 <span>    <span class="va">dt</span><span class="op">[</span>,<span class="va">D_P_CO</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">D_P_CO</span><span class="op">)</span><span class="op">]</span></span>
@@ -1152,9 +1159,9 @@ conclusion of serious bottlenecks for aggregate stability, then the
 index declines to almost zero.</p>
 <p><img src="bln_ess_crop_production_files/figure-html/unnamed-chunk-14-1.png" width="672"></p>
 </div>
-<div class="section level4">
-<h4 id="water-retention-in-topsoil">Water retention in topsoil<a class="anchor" aria-label="anchor" href="#water-retention-in-topsoil"></a>
-</h4>
+<div class="section level5">
+<h5 id="water-retention-in-topsoil">Water retention in topsoil<a class="anchor" aria-label="anchor" href="#water-retention-in-topsoil"></a>
+</h5>
 <p>The moisture characteristic of a soil depends on its physical
 properties, texture, and structure. The texture of a soil is determined
 by its clay, loam, and sand content. In addition, almost all soils
@@ -1176,13 +1183,13 @@ present as a film around individual soil particles. The potential under
 these conditions is around -18 bar. The amount of moisture present
 between field capacity and wilting point is defined as the amount of
 plant-available water.</p>
-<p>The review study of various soil health instruments (Bunemann et al.,
-2016) identifies a variety of indicators that can be used to gain more
-insight into the water retaining capacity of a soil. Frequently used
-indicators are the amount of plant-available water (14 x), the water
-holding capacity (11 x), the moisture content at field capacity (11 x),
-and the saturated permeability (10 x). These indicators can be measured
-or estimated indirectly via so-called pedotransfer functions.</p>
+<p>The review study of various soil health instruments <span class="citation">(Bünemann et al., 2016)</span> identifies a variety of
+indicators that can be used to gain more insight into the water
+retaining capacity of a soil. Frequently used indicators are the amount
+of plant-available water (14 x), the water holding capacity (11 x), the
+moisture content at field capacity (11 x), and the saturated
+permeability (10 x). These indicators can be measured or estimated
+indirectly via so-called pedotransfer functions.</p>
 <p>The BLN makes use of OBIC functions to derive the following
 water-related indicators in function
 <code><a href="https://rdrr.io/pkg/OBIC/man/calc_waterretention.html" class="external-link">OBIC::calc_waterretention</a></code>. A few examples are illustrated
@@ -1204,7 +1211,7 @@ Other options are also possible.</p>
 <p>For more details, see <code><a href="https://rdrr.io/pkg/OBIC/man/calc_waterretention.html" class="external-link">?OBIC::calc_waterretention</a></code>.
 Functions are copied into <code>bln_helpers.R</code>. For the
 implementation of the WHC assessment, see <code><a href="../reference/bln_p_whc.html">?bln_p_whc</a></code>.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="co"># estimate the plant available water in topsoil</span></span>
 <span>  <span class="va">dt</span><span class="op">[</span>, <span class="va">D_WRI</span> <span class="op">:=</span> <span class="fu">calc_waterretention</span><span class="op">(</span><span class="va">A_CLAY_MI</span>,<span class="va">A_SAND_MI</span>,<span class="va">A_SILT_MI</span>,<span class="va">A_SOM_LOI</span>,type <span class="op">=</span> <span class="st">'plant available water'</span><span class="op">)</span><span class="op">]</span></span>
 <span>  </span>
@@ -1225,9 +1232,9 @@ matter content. All other soil properties are assumed to be
 constant.</p>
 <p><img src="bln_ess_crop_production_files/figure-html/unnamed-chunk-16-1.png" width="672"></p>
 </div>
-<div class="section level4">
-<h4 id="workability">Workability<a class="anchor" aria-label="anchor" href="#workability"></a>
-</h4>
+<div class="section level5">
+<h5 id="workability">Workability<a class="anchor" aria-label="anchor" href="#workability"></a>
+</h5>
 <p>Agricultural fields are not always workable in particular when the
 conditions for farm activities are limited by too wet or too dry
 conditions. The relative season length, and in extension, the soil
@@ -1239,9 +1246,9 @@ can be improved.</p>
 <p>For more information of the function, see
 <code><a href="../reference/bln_p_workability.html">?bln_p_workability</a></code>.</p>
 </div>
-<div class="section level4">
-<h4 id="bulk-density">Bulk density<a class="anchor" aria-label="anchor" href="#bulk-density"></a>
-</h4>
+<div class="section level5">
+<h5 id="bulk-density">Bulk density<a class="anchor" aria-label="anchor" href="#bulk-density"></a>
+</h5>
 <p>Plant roots are limited in their development when the bulk density
 exceeds a certain threshold. To assess the soil quality in view of this
 penetration resistance, the bulk density is assessed using the function
@@ -1251,15 +1258,15 @@ as input the soil organic matter content (A_SOM_LOI), the clay content
 (A_CLAY_MI). For more information, see <code><a href="../reference/bln_p_density.html">?bln_p_density</a></code>.</p>
 </div>
 </div>
-<div class="section level3">
-<h3 id="biological-soil-functions">3.3 Biological soil functions<a class="anchor" aria-label="anchor" href="#biological-soil-functions"></a>
-</h3>
+<div class="section level4">
+<h4 id="biological-soil-functions">3.3 Biological soil functions<a class="anchor" aria-label="anchor" href="#biological-soil-functions"></a>
+</h4>
 <p>The BLN assesses also series of soil biological functions related to
 the composition of the microbiome, suppression of soil borne pests and
 plagues, and plant parasitic nematodes.</p>
-<div class="section level4">
-<h4 id="potentially-mineralizable-nitrogen">Potentially mineralizable nitrogen<a class="anchor" aria-label="anchor" href="#potentially-mineralizable-nitrogen"></a>
-</h4>
+<div class="section level5">
+<h5 id="potentially-mineralizable-nitrogen">Potentially mineralizable nitrogen<a class="anchor" aria-label="anchor" href="#potentially-mineralizable-nitrogen"></a>
+</h5>
 <p>The activity of soil fungi and bacteria has been measured via
 incubation trials for decades. In such incubation trials, the
 decomposition of soil organic nitrogen is measured over a period of
@@ -1272,7 +1279,7 @@ sample is submerged in water, creating an anaerobic environment, killing
 aerobic bacteria and fungi, which, together with some labile organic
 matter, are decomposed by anaerobic soil microbes.</p>
 <p>For more information see <code><a href="../reference/bln_b_pmn.html">?bln_b_pmn</a></code>.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="co"># calculate the index for the potential mineralizable nitrogen pool</span></span>
 <span>  <span class="va">dt</span><span class="op">[</span>, <span class="va">D_PMN</span> <span class="op">:=</span> <span class="fu"><a href="../reference/bln_b_pmn.html">bln_b_pmn</a></span><span class="op">(</span><span class="va">B_LU_BRP</span>, <span class="va">B_SOILTYPE_AGR</span>, <span class="va">A_N_PMN</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <p>The PMN measured by routine laboratories in the Netherlands may be
@@ -1281,9 +1288,9 @@ used. The PMN index is capped at 500. Below an example of this function
 is given.</p>
 <p><img src="bln_ess_crop_production_files/figure-html/unnamed-chunk-18-1.png" width="672"></p>
 </div>
-<div class="section level4">
-<h4 id="disease-resistance">Disease resistance<a class="anchor" aria-label="anchor" href="#disease-resistance"></a>
-</h4>
+<div class="section level5">
+<h5 id="disease-resistance">Disease resistance<a class="anchor" aria-label="anchor" href="#disease-resistance"></a>
+</h5>
 <p>The activity of the soil life is an indication of the general disease
 resistance of the soil. When a soil food web is in balance, the soil’s
 resistance to disease and pests is also optimal. The soil’s resistance
@@ -1308,9 +1315,9 @@ resistance.</p>
 <p>For more information see <code><a href="../reference/bln_b_diseaseresistance.html">?bln_b_diseaseresistance</a></code>.</p>
 <p><img src="bln_ess_crop_production_files/figure-html/unnamed-chunk-19-1.png" width="672"></p>
 </div>
-<div class="section level4">
-<h4 id="plant-parasitic-nematodes">Plant Parasitic Nematodes<a class="anchor" aria-label="anchor" href="#plant-parasitic-nematodes"></a>
-</h4>
+<div class="section level5">
+<h5 id="plant-parasitic-nematodes">Plant Parasitic Nematodes<a class="anchor" aria-label="anchor" href="#plant-parasitic-nematodes"></a>
+</h5>
 <p>Nematodes are small animals occurring in all ecotypes on Earth, so
 also in soil. There is a large variety of nematodes in soils, they vary
 amongst other things, in size, feeding habits, reproduction speed, and
@@ -1331,9 +1338,9 @@ determine the indicator score.</p>
 due to the fact that actual observations are not present in open
 databases or the <code>National Agricultural Soil Archive</code>.</p>
 </div>
-<div class="section level4">
-<h4 id="earthworm-density">Earthworm density<a class="anchor" aria-label="anchor" href="#earthworm-density"></a>
-</h4>
+<div class="section level5">
+<h5 id="earthworm-density">Earthworm density<a class="anchor" aria-label="anchor" href="#earthworm-density"></a>
+</h5>
 <p>Earthworms are some of the largest fauna found in agricultural soils
 and through their tunneling affect nutrient cycling and soil structure.
 Analysis and interpretation of earthworm diversity is not regularly done
@@ -1344,9 +1351,9 @@ information).</p>
 </div>
 </div>
 </div>
-<div class="section level2">
-<h2 id="crop-and-soil-dependent-applicability-of-functions">4. Crop and soil dependent applicability of functions<a class="anchor" aria-label="anchor" href="#crop-and-soil-dependent-applicability-of-functions"></a>
-</h2>
+<div class="section level3">
+<h3 id="crop-and-soil-dependent-applicability-of-functions">4. Crop and soil dependent applicability of functions<a class="anchor" aria-label="anchor" href="#crop-and-soil-dependent-applicability-of-functions"></a>
+</h3>
 <p>Not all indicators are relevant for all combinations of soil type and
 crop. For example, <code>i_p_du</code> (wind erodibility) is not
 relevant on permanent grassland, as wind erosion is not a problem on
@@ -1358,15 +1365,65 @@ In soil type a differentiation is made between peat and non peat soils.
 If an indicator is not relevant for a given parcel, its score will not
 be used in further aggregation.</p>
 </div>
-<div class="section level2">
-<h2 id="reading-more">5. Reading more?<a class="anchor" aria-label="anchor" href="#reading-more"></a>
-</h2>
+<div class="section level3">
+<h3 id="reading-more">5. Reading more?<a class="anchor" aria-label="anchor" href="#reading-more"></a>
+</h3>
 <p>More vignettes will be made available regarding the derivation of all
 soil health indicators, the aggregation methods applied, the derivation
 of optimum land use given the current soil quality assessments, and the
 best management practices to be applied to improve the soil quality. Are
 you interested to contribute, please contact the author(s) of this R
 package. Enjoy!</p>
+</div>
+<div class="section level2">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-van_den_Akker2004" class="csl-entry">
+<strong>Akker JJH van den</strong> (2004). <em><a href="https://doi.org/10.1016/j.still.2004.03.021" class="external-link"><span>SOCOMO</span>:
+A Soil Compaction Model to Calculate Soil Stresses and the Subsoil
+Carrying Capacity</a></em>. Soil and Tillage Research, Advances in
+<span>Soil</span> <span>Structure</span> <span>Research</span>, 79 (1):
+113–27.
+</div>
+<div id="ref-Bunemann2016" class="csl-entry">
+<strong>Bünemann EK</strong>, <strong>Mäder P</strong>,
+<strong>Wohlfahrt J</strong>, <strong>Brussaard L</strong>,
+<strong>Bongiorno G</strong>, <strong>De Goede R</strong>,
+<strong>Geissen V</strong>, <strong>Fleskens L</strong>, <strong>Sukkel
+W</strong>, et al. (2016). <em>Concepts and Indicators of Soil Quality-a
+Review</em>. Interactive Soil Quality Assessment in Europe and China for
+Agricultural Productivity and Environmental Resilience, 1–76.
+</div>
+<div id="ref-Huinink2018" class="csl-entry">
+<strong>Huinink JThM</strong> (2018). <em><a href="https://www.bodemmconsult.nl" class="external-link">Bodem/Perceel
+Geschiktheidsbeoordeling Voor <span>Landbouw</span>,
+<span>Bosbouw</span> En <span>Recreatie</span>: T.b.v. Een Optimalisatie
+van Grondwater- En Oppervlaktewaterpeilbeheer: State of the Art
+2018</a></em>. Bodemconsult-{Arnhem} rapport 2018-3. Oosterbeek:
+BodemConsult-Arnhem.
+</div>
+<div id="ref-Sonneveld2014" class="csl-entry">
+<strong>Sonneveld MPW</strong>, <strong>Heuvelink GBM</strong>, &amp;
+<strong>Moolenaar SW</strong> (2014). <em>Application of a Visual Soil
+Examination and Evaluation Technique at Site and Farm Level</em>. Soil
+Use and Management 30 (2): 263–71.
+</div>
+<div id="ref-van_Bakel2005" class="csl-entry">
+<strong>Van Bakel PJT</strong>, <strong>Huinink J</strong>, <strong>Prak
+H</strong>, &amp; <strong>Van der Bolt FJE</strong> (2005).
+<em><span>HELP</span>-2005 <span>Uitbreiding</span> En Actualisering van
+de <span>HELP</span>-Tabellen Ten Behoeve van Het
+Waternood-Instrumentarium</em>. STOWA Rapportnummer 2005-16, 61.
+</div>
+<div id="ref-verweij_obic_2023" class="csl-entry">
+<strong>Verweij S</strong>, <strong>Ros G</strong>, <strong>Fujita
+Y</strong>, &amp; <strong>Riechelman B</strong> (2023).
+<em><span>OBIC</span>: <span>Calculate</span> the <span>Open</span>
+<span>Bodem</span> <span>Index</span> (<span>OBI</span>)
+<span>Score</span></em>. <a href="https://github.com/AgroCares/Open-Bodem-Index-Calculator" class="external-link">https://github.com/AgroCares/Open-Bodem-Index-Calculator</a>.
+</div>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
