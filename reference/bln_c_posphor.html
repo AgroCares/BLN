@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">BLN</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,6 +72,18 @@
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>The phosphate availability index in the Netherlands estimated from extractable soil P fractions. A numeric value.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The category a cultivation supplied by B_LU belongs to determines which P
+extraction parameter are required. Not supplying the correct P parameter for
+a cultivation results in the function returning NA. The cultivation categories
+can be found in table bln_crops, column crop_cat1. Column crop_code in this
+table should correspond to the B_LU input of bln_c_posphor.</p>
+<p>There are four cultivation categories: grass, maize, arable, and nature. Grass
+and maize classified cultivations require the parameters A_P_AL and A_P_CC,
+arable cultivations require A_P_WA, and nature does not require any P parameter.
+The phosphate availability index for nature defaults to 0.</p>
     </div>
 
     <div class="section level2">
