@@ -7,9 +7,9 @@
 #' @param B_SOILTYPE_AGR (character) The agricultural type of soil
 #' @param B_AER_CBS (character) The agricultural economic region in the Netherlands (CBS, 2016)
 #' @param B_GWL_CLASS (character) The groundwater table class
+#' @param A_SOM_LOI DEPRECATED
 #' @param B_GWP (boolean) is the field located in a groundwater protected area (options: TRUE or FALSE)
 #' @param B_SC_WENR (integer) The risk for subsoil compaction as derived from risk assessment study of Van den Akker (2006). Options include: 1,2,3,4,5,10,11,401,901 and 902.
-#' @param A_SOM_LOI (numeric) The organic matter content of the soil (\%)
 #' @param A_N_RT (numeric) The organic nitrogen content of the soil in mg N / kg
 #' @param B_N_RT (numeric) The mean organic nitrogen content of the soil in the LSW region (mg N / kg). Optional.
 #' @param B_N_RT_SD (numeric) The variance in organic nitrogen content of the soil in the LSW region (standard deviation) (mg N / kg). Optional.
@@ -57,7 +57,7 @@ bln_bbwp_ngw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GWP,B_
 
   # check inputs B parameters
   arg.length <- max(length(B_LU_BRP),length(B_SOILTYPE_AGR), length(B_SC_WENR),length(B_AER_CBS),
-                    length(B_GWP),length(B_GWL_CLASS),length(A_SOM_LOI),length(A_N_RT))
+                    length(B_GWP),length(B_GWL_CLASS),length(A_N_RT))
   checkmate::assert_subset(B_LU_BRP, choices = unlist(BLN::bln_crops$crop_code))
   checkmate::assert_integerish(B_LU_BRP, len = arg.length)
   checkmate::assert_subset(B_SOILTYPE_AGR, choices = unlist(blnp[code == "B_SOILTYPE_AGR", choices]))
@@ -74,7 +74,6 @@ bln_bbwp_ngw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GWP,B_
   if(length(B_N_RT_SD)>1){checkmate::assert_numeric(B_N_RT,lower = 0, upper = blnp[code == "A_N_RT", value_max],len = arg.length)}
 
   # check inputs A parameters
-  checkmate::assert_numeric(A_SOM_LOI, lower = blnp[code == "A_SOM_LOI", value_min], upper = blnp[code == "A_SOM_LOI", value_max],len = arg.length)
   checkmate::assert_numeric(A_N_RT, lower = blnp[code == "A_N_RT", value_min], upper = blnp[code == "A_N_RT", value_max],len = arg.length)
 
   # make internal table
@@ -86,7 +85,6 @@ bln_bbwp_ngw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GWP,B_
                    B_GWL_CLASS=B_GWL_CLASS,
                    B_AER_CBS=B_AER_CBS,
                    B_GWP = B_GWP,
-                   A_SOM_LOI = A_SOM_LOI,
                    A_N_RT = A_N_RT,
                    B_N_RT = B_N_RT,
                    B_N_RT_SD = B_N_RT_SD)
