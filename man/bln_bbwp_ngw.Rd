@@ -34,6 +34,8 @@ bln_bbwp_ngw(
 
 \item{B_GWL_CLASS}{(character) The groundwater table class}
 
+\item{A_SOM_LOI}{DEPRECATED}
+
 \item{A_N_RT}{(numeric) The organic nitrogen content of the soil in mg N / kg}
 
 \item{B_N_RT}{(numeric) The mean organic nitrogen content of the soil in the LSW region (mg N / kg). Optional.}

@@ -7,6 +7,7 @@
 #' @param B_SOILTYPE_AGR (character) The agricultural type of soil
 #' @param B_AER_CBS (character) The agricultural economic region in the Netherlands (CBS, 2016)
 #' @param B_GWL_CLASS (character) The groundwater table class
+#' @param A_SOM_LOI DEPRECATED
 #' @param B_GWP (boolean) is the field located in a groundwater protected area (options: TRUE or FALSE)
 #' @param B_SC_WENR (integer) The risk for subsoil compaction as derived from risk assessment study of Van den Akker (2006). Options include: 1,2,3,4,5,10,11,401,901 and 902.
 #' @param A_N_RT (numeric) The organic nitrogen content of the soil in mg N / kg
