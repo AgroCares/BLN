@@ -289,11 +289,11 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
                                   B_AER_CBS = B_AER_CBS, B_GWP = B_GWP, B_GWL_CLASS = B_GWL_CLASS, A_N_RT = A_N_RT,
                                   B_N_RT = B_N_RT, B_N_RT_SD = B_N_RT_SD, penalty = TRUE)]
 
-    # groundwater quantity and qality: pesticide leaching (I_H_PEST,from OBI)
+    # groundwater quantity and quality: pesticide leaching (I_H_PEST,from OBI)
     dt[, i_gw_pest := bln_wat_pesticide(ID,B_LU_BRP, B_SOILTYPE_AGR, A_CLAY_MI, A_SAND_MI, A_SILT_MI,
                                         A_SOM_LOI, M_GREEN, M_MECHWEEDS, M_PESTICIDES_DST)]
 
-    # groundwater quantity and qality: nitrogen retention (I_E_NGW, from OBI)
+    # groundwater quantity and quality: nitrogen retention (I_E_NGW, from OBI)
     dt[, i_gw_nret := bln_wat_nretention_gw(ID, B_LU_BRP, B_SOILTYPE_AGR, B_AER_CBS, B_GWL_CLASS, A_SOM_LOI, A_N_RT,A_CN_FR)]
 
     # groundwater quantity and quality: nitrogen leaching (I_H_NGW, from OBI). M_GREEN FALSE (YF: otherwise too strong impact)

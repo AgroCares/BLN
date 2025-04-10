@@ -13,6 +13,18 @@
 #' bln_c_posphor(B_LU = 265, A_P_AL = 45, A_P_CC = 2.5)
 #' bln_c_posphor(B_LU = c(265,1019),A_P_AL = c(35,54),A_P_CC = c(2.5,4.5), A_P_WA = c(35,65))
 #'
+#' @details
+#' The category a cultivation supplied by B_LU belongs to determines which P
+#' extraction parameter are required. Not supplying the correct P parameter for
+#' a cultivation results in the function returning NA. The cultivation categories
+#' can be found in table bln_crops, column crop_cat1. Column crop_code in this
+#' table should correspond to the B_LU input of bln_c_posphor.
+#'
+#' There are four cultivation categories: grass, maize, arable, and nature. Grass
+#' and maize classified cultivations require the parameters A_P_AL and A_P_CC,
+#' arable cultivations require A_P_WA, and nature does not require any P parameter.
+#' The phosphate availability index for nature defaults to 0.
+#'
 #' @return
 #' The phosphate availability index in the Netherlands estimated from extractable soil P fractions. A numeric value.
 #'

@@ -1,4 +1,5 @@
-#' Function to calculate and evaluate the pesticide retention in soils in view of water purification for surface water quality
+#' Function to calculate and evaluate the pesticide retention in soils in view
+#'  of water purification for groundwater water quality
 #'
 #' @param ID (character) A field id
 #' @param B_LU_BRP (numeric) The crop code

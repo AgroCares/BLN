@@ -1,13 +1,13 @@
 Package: BLN
 Type: Package
 Title: Calculate the Soil Quality Assessment Score using the Dutch BLN framework
-Version: 0.9.1
+Version: 0.9.2
 Authors@R: c(
-    person("Gerard", "Ros", email = "gerard.ros@nmi-agro.nl", role = c("aut","cre")),
-    person("Sven", "Verweij", email = "sven.verweij@nmi-agro.nl", role = "aut"),
-    person("Yuki", "Fujita", email = "yuki.fujita@nmi-agro.nl", role = "aut"),
+    person("Gerard", "Ros", email = "gerard.ros@nmi-agro.nl", role = c("aut","cre"), comment = c(ORCID = '0000-0002-6062-9770')),
+    person("Sven", "Verweij", email = "sven.verweij@nmi-agro.nl", role = "aut", comment = c(ORCID = '0000-0002-5573-3952')),
+    person("Yuki", "Fujita", email = "yuki.fujita@nmi-agro.nl", role = "aut", comment = c(ORCID = '0000-0002-0541-2798')),
     person("Noud", "van Dam", email = "noud.vandam@nmi-agro.nl", role = "aut"),
-    person("Brent", "Riechelman", email = 'brent.riechelman@nmi-agro.nl', role = "aut"),
+    person("Brent", "Riechelman", email = 'brent.riechelman@nmi-agro.nl', role = "aut", comment = c(ORCID = '0000-0003-1501-1573')),
     person("Nutriënten Managment Instituut", email = "nmi@nmi-agro.nl", role = "cph"))
 Description: The Dutch Soil Quality Assessment Framework (BLN) is a method to evaluate the quality of soils of agricultural fields in The Netherlands.
     The soil quality score is based on various criteria whereas chemical, physical, biological soil functions are defined and evaluated in view of five ecosystem services.

@@ -3,6 +3,8 @@ title: "BLN assessment for crop production"
 author: 'Gerard H. Ros'
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
+bibliography: references.bib
+csl: nmi-csl-nmi-v1_11.csl
 vignette: >
   %\VignetteIndexEntry{BLN assessment for crop production}
   %\VignetteEngine{knitr::rmarkdown}
@@ -32,15 +34,15 @@ library(BLN)
 ## 1. introduction
 
 ### Background
-Facilitating and promoting crop production is one of the ecosystem services a soil supplies. The Dutch soil assessment scheme BLN, being an abbreviation for `Bodemindicatorenset Landbouwgronden Nederland`, strongly depends on the [Open Soil Index Framework](https://pubs.acs.org/doi/10.1021/acs.est.2c04516#), a presucessor of the BLN. The Open Soil Index is currently in use by farmers and farm advisors to facilitate sustainable soil management. In addition, governments, banks, regional governments, agricultural laboratories and other stakeholders are using this framework to monitor soil health and valorise appropriate soil management measures. For more information on the OSI, see: [the OBIC package]([OBIC]).
+Facilitating and promoting crop production is one of the ecosystem services a soil supplies. The Dutch soil assessment scheme BLN, being an abbreviation for `Bodemindicatorenset Landbouwgronden Nederland`, strongly depends on the [Open Soil Index Framework](https://pubs.acs.org/doi/10.1021/acs.est.2c04516#), a predecessor of the BLN. The Open Soil Index is currently in use by farmers and farm advisors to facilitate sustainable soil management. In addition, (regional) governments, banks, agricultural laboratories and other stakeholders are using this framework to monitor soil health and valorise appropriate soil management measures. For more information on the OSI, see: [the OBIC package]([OBIC]).
 
 
 ### The Soil Assessment Framework
-Soil quality is defined as the capacity of a soil to fulfill the desired soil functions under varying conditions for a combination of purposes (and services) such as food production, efficient nutrient cycling, and preservation of biodiversity. This vignette is focussing on the ecosystem service food production. Lets start with some definitions:
+Soil quality is defined as the capacity of a soil to fulfil the desired soil functions under varying conditions for a combination of purposes (and services) such as food production, efficient nutrient cycling, and preservation of biodiversity. This vignette is focussing on the ecosystem service food production. Lets start with some definitions:
 
-* Soil functions are quantitative relationships evaluating how soil properties alone or in combination with each other contribute to crop produciton. 
+* Soil functions are quantitative relationships evaluating how soil properties alone or in combination with each other contribute to crop production. 
 * Soil indicators are the result of an evaluation scoring methodology transforming the output of soil functions to a qualitative category (low to high) or a numeric grade (1-10). 
-* Soil and field properties are characteristics of a soil (or field) that are used to quantify the soil functions. These characteristics may have been analyzed in the laboratory as well as those resulting from the location of the field in the landscape. For example, the groundwater level, the variation in ground level, the slope, and the presence of drainage are soil properties. 
+* Soil and field properties are characteristics of a soil (or field) that are used to quantify the soil functions. These characteristics may have been analysed in the laboratory as well as those resulting from the location of the field in the landscape. For example, the groundwater level, the variation in ground level, the slope, and the presence of drainage are soil properties. 
 * Soil management includes all measures that land users or farmers can take to improve or adapt soil quality for a specific purpose. This has a direct influence on (measurable) soil properties. 
 
 Within the boundary condition of context (i.e. continuation of crop rotation scheme in next decade) and objective (i.e. sustainable crop production), soil properties are quantified based on routinely available soil analyses, and field properties. The soil properties are in conjunction with each other used to quantify a number of soil functions. These functions can be clustered around the three relevant aspects of soil, namely:
@@ -119,7 +121,7 @@ Below a short snapshot of the `bln_farm_hf` is given:
 
 In this example all optional input variables are set to the lowest score (for visuals soil assessment). Since soil quality can only be evaluated given its use, the crop rotation (being the sequence of crops cultivated over time) determines also which soil properties and which soil functions are relevant and how they are evaluated given a desired threshold value.
 
-Note that `bln_farm_hf` is a data.table, a modern and fast variant of a data frame [data.table]. It's particularly useful for large datasets because it only prints a selection of the dataset and calculations done on a data.table are extremely fast. You can learn more about data.tables at [this link](https://CRAN.R-project.org/package=data.table/vignettes/datatable-intro.html) ; in particular you can convert data frames to data.tables with as.data.table().
+Note that `bln_farm_hf` is a data.table, a modern and fast variant of a data.frame. It's particularly useful for large datasets because it only prints a selection of the dataset and calculations done on a data.table are extremely fast. You can learn more about data.tables at [this link](https://CRAN.R-project.org/package=data.table/vignettes/datatable-intro.html); in particular you can convert data frames to data.tables with `data.table::as.data.table()`.
 
 #### Running BLN for a single field
 The main function to evaluate the quality of the soil is `bln_field()` as well as `bln_field_dt()`. Both are wrappers around the the following steps (where the latter requires a data.table as input and the former does not):
@@ -149,12 +151,12 @@ knitr::include_graphics('../man/figures/OBIC_score_integratie_2.png')
 
 <br />
 
-An example of both wrapper functions is illustrated below. The soil has an BLN score of 0.79 indicating a relatively good quality to continue the current crop rotation plan. A value of one means that the soil quality is optimum for the continuation of the cropping plan whereas a value of zero means that there are substantial bottlenecks that need to be solved. Note that the BLN is automatically also calculating scores for other ecosystem services not elaborated in this vignette.
+An example of both wrapper functions are illustrated below. The soil has an BLN score of 0.79 indicating a relatively good quality to continue the current crop rotation plan. A value of one means that the soil quality is optimum for the continuation of the cropping plan whereas a value of zero means that there are substantial bottlenecks that need to be solved. Note that the BLN is automatically also calculating scores for other ecosystem services not elaborated in this vignette.
 
 
 ```{r, sim1, echo=TRUE}
   
-  # select the data for de Mare farm
+  # select the data for de Marke farm
   dt <- copy(BLN::bln_farm_hf)
   dt <- dt[id==1]
   
@@ -277,18 +279,18 @@ The total N supply is evaluated via a parabolic scoring function with an optimum
 <br />
 
 #### Phosphorus Availability Index
-Phosphate (P) is present in the soil in both inorganic and organic. Inorganic P present in the soil solution is directly available for plant uptake. The amount of P in the soil solution is small compared to the total P supply of the soil. Organic P is only available to the plant after decomposition by micro-organisms. The undissolved inorganic and organic P compounds can be divided into labile and stable compounds:
+Phosphate (P) is present in the soil in both inorganic and organic form. Inorganic P present in the soil solution is directly available for plant uptake. The amount of P in the soil solution is small compared to the total P supply of the soil. Organic P is only available to the plant after decomposition by micro-organisms. The undissolved inorganic and organic P compounds can be divided into labile and stable compounds:
 
 * The labile P fraction is in equilibrium with the P in solution and is the main source of P re-supply to the soil solution. Labile inorganic P compounds include P bound to the surface of iron and aluminium (hydr-) oxides, and iron (Fe), aluminium (Al) and calcium phosphates. In acid and neutral soils, P availability is mainly determined by its binding to Fe and Al (hydr-) oxides. In calcareous soils, P is usually associated with calcium (Ca).
 * The stable P compounds are usually poorly soluble and therefore poorly available to plants. Stable inorganic P compounds include P-containing soil minerals (e.g. apatite).
 
-The phosphorus supply of an agricultural soil can be derived from methods measuring either a capacity or an intensity of P pools in soil or a combination of both. The latter approach is followed for grassland and maize fields, where the optimum P supply is derived from multiple field experiments across the Netherlands. For arable farming systems, the phosphorus supply is derived from one measured P pool reflecting the P status as well as controlling the crop response to P inputs. The availability is highly controlled by chemical adsorption and desorption equilibria and affected by the iron and aluminum oxides content of soils as well as the availability of oxygen. A phosphorus supply around 4.8 (unitless index, for maize and grassland fields) and 45 (mg P2O5 per liter, for arable fields) is optimal for crop production.
+The phosphorus supply of an agricultural soil can be derived from methods measuring either a capacity or an intensity of P pools in soil or a combination of both. The latter approach is followed for grassland and maize fields, where the optimum P supply is derived from multiple field experiments across the Netherlands. For arable farming systems, the phosphorus supply is derived from one measured P pool reflecting the P status as well as controlling the crop response to P inputs. The availability is highly controlled by chemical adsorption and desorption equilibria and affected by the iron and aluminium oxides content of soils as well as the availability of oxygen. A phosphorus supply around 4.8 (unitless index, for maize and grassland fields) and 45 (mg P~2~O~5~ per liter, for arable fields) is optimal for crop production.
 
-To assess the capacity of soils to supply P, one can make use of the function `bln_c_posphor`. The function requires the following input: the BRP crop code and P concentration measured via extraction of ammonium lactate (A_P_AL), water (A_P_WA) or 0.01M CaCl2 (A_P_CC). 
+To assess the capacity of soils to supply P, one can make use of the function `bln_c_posphor`. The function requires the following input: the BRP crop code and P concentration measured via extraction of ammonium lactate (A_P_AL) and either water (A_P_WA) for arable cultivation or 0.01M CaCl~2~ (A_P_CC) for grass and maize cultivations. 
 
 For more details, see `?bln_c_posphor`. 
 
-An example of this function is illustrated below for both an arable and a grassland field with one levels of A_P_AL (being sufficient for crop growth) en varying levels of A_P_CC. 
+An example of this function is illustrated below for both an arable and a grassland field with one level of A_P_AL (being sufficient for crop growth) en varying levels of A_P_CC. 
 
 <br />
 
@@ -332,15 +334,16 @@ An example of this function is illustrated below for both an arable and a grassl
 
 
 #### Potassium supply
-Like N and P, potassium (K) an important element for crop growth. Potassium is almost exclusively present in the soil in mineral form. The amount of K in the soil can be divided into 4 fractions:
+Like N and P, potassium (K) is an important element for crop growth. Potassium is almost exclusively present in the soil in mineral form. The amount of K in the soil can be divided into 4 fractions:
+
 * K^+- ions in the soil solution; completely and directly available to the plant, but insufficient to cover the needs of the crop
 * K-exchangeable; K adsorbed to the clay and humus particles (adsorption complex; CEC). The exchange between K in the soil solution and K adsorbed occurs rapidly: within minutes to 24 hours
 * K-fixed or bound (in clay soils); the K enclosed in the clay plates. Exchange between K-fixed and K-soil solution takes days to months
 * K-mineral or K rock; becomes available through weathering. The amount of K that becomes available through weathering during a growing season is too small to be of agricultural interest.
 
-The K supply is strongly controlled by the distribution of K over the possible K pools in soil, being controlled by adsorption and desorption processes, the cation exchange capacity of the soil and competing ions in soil solution and present at the exchange complex. Building on agronomic research from the last decade, the K supply is quantified for grasslands using the plant available K fraction (measured via CaCl2-extraction, K-CaCl2) as well as the CEC. For maize it is quantified using K-CaCl2 and for arable fields its quantified from K-CaCl2 and the CEC while accounting for the clay content, the organic matter content and the pH of the soil. 
+The K supply is strongly controlled by the distribution of K over the possible K pools in soil, being controlled by adsorption and desorption processes, the cation exchange capacity of the soil and competing ions in soil solution and present at the exchange complex. Building on agronomic research from the last decade, the K supply is quantified for grasslands using the plant available K fraction (measured via CaCl~2~`-extraction, K-CaCl~2~) as well as the CEC. For maize it is quantified using K-CaCl~2~ and for arable fields its quantified from K-CaCl~2~ and the CEC while accounting for the clay content, the organic matter content and the pH of the soil. 
 
-To assess the capacity of soils to supply K, one can make use of the function `bln_c_potassium`. The function requires the following input: the BRP crop code, the soil type, the organic matter content, the clay content, the pH, the cation exchange capacity (CEC), the occupation of the CEC with potassium (%) and the directly available concentration of K as determined with a soil extraction with 0.01M CaCl2. 
+To assess the capacity of soils to supply K, one can make use of the function `bln_c_potassium`. The function requires the following input: the BRP crop code, the soil type, the organic matter content, the clay content, the pH, the cation exchange capacity (CEC), the occupation of the CEC with potassium (%) and the directly available concentration of K as determined with a soil extraction with 0.01M CaCl~2~. 
 
 For more details, see `?bln_c_potassium`. 
 
@@ -392,7 +395,7 @@ An example of this function is illustrated below for both an arable and a grassl
 
 
 #### Sulfur supply
-Sulfur (S) is needed - along with nitrogen - for the formation of proteins in the plant. Whether S supply from the soil is sufficient for optimal production and quality depends on the crop's S requirements and the S supply in the soil. The S supply is  determined by soil processes and external sulfur supplies to the soil.
+Sulfur (S) is needed - along with nitrogen - for the formation of proteins in the plant. Whether S supply from the soil is sufficient for optimal production and quality depends on the crop's S requirement and the S supply in the soil. The S supply is  determined by soil processes and external sulfur supplies to the soil.
 
 The amount of sulfur in the soil that is available for crop uptake is determined by the mineral sulfur supply remaining in the soil after winter (Smin), mineralization of sulfur in the soil during the growing season (sulfur supply capacity), sulfur deposition, sulfur supply by irrigation during cultivation, capillary rise of sulfur-containing groundwater, and by possible losses. Sulfur supply, capillary rise, and Smin are quantitatively the most important inputs of sulfur. However, all three can vary considerably. The contribution from sulfur deposition is only minor throughout the Netherlands. A substantial amount of sulfur can also be supplied through irrigation with sulfurous spring water. This supply, however, varies greatly, depending on the amount sprayed and the sulfur content of the water.
 
@@ -446,11 +449,11 @@ An example of this function is illustrated below for both an arable and a grassl
 
 
 #### Magnesium supply
-Magnesium is an important element for crop growth, livestock health, and livestock productivity. Deficiencies for magnesium often occur on sandy soils with low organic matter and low pH. The supply of Mg for arable fields as well as grassland fields on sandy soils is directly related to the plant available Mg-content (Mg-CaCl2). For grassland fields on clay and peat soils the Mg-supply is indirectly quantified given the required composition of the grass (for intake by cows) and depends on the CEC, the organic matter and clay content, pH, as well as the K-availability assessed by K-CaCl2 and K-CEC. 
+Magnesium is an important element for crop growth, livestock health, and livestock productivity. Deficiencies for magnesium often occur on sandy soils with low organic matter and low pH. The supply of Mg for arable fields as well as grassland fields on sandy soils is directly related to the plant available Mg-content (Mg-CaCl~2~). For grassland fields on clay and peat soils the Mg-supply is indirectly quantified given the required composition of the grass (for intake by cows) and depends on the CEC, the organic matter and clay content, pH, as well as the K-availability assessed by K-CaCl~2~ and K-CEC. 
 
-To assess the Mg supplying capacity of the soil, one can make use of the function `i_c_mg`. The function requires the following input: the BRP crop code, the soil type, the organic matter content, the clay content, the pH, the cation exchange capacity (CEC), the occupation of the CEC with potassium (%) and the directly available concentration of both Mg and K as determined with a soil extraction with 0.01M CaCl2. 
+To assess the Mg supplying capacity of the soil, one can make use of the function `bln_c_magnesium`. The function requires the following input: the BRP crop code, the soil type, the organic matter content, the clay content, the pH, the cation exchange capacity (CEC), the occupation of the CEC with potassium (%) and the directly available concentration of both Mg and K as determined with a soil extraction with 0.01M CaCl~2~. 
 
-For more details, see `?i_c_mg`. 
+For more details, see `?bln_c_magnesium`. 
 
 An example of this function is illustrated below for both an arable and a grassland field.
 
@@ -502,12 +505,12 @@ An example of this function is illustrated below for both an arable and a grassl
 
 
 #### Soil Acidity
-The pH is a measure of the acidity of the soil. The pH influences the soil quality and crop growth, among others through availability of nutrients and (heavy) metals and activity of soil life. In addition, the pH also influences various soil functions such as nutrient buffering and aggregate stability. The optimum soil pH for crop growth differs per crop. Potatoes prefer a lower pH and cereals, maize, sugar beet, and field vegetables a higher pH. Organic matter reduces the negative effect of pH on crop growth. On sandy soils with an organic matter content of 15%, the desired pH can be up to half a unit lower than on low organic matter content soils. On clay soils the desired pH is higher than on sandy soils. With a clay percentage above 10, the desired pH is half a unit higher than with low clay percentages.
+The pH is a measure of the acidity of the soil. The pH influences the soil quality and crop growth, among others through availability of nutrients and (heavy) metals and activity of soil life. In addition, the pH also influences various soil functions such as nutrient buffering and aggregate stability. The optimum soil pH for crop growth differs per crop. Potatoes prefer a lower pH whilst cereals, maize, sugar beet, and field vegetables a higher pH. Organic matter reduces the negative effect of pH on crop growth. On sandy soils with an organic matter content of 15%, the desired pH can be up to half a unit lower than on low organic matter content soils. On clay soils the desired pH is higher than on sandy soils. With a clay percentage above 10, the desired pH is half a unit higher than with low clay percentages.
 
 The optimum pH is determined in historical field experiments given crop rotation plan, soil texture, soil organic matter, and initial pH. 
-The assessment of the current soil pH can be done via the function `i_c_ph`. The function requires the following input variables: land use (B_LU_BRP), soil type (B_SOILTYPE_AGR), soil organic matter (A_SOM_LOI), clay content (A_CLAY_MI) and the pH measured in CaCl2 (A_PH_CC).
+The assessment of the current soil pH can be done via the function `bln_c_ph`. The function requires the following input variables: land use (B_LU_BRP), soil type (B_SOILTYPE_AGR), soil organic matter (A_SOM_LOI), clay content (A_CLAY_MI) and the pH measured in CaCl~2~ (A_PH_CC).
 
-For more details, see `?i_c_ph`. 
+For more details, see `?bln_c_ph`. 
 
 An example of this function is illustrated below for both an arable and a grassland field over a predefined range in initial pH from 3 to 7.
 
@@ -554,14 +557,14 @@ An example of this function is illustrated below for both an arable and a grassl
 
 
 #### OBIC indicators not used
-From the OBIC calculator three indicators reflecting soil chemical functions are not used in the BLN. These include the availability and buffering of zinc and copper on the one hand, and the cation exchange capacity as factor controlling the availability of cations. 
+From the OBIC calculator three indicators reflecting soil chemical functions are not used in the BLN. These are the availability and buffering of zinc and copper, and the cation exchange capacity as factor controlling the availability of cations. 
 
 
 ### 3.2 Physical soil functions
-The BLN evaluates also a series of physical soil functions related to the supply of water and the rootability of the top and subsoil. The different soil physical functions are illustrated and explained below. Soil physical functions include the capacity of soils to retain and supply water, to resist wind erosion, topsoil sealing, subsoil compaction, and to deliver bearing capacity for mechanic activities. 
+The BLN also evaluates a series of physical soil functions related to the supply of water and the rootability of the top and subsoil. The different soil physical functions are illustrated and explained below. Soil physical functions include the capacity of soils to retain and supply water, to resist wind erosion, topsoil sealing, subsoil compaction, and to deliver bearing capacity for mechanised activities such as sowing or plowing. 
 
 #### Water Stress due to drought or wetness
-The supply of water is of uttermost importance for crop development. The water supply depends on weather conditions and the capacity of soils to buffer and supply water during the growing season. Using long-term field experiments for multiple crops, empirical relationships between soil texture, ground water levels, and yield depressions due to drought or too wet conditions have been developed (Van Bakel, 2005; Huinink, 2018). Within OBIC the crop yield response to drought stress or wetnessstress can be estimated via the function `bln_p_droughtstress` or `bln_p_wetnessstress`, requiring as input a soil code (representing unique combinations of soil type and geohydrological conditions controlling water availability), crop type, and groundwater level.
+The supply of water is of uttermost importance for crop development. The water supply depends on weather conditions and the capacity of soils to buffer and supply water during the growing season. Using long-term field experiments for multiple crops, empirical relationships between soil texture, ground water levels, and yield depressions due to drought or too wet conditions have been developed [@van_Bakel2005;@Huinink2018]. Within OBIC the crop yield response to drought stress or wetnessstress can be estimated via the function `bln_p_droughtstress` or `bln_p_wetnessstress`, requiring as input a soil code (representing unique combinations of soil type and geohydrological conditions controlling water availability), crop type, and groundwater level.
 
 For more details, see `bln_p_droughtstress` and `?bln_p_wetnessstress`. 
 
@@ -656,8 +659,7 @@ An example of these functions is illustrated below for an arable soil with varia
                aes(x = A_CLAY_MI, y = i_p_se, color = luse,group = luse)) + 
         geom_line() + geom_point(size=3) +  theme_bw() + scale_fill_viridis_d()+ scale_color_viridis_d()+ 
         ylab('Soil Sealing (-)') + xlab('Clay content (%)') + ylim(0,1)+
-        theme(legend.position = c(0.8,0.2),
-              plot.title = element_text(size=10),
+        theme(plot.title = element_text(size=10),
               legend.text = element_text(size=10)) + 
         ggtitle('Soil sealing given SOM and clay content') +
         guides(color = guide_legend(title="land use"))
@@ -667,21 +669,20 @@ An example of these functions is illustrated below for an arable soil with varia
                aes(x = A_CLAY_MI, y = i_p_du, color = luse)) + 
         geom_line() + geom_point(size=3) +  theme_bw() + scale_fill_viridis_d()+ scale_color_viridis_d()+ 
         ylab('Wind Erodibility (-)') + xlab('Clay content (%)') + ylim(0,1)+
-        theme(legend.position = c(0.8,0.2),
-              plot.title = element_text(size=10),
+        theme(plot.title = element_text(size=10),
               legend.text = element_text(size=10)) + 
         ggtitle('Wind erodibility given soil texture and landuse') +
         guides(color = guide_legend(title="land use"))
   
   # plot side by side
-  p1 + p2
+  p1 + p2 + plot_layout(guides = "collect")
 ```
 
 
 #### Aggregate Stability and Crumbleability
 Crumbleability is an indication of the ease with which the soil can be broken up or crumbled and of the moisture range within which this is possible. The crumbleability of a soil is determined by the binding between soil aggregates. The lower the degree of crumbling, the more energy is required and the heavier tractors and equipment are needed for working the soil. This requires (additional) investments and higher fuel consumption, while the end result - even after additional tillage - is poorer.
 
-Similarly to the vulnerability to sealing and wind erodibility, the crumbleability of a soil (a measure for aggregate stability) as well as the potential risk for yield depressions (crop specific) can be derived from the clay content, the organic matter content, and the pH. Aggregate stability is additionally evaluated given the cation occupation of the cation exchange capacity. Clayey soils with 80% Ca, 8% Mg, and about 3.5% K are recognized as soils with more stable aggregates due to the influence of electrostatic bindings of divalent cations. Within BLN, and thereby following [@R-OBIC], these two soil functions are assessed using `bln_p_crumbleability` and `bln_p_aggstability`.
+Similarly to the vulnerability to sealing and wind erodibility, the crumbleability of a soil (a measure for aggregate stability) as well as the potential risk for yield depressions (crop specific) can be derived from the clay content, the organic matter content, and the pH. Aggregate stability is additionally evaluated given the cation occupation of the cation exchange capacity. Clayey soils with 80% Ca, 8% Mg, and about 3.5% K are recognized as soils with more stable aggregates due to the influence of electrostatic bindings of divalent cations. Within BLN, and thereby following the OBIC package, these two soil functions are assessed using `bln_p_crumbleability` and `bln_p_aggstability` @verweij_obic_2023.
 
 For more details, see `?bln_p_crumbleability` and `?bln_p_aggstability`. 
 
@@ -713,10 +714,12 @@ To illustrate how both functions are evaluated, we firstly show the dependency o
   dt.test2[, i_p_as := bln_p_aggstability(B_SOILTYPE_AGR, A_SOM_LOI, A_K_CO_PO, A_CA_CO_PO, A_MG_CO_PO)]
    
   # plot output crumbleabilty
-  p1 <- ggplot(data = dt.test1,aes(x = A_CLAY_MI, y = i_p_cr,color=landuse)) + 
+  p1 <- ggplot(data = dt.test1,
+               aes(x = A_CLAY_MI, y = i_p_cr,color=landuse)) + 
         geom_line() + geom_point(size=3) +  theme_bw() + scale_fill_viridis_d()+ scale_color_viridis_d()+ 
         ylab('Crumbleability score') + xlab('Clay content (%)') + #ylim(0,1)+
-        theme(legend.position = c(0.2,0.2),
+        theme(legend.position = "inside",
+              legend.position.inside = c(0.2,0.2),
               plot.title = element_text(size=10),
               legend.text = element_text(size=10)) + 
     ggtitle('Soil crumbleability given SOM and clay content')   
@@ -727,7 +730,8 @@ To illustrate how both functions are evaluated, we firstly show the dependency o
         geom_point(size=2) + theme_bw() + scale_fill_viridis_d()+ scale_colour_viridis_b()+ 
         ylab('Aggregate stability score (-)') + xlab('Calcium ocuppation') + ylim(0,1)+
         theme(plot.title = element_text(size=10),
-              legend.position = c(0.6,0.2),
+              legend.position = "inside",
+              legend.position.inside = c(0.6,0.2),
               legend.text = element_text(size=10),
               legend.title = element_text(size=10)) +
     ggtitle('Aggregate stability given variation in Ca, Mg and K')+
@@ -741,11 +745,11 @@ To illustrate how both functions are evaluated, we firstly show the dependency o
 #### Subsoil compaction
 Soil compaction is caused by the use of excessively heavy machinery or by driving over and/or tilling soil with insufficient bearing capacity. Compaction can lead to poor rooting of the soil, limiting the absorption of water and nutrients. On heavy soils, compaction mainly occurs in the soil surface, while on lighter soils there is a risk of subsoil compaction, such as plough-soil formation. Compaction decreases the workability of soils and can reduce the water retention capacity of the soil and impede water transport to deeper layers. This can lead to an increased risk of surface run-off of nutrients and soil particles. Soil compaction in the soil can be eliminated by ploughing. Subsoil compaction is almost impossible to eliminate.
 
-The risk of subsoil compaction for each field was assessed using soil texture, land use and a soil compaction model SOCOMO. The model determines whether the usual wheel loads for that land use exceed the strength of the subsurface in wet or humid conditions. Subsequently it was determined on the basis of the soil properties and groundwater levels whether the subsurface is extra sensitive to compaction or whether natural recovery is possible due to, for example, drought shrinkage. Strength, land use, and soil properties together determine the risk of subsoil compaction. The presence of subsoil compaction is derived from a national map with the estimated risk. As such, there is no calculation used. Recent field experimental data support the accuracy of this risk assessment map.
+The risk of subsoil compaction for each field was assessed using soil texture, land use and a soil compaction model SOCOMO. The model determines whether the usual wheel loads for that land use exceed the strength of the subsurface in wet or humid conditions. Subsequently it was determined on the basis of the soil properties and groundwater levels whether the subsurface is extra sensitive to compaction or whether natural recovery is possible due to, for example, drought shrinkage. Strength, land use, and soil properties together determine the risk of subsoil compaction. The presence of subsoil compaction is derived from a national map with the estimated risk. As such, there is no calculation used. Recent field experimental data support the accuracy of this risk assessment map [@van_den_Akker2004].
 
 
 #### Visual Soil Assessment Correction
-Within the BLN, the estimates of aggregate stability and risk of subsoil compaction can be adapted to local site specific insights derived from the Visual Soil Assessment Methodology. Visual soil assessments (VSA) is an assessment of soil quality in the field, by digging a hole and assessing several soil quality indicators visually. Soil quality indicators are: grass cover, number of roots, number of biopores, soil color, soil structure, soil compaction, and number of gray spots. Visual soil assessments are more and more used by farmers in the Netherlands, but not specifically developed for various soil types. 
+Within the BLN, the estimates of aggregate stability and risk of subsoil compaction can be adapted to local site specific insights derived from the Visual Soil Assessment Methodology [@Sonneveld2014]. Visual soil assessments (VSA) is an assessment of soil quality in the field, by digging a hole and assessing several soil quality indicators visually. Soil quality indicators are: grass cover, number of roots, number of biopores, soil colour, soil structure, soil compaction, and number of gray spots. Visual soil assessments are more and more used by farmers in the Netherlands, but not specifically developed for various soil types. 
 
 Below is illustrated how the obic_field wrapper deals with the parameters derived from the VSA methodology. The score derived from the original risk assessment map for subsoil compaction is overwritten with the relevant VSA indicators when When scores are present for the presence of earthworms (A_EW_BCS), the occurrence of subsurface compaction (A_SC_BCS), limited root development (A_RD_BCS), ponding in the spring (wet conditions after rainfall, A_P_BCS) and clear presence of visible tracks / rutting or trampling on the land (A_RT_BCS). Similarly, the soil aggregate stability is adapted when VSA indicators are available for earthworm density (A_EW_BCS), soil structure (A_SS_BCS), and presence of cracks in the topsoil (A_C_BCS).
 
@@ -834,7 +838,7 @@ In the left figure below one can see how the soil compaction risk is adapted whe
 #### Water retention in topsoil
 The moisture characteristic of a soil depends on its physical properties, texture, and structure. The texture of a soil is determined by its clay, loam, and sand content. In addition, almost all soils contain organic matter. The fine soil particles, together with the organic matter, contribute to aggregate formation (and thus to the soil structure). The size, shape, and arrangement of the soil particles and aggregates, and pores, determine the soil's capacity to retain water. Large pores are able to conduct more water faster than small pores, moreover, removing water from large pores will require less energy than removing water from small pores. When a soil is at field capacity, the moisture state is such that all the water in the macro pores has been replaced by air under the influence of the gravitational potential. The water that is still present in the soil is retained in micro pores. The prevailing potential at field capacity can vary from soil to soil but usually varies between -0.1 bar (sandy soil) to -0.3 bar (loamy soil). When water is retained to such an extent that it is no longer available for crop uptake, this is known as the wilting point. The water is mainly present as a film around individual soil particles. The potential under these conditions is around -18 bar. The amount of moisture present between field capacity and wilting point is defined as the amount of plant-available water.
 
-The review study of various soil health instruments (Bunemann et al., 2016) identifies a variety of indicators that can be used to gain more insight into the water retaining capacity of a soil. Frequently used indicators are the amount of plant-available water (14 x), the water holding capacity (11 x), the moisture content at field capacity (11 x), and the saturated permeability (10 x). These indicators can be measured or estimated indirectly via so-called pedotransfer functions.  
+The review study of various soil health instruments [@Bunemann2016] identifies a variety of indicators that can be used to gain more insight into the water retaining capacity of a soil. Frequently used indicators are the amount of plant-available water (14 x), the water holding capacity (11 x), the moisture content at field capacity (11 x), and the saturated permeability (10 x). These indicators can be measured or estimated indirectly via so-called pedotransfer functions.  
 
 The BLN makes use of OBIC functions to derive the following water-related indicators in function `OBIC::calc_waterretention`. A few examples are illustrated below:
 
@@ -1040,6 +1044,6 @@ Not all indicators are relevant for all combinations of soil type and crop. For 
 ## 5. Reading more?
 More vignettes will be made available regarding the derivation of all soil health indicators, the aggregation methods applied, the derivation of optimum land use given the current soil quality assessments, and the best management practices to be applied to improve the soil quality. Are you interested to contribute, please contact the author(s) of this R package. Enjoy!
 
-
+# References
 
 

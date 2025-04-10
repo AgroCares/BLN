@@ -191,8 +191,8 @@
 #' This table contains all soil indicators and soil quality scores for the BLN package
 #'
 #' \describe{
-#'   \item{code}{}
-#'   \item{parameter}{}
+#'   \item{code}{The name of the output parameter}
+#'   \item{parameter}{A description of the output parameter}
 #' }
 "bln_output_description"
 
@@ -201,10 +201,10 @@
 #' This table contains all input parameters needed to run the BLN package
 #'
 #' \describe{
-#'   \item{code}{}
-#'   \item{parameter}{}
-#'   \item{data_type}{}
-#'   \item{value_min}{}
-#'   \item{value_max}{}
+#'   \item{code}{The input parameter's name}
+#'   \item{parameter}{A description of the parameter}
+#'   \item{data_type}{Type of data, either boolean, numeric, integer, or character}
+#'   \item{value_min}{Minimum value for a numeric or integer parameter}
+#'   \item{value_max}{Maximum value for a numeric or integer parameter}
 #' }
 "bln_input_description"
