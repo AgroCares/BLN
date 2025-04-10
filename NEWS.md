@@ -1,4 +1,4 @@
-# BLN 0.9.1 2025-04-08
+# BLN 0.9.3 2025-04-10
 ## Deprecated
 * function argument A_SOM_LOI in `bln_bbwp_ngw` is deprecated as it was not used by the function
 
