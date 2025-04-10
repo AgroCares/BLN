@@ -7,25 +7,124 @@ rm(list=ls())
 library(sf);library(data.table);library(pandex)
 
 # set paths
-
 nmi.dat <- Sys.getenv('NMI_DATA')
 nmi.proj<- Sys.getenv('NMI-PROJ')
 nmi.site<- Sys.getenv('NMI_SITE')
 
-# shape file to extract data for
-s1.sel <- st_read(paste0(nmi.dat, 'landgebruik/brp/products/brpgewaspercelen_',2021,'.gpkg'))
+# -- helper functions ----
 
-# add unique id
-s1.sel$fid <- s1.sel$id
-s1.sel$id <- 1:nrow(s1.sel)
+  # helper function to add a buffer aroudn point when extracting
+  extractwithbuffer <- function(dtte,spo,dt.sf,dbn = 'table_name',parm, sbuffer = NULL){
 
-# Load BLN input data for spatial points object ----------------------------------------------------
+    # interne copy
+    dtte.c <- copy(dtte)
+    dtte.c[,checkparm := get(parm)]
 
-# load in the data points for which the BLN data need to be selected. Only ID and coordinates
-sf.sel <- s1.sel[,c('id','geom')]
+    # set buffer size to extract
+    if(is.null(sbuffer)){buffersize = c(100, 500, 1000,5000)}
 
-# convert to centroid and spatial point for speed reasons
-sf.sel <- st_centroid(sf.sel)
+    # for loop for extraction
+    for(i in buffersize){
+
+      # check missing ones
+      check.mis <- dtte.c[is.na(checkparm),length(unique(id))] > 0
+
+      # add check to add missing ones via buffer of 100m
+      if(check.mis){
+
+        # missing ids
+        ids <- dtte.c[is.na(checkparm),unique(id)]
+
+        # print warning
+        print(paste0('dataset merged with ',dbn,' ',length(ids),' samples are missing. A buffer of ',i,'m will be applied and most nearby field properties selected'))
+
+        # data.table with correct values
+        dtte.cor <- dtte.c[!id %in% ids]
+
+        # subset the spatial object for missing ones
+        tmp2 <- spo[spo$id %in% ids,]
+        tmp2 <- st_buffer(tmp2,i)
+
+        # join with buffer one and convert back to points and data.table
+        suppressWarnings(dtte.mis <-  st_join(tmp2,dt.sf,largest = TRUE, left = TRUE))
+        suppressWarnings(dtte.mis <- st_cast(dtte.mis,'POINT'))
+        dtte.mis <- as.data.table(dtte.mis)
+        dtte.mis <- dtte.mis[!duplicated(id)]
+
+        # correct names
+        setnames(dtte.mis,
+                 old = c('A_OS_GV','A_KZK_MI','B_BT_AK','A_CN_OF'),
+                 new = c('A_SOM_LOI','A_CACO3_IF','B_SOILTYPE_AGR','A_CN_FR'), skip_absent = TRUE)
+        if('sc.id' %in% colnames(dtte.mis)){dtte.mis[,sc.id := NULL]}
+
+        dtte.mis[,checkparm := get(parm)]
+        # combine with correct ones
+        dtte.c <- rbind(dtte.cor,dtte.mis)
+        setorder(dtte.c,id)
+      }
+    }
+
+    print(paste0('dataset merged with ',dbn,' ',dtte.c[is.na(checkparm),length(unique(id))],' samples are missing.'))
+
+    out <- copy(dtte.c)
+    out[,checkparm := NULL]
+
+
+
+    return(out)
+  }
+
+
+
+# -- step 1. prepare spatial file for data extraction ----
+
+  # shape file to extract data for, and remove the bufferstrips and other fields that have no agricultural usage
+  s1.sel <- st_read(paste0(nmi.dat, 'landgebruik/brp/products/brpgewaspercelen_',2024,'_concept.gpkg'))
+  s1.sel <- s1.sel[s1.sel$is_gewasperceel==TRUE,]
+
+  # add unique id
+  s1.sel$id <- 1:nrow(s1.sel)
+
+  # select only spatial geometry for which the BLN data need to be selected. Only ID and coordinates
+  sf.sel <- s1.sel[,c('id','geom')]
+
+  # convert to centroid and spatial point for speed reasons
+  sf.sel <- st_centroid(sf.sel)
+
+  # safe the spatial files as RDS files
+  saveRDS(sf.sel,'D:/DATA/18 bln/brp24_sfsel.rds')
+  saveRDS(s1.sel,'D:/DATA/18 bln/brp24_s1sel.rds')
+
+# -- Load BLN input data for spatial points object ----------------------------------------------------
+
+  # load in bodemschat, do spatial join with the object, save object
+  tmp1 <- sf::st_read(paste0(nmi.dat, 'bodem/bodemschat/products/BS6/BS6_2021.gpkg'))
+  dt.bs <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = 'st_nearest_feature')
+  dt.bs <- as.data.table(dt.bs)
+  dt.bs <- extractwithbuffer(dtte = dt.bs,spo = sf.sel,dt.sf = tmp1, dbn = 'BS',parm='A_SOM_LOI')
+  saveRDS(dt.bs,'D:/DATA/18 bln/brp24_bs.rds')
+  rm(tmp1);rm(dt.bs);gc()
+
+  # load in BodemBedrijf
+  tmp1 <- sf::st_read(paste0(nmi.dat, 'bodem/bodembedrijf/products/1/bodembedrijf_2019.gpkg'))
+  dt.bb <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = 'st_nearest_feature')
+  dt.bb <- as.data.table(dt.bb)
+  setnames(dt.bb,
+           old = c('A_OS_GV','A_KZK_MI','B_BT_AK','A_CN_OF'),
+           new = c('A_SOM_LOI','A_CACO3_IF','B_SOILTYPE_AGR','A_CN_FR'), skip_absent = TRUE)
+  dt.bb <- extractwithbuffer(dtte = dt.bb,spo = sf.sel,dt.sf = tmp1, dbn = 'BodemBedrijf',parm='A_SOM_LOI')
+  saveRDS(dt.bb,'D:/DATA/18 bln/brp24_bb.rds')
+  rm(tmp1,dt.bb);gc()
+
+  # load data from MOK
+  tmp1 <- sf::st_read(paste0(nmi.dat, 'maatregelen/Maatregelen-op-de-kaart/Fase2/Percelenkaart - Maatregel op de Kaart Fase 2.shp'))
+  tmp1 <- sf::st_transform(tmp1,28992)
+  dt.mok <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = 'st_nearest_feature')
+  dt.mok <- as.data.table(dt.mok)
+  dt.mok <- extractwithbuffer(dtte = dt.mok,spo = sf.sel,dt.sf = tmp1, dbn = 'MOK',parm='bodem')
+  saveRDS(dt.mok,'D:/DATA/18 bln/brp24_mok.rds')
+  rm(tmp1,dt.mok);gc()
+
 
 
 require(terra)
@@ -99,90 +198,7 @@ fex <- function(spv,s,r,varname,vn_new = NULL){
 tmp1 <- sf::st_read(paste0(nmi.dat, 'topo/landbouwgebieden/raw/landbouwgebieden_2016/landbouwgebieden_2016.shp'))
 dt.aer <- fex(spv = spv,s=tmp1,r=r,varname = 'statcode',vn_new = 'B_AER_CBS')
 
-# load in bodemschat, do spatial join with the object
-tmp1 <- sf::st_read(paste0(nmi.dat, 'bodem/bodemschat/products/BS6/BS6_2021.gpkg'))
-tmp1 <- as.data.table(tmp1)
-dt.bs <- merge(as.data.table(s1.sel[,c('ref_id','geom')]),tmp1,by='ref_id')
 
-# helper function to add a buffer aroudn point when extracting
-extractwithbuffer <- function(dtte,spo,dt.sf,dbn = 'table_name',parm){
-
-  # interne copy
-  dtte.c <- copy(dtte)
-  dtte.c[,checkparm := get(parm)]
-
-  # set buffer size to extract
-  buffersize = c(100, 500, 1000,5000)
-
-  for(i in buffersize){
-
-    # check missing ones
-    check.mis <- dtte.c[is.na(checkparm),length(unique(id))] > 0
-
-    # add check to add missing ones via buffer of 100m
-    if(check.mis){
-
-      # missing ids
-      ids <- dtte.c[is.na(checkparm),unique(id)]
-
-      # print warning
-      print(paste0('dataset merged with ',dbn,' ',length(ids),' samples are missing. A buffer of ',i,'m will be applied and most nearby field properties selected'))
-
-      # data.table with correct values
-      dtte.cor <- dtte.c[!id %in% ids]
-
-      # subset the spatial object for missing ones
-      tmp2 <- spo[spo$id %in% ids,]
-      tmp2 <- st_buffer(tmp2,i)
-
-      # join with buffer one and convert back to points and data.table
-      suppressWarnings(dtte.mis <-  st_join(tmp2,dt.sf,largest = TRUE, left = TRUE))
-      suppressWarnings(dtte.mis <- st_cast(dtte.mis,'POINT'))
-      dtte.mis <- as.data.table(dtte.mis)
-      dtte.mis <- dtte.mis[!duplicated(id)]
-
-      # correct names
-      setnames(dtte.mis,
-               old = c('A_OS_GV','A_KZK_MI','B_BT_AK','A_CN_OF'),
-               new = c('A_SOM_LOI','A_CACO3_IF','B_SOILTYPE_AGR','A_CN_FR'), skip_absent = TRUE)
-      if('sc.id' %in% colnames(dtte.mis)){dtte.mis[,sc.id := NULL]}
-
-      dtte.mis[,checkparm := get(parm)]
-      # combine with correct ones
-      dtte.c <- rbind(dtte.cor,dtte.mis)
-      setorder(dtte.c,id)
-    }
-  }
-
-  print(paste0('dataset merged with ',dbn,' ',dtte.c[is.na(checkparm),length(unique(id))],' samples are missing.'))
-
-  out <- copy(dtte.c)
-  out[,checkparm := NULL]
-
-
-
-  return(out)
-}
-
-# load in bodembedrijf
-tmp1 <- sf::st_read(paste0(nmi.dat, 'bodem/bodembedrijf/products/1/bodembedrijf_2019.gpkg'))
-a <- Sys.time()
-dt.bb <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = 'st_nearest_feature')
-Sys.time()-a
-dt.bb <- as.data.table(dt.bb)
-setnames(dt.bb,
-         old = c('A_OS_GV','A_KZK_MI','B_BT_AK','A_CN_OF'),
-         new = c('A_SOM_LOI','A_CACO3_IF','B_SOILTYPE_AGR','A_CN_FR'), skip_absent = TRUE)
-dt.bb <- extractwithbuffer(dtte = dt.bb,spo = sf.sel,dt.sf = tmp1, dbn = 'BodemBedrijf',parm='A_SOM_LOI')
-rm(tmp1)
-
-# load data from MOK
-tmp1 <- sf::st_read(paste0(nmi.dat, 'maatregelen/Maatregelen-op-de-kaart/Fase2/Percelenkaart - Maatregel op de Kaart Fase 2.shp'))
-tmp1 <- sf::st_transform(tmp1,28992)
-dt.mok <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = 'st_nearest_feature')
-dt.mok <- as.data.table(dt.mok)
-dt.mok <- extractwithbuffer(dtte = dt.mok,spo = sf.sel,dt.sf = tmp1, dbn = 'MOK',parm='bodem')
-rm(tmp1)
 
 # load HELP code for OBIC
 tmp1 <- sf::st_read(paste0(nmi.dat, 'nmi/obi_helpcode/bodemtype_helpcode.gpkg'))
@@ -272,15 +288,15 @@ rm(tmp1)
 
 # save files
 saveRDS(dt.aer,'D:/DATA/18 bln/brp21_aer.rds')
-saveRDS(dt.bb,'D:/DATA/18 bln/brp21_bb.rds')
+
 saveRDS(dt.bk,'D:/DATA/18 bln/brp21_bk.rds')
-saveRDS(dt.bs,'D:/DATA/18 bln/brp21_bs.rds')
+
 saveRDS(dt.cs,'D:/DATA/18 bln/brp21_cs.rds')
 saveRDS(dt.gwl,'D:/DATA/18 bln/brp21_gwl.rds')
 saveRDS(dt.gwpz,'D:/DATA/18 bln/brp21_gwpz.rds')
 saveRDS(dt.help,'D:/DATA/18 bln/brp21_help.rds')
 saveRDS(dt.lsw,'D:/DATA/18 bln/brp21_lsw.rds')
-saveRDS(dt.mok,'D:/DATA/18 bln/brp21_mok.rds')
+
 saveRDS(dt.ro,'D:/DATA/18 bln/brp21_ro.rds')
 saveRDS(dt.saw,'D:/DATA/18 bln/brp21_saw.rds')
 saveRDS(dt.sc,'D:/DATA/18 bln/brp21_sc.rds')
