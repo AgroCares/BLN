@@ -2,7 +2,8 @@
 % Please edit documentation in R/bln_gw_pesticide.R
 \name{bln_wat_pesticide}
 \alias{bln_wat_pesticide}
-\title{Function to calculate and evaluate the pesticide retention in soils in view of water purification for surface water quality}
+\title{Function to calculate and evaluate the pesticide retention in soils in view
+ of water purification for groundwater water quality}
 \usage{
 bln_wat_pesticide(
   ID,
@@ -39,5 +40,6 @@ bln_wat_pesticide(
 \item{M_PESTICIDES_DST}{(boolean) measure. Use of DST for pesticides (option: yes or no)}
 }
 \description{
-Function to calculate and evaluate the pesticide retention in soils in view of water purification for surface water quality
+Function to calculate and evaluate the pesticide retention in soils in view
+ of water purification for groundwater water quality
 }

@@ -15,8 +15,8 @@ This table contains all soil indicators and soil quality scores for the BLN pack
 }
 \details{
 \describe{
-  \item{code}{}
-  \item{parameter}{}
+  \item{code}{The name of the output parameter}
+  \item{parameter}{A description of the output parameter}
 }
 }
 \keyword{datasets}
