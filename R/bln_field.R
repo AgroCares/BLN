@@ -285,9 +285,9 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
                                A_CLAY_MI, A_SAND_MI, A_SILT_MI, A_SOM_LOI)]
 
     # ground water quantity and quality: N buffering (S_BBWP_NGW, from BBWP)
-    dt[, i_gw_ngw := bln_bbwp_ngw(ID,B_LU_BRP, B_SOILTYPE_AGR, B_SC_WENR,
-                                  B_AER_CBS, B_GWP,B_GWL_CLASS, A_SOM_LOI, A_N_RT,
-                                  B_N_RT, B_N_RT_SD,penalty = TRUE)]
+    dt[, i_gw_ngw := bln_bbwp_ngw(ID = ID, B_LU_BRP = B_LU_BRP, B_SOILTYPE_AGR = B_SOILTYPE_AGR, B_SC_WENR = B_SC_WENR,
+                                  B_AER_CBS = B_AER_CBS, B_GWP = B_GWP, B_GWL_CLASS = B_GWL_CLASS, A_N_RT = A_N_RT,
+                                  B_N_RT = B_N_RT, B_N_RT_SD = B_N_RT_SD, penalty = TRUE)]
 
     # groundwater quantity and qality: pesticide leaching (I_H_PEST,from OBI)
     dt[, i_gw_pest := bln_wat_pesticide(ID,B_LU_BRP, B_SOILTYPE_AGR, A_CLAY_MI, A_SAND_MI, A_SILT_MI,
