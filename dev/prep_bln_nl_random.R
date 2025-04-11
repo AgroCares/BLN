@@ -125,6 +125,104 @@ nmi.site<- Sys.getenv('NMI_SITE')
   saveRDS(dt.mok,'D:/DATA/18 bln/brp24_mok.rds')
   rm(tmp1,dt.mok);gc()
 
+  # load HELP code for OBIC
+  tmp1 <- sf::st_read(paste0(nmi.dat, 'nmi/obi_helpcode/bodemtype_helpcode.gpkg'))
+  dt.help <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = 'st_intersects')
+  dt.help <- as.data.table(dt.help)
+  dt.help <- extractwithbuffer(dtte = dt.help,spo = sf.sel,dt.sf = tmp1, dbn = 'HELP',parm='helpcode')
+  saveRDS(dt.help,'D:/DATA/18 bln/brp24_help.rds')
+  rm(tmp1,dt.help);gc()
+
+  # load soil compaction
+  tmp1 <- st_read(paste0(nmi.dat, 'bodem/alterra/ondergrondverdichting/B41_Risico_op_ondergrondverdichtingPolygon.shp'))
+  dt.sc <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = 'st_nearest_feature')
+  dt.sc <- as.data.table(dt.sc)
+  dt.sc <- extractwithbuffer(dtte = dt.sc,spo = sf.sel,dt.sf = tmp1, dbn = 'verdichting',parm='VALUE')
+  saveRDS(dt.sc,'D:/DATA/18 bln/brp24_sc.rds')
+  rm(tmp1,dt.sc);gc()
+
+  # load data bodemkaart
+  tmp1 <- st_read(paste0(nmi.dat, 'bodem/alterra/Bodemkaart50/products/bodemkaart50.gpkg'))
+  tmp1 <- sf::st_set_crs(tmp1,28992)
+  dt.bk <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = 'st_nearest_feature')
+  dt.bk <- as.data.table(dt.bk)
+  dt.bk <- extractwithbuffer(dtte = dt.bk,spo = sf.sel,dt.sf = tmp1, dbn = 'Bodemkaart',parm='bd50.hoofd')
+  saveRDS(dt.bk,'D:/DATA/18 bln/brp24_bk.rds')
+  rm(tmp1,dt.bk);gc()
+
+  # load carbon saturation
+  tmp1 <- st_read(paste0(nmi.proj, 'Carbon_Saturation_Potential/results/agg_2019_84703f52aa91e09d.gpkg'))
+  tmp1 <- tmp1[,c('sc.id','a_som_loi_pred_mean_bau','a_som_loi_pred_mean_top','d_cs_bau','d_cs_top','geom')]
+  dt.cs <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = 'st_nearest_feature')
+  dt.cs <- as.data.table(dt.cs)
+  dt.cs[,sc.id := NULL]
+  dt.cs <- extractwithbuffer(dtte = dt.cs,spo = sf.sel,dt.sf = tmp1, dbn = 'C saturation',parm='a_som_loi_pred_mean_bau')
+  saveRDS(dt.cs,'D:/DATA/18 bln/brp24_cs.rds')
+  rm(tmp1,dt.cs);gc()
+
+  # load Z crit (distance between groundwater table and root zone (30cm -mv) for delivering 2mm of water per day)
+  tmp1 <- st_read(paste0(nmi.dat, 'watersysteem/Grondwaterniveau/products/b_z_crit_two.gpkg'))
+  dt.zcrit <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = 'st_nearest_feature')
+  dt.zcrit <- as.data.table(dt.zcrit)
+  dt.zcrit <- extractwithbuffer(dtte = dt.zcrit,spo = sf.sel,dt.sf = tmp1, dbn = 'zcrit',parm='B_Z_TWO')
+  saveRDS(dt.zcrit,'D:/DATA/18 bln/brp24_zcrit.rds')
+  rm(tmp1,dt.zcrit);gc()
+
+  # load in ground water protection zone
+  tmp1 <- st_read(paste0(nmi.dat, "watersysteem/Grondwaterbeschermingsgebieden/raw/gwbg_nederland.gpkg"))
+  dt.gwpz <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = 'st_nearest_feature')
+  dt.gwpz <- as.data.table(dt.gwpz)
+  dt.gwpz[, B_GWP := fifelse(is.na(sid) & is.na(omschrijvi),FALSE,TRUE)]
+  saveRDS(dt.gwpz,'D:/DATA/18 bln/brp24_gwpz.rds')
+  rm(tmp1,dt.gwpz);gc()
+
+  # load in LSW
+  tmp1 <- st_read(paste0(nmi.dat, "watersysteem/Opgave_oppervlaktewater/products/20240625_oppervlaktewateropgave.gpkg")) # 30213_oppervlaktewateropgave.gpkg"))
+  dt.lsw <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = st_intersects)
+  dt.lsw <- as.data.table(dt.lsw)
+  dt.lsw[,B_CT_PSW := fifelse(is.na(oow_phosphate),1, oow_phosphate)]
+  dt.lsw[,B_CT_NSW := fifelse(is.na(oow_nitrogen), 1, oow_nitrogen)]
+  saveRDS(dt.lsw,'D:/DATA/18 bln/brp24_lsw.rds')
+  rm(tmp1,dt.lsw);gc()
+
+  ## load D_RO_R runoff risk
+  tmp1 <- st_read(paste0(nmi.dat, 'nmi/runoff_risk/runoff_risk19_v2.gpkg'))
+  dt.ro <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = st_nearest_feature)
+  dt.ro <- as.data.table(dt.ro)
+  dt.ro <- extractwithbuffer(dtte = dt.ro,spo = sf.sel,dt.sf = tmp1, dbn = 'runof risks',parm='D_RO_R')
+  saveRDS(dt.ro,'D:/DATA/18 bln/brp24_ro.rds')
+  rm(tmp1,dt.ro);gc()
+
+  ## load D_SA_W wet surrounding
+  tmp1 <- st_read(paste0(nmi.dat, 'landgebruik/brp/natte omtrek/2021/brp_2021_natteomtrek_zonder_2m.gpkg'))
+  dt.saw <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = st_nearest_feature)
+  dt.saw <- as.data.table(dt.saw)
+  dt.saw <- extractwithbuffer(dtte = dt.saw,spo = sf.sel,dt.sf = tmp1, dbn = 'wet surrounding',parm='fr_natte_omtrek')
+  saveRDS(dt.saw,'D:/DATA/18 bln/brp24_saw.rds')
+  rm(tmp1,dt.saw);gc()
+
+  # load in landbouwgebied, do spatial join with the object
+  tmp1 <- sf::st_read(paste0(nmi.dat, 'topo/landbouwgebieden/raw/landbouwgebieden_2016/landbouwgebieden_2016.shp'))
+  dt.aer <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = st_nearest_feature)
+  dt.aer <- as.data.table(dt.aer)
+  dt.aer <- extractwithbuffer(dtte = dt.aer,spo = sf.sel,dt.sf = tmp1, dbn = 'statcode',parm='B_AER_CBS')
+  saveRDS(dt.aer,'D:/DATA/18 bln/brp24_aer.rds')
+
+  # Load the GWLdata from rasters LHM
+  require(terra)
+  r.gwl.ghg <- terra::rast(paste0(nmi.dat, 'watersysteem/Grondwaterniveau/raw/LHM GHG_2011-2018_L1.tif'))
+  r.gwl.glg <- terra::rast(paste0(nmi.dat, 'watersysteem/Grondwaterniveau/raw/LHM GLG_2011-2018_L1.tif'))
+  tmp1 <- c(r.gwl.ghg,r.gwl.glg)
+  vect.sel <- terra::vect(sf.sel)
+  dt.gwl <- terra::extract(tmp1,vect.sel,method='bilinear') # for shapes bilinear otherwis simple
+  dt.gwl <- as.data.table(dt.gwl)
+  dt.gwl <- dt.gwl[,lapply(.SD,mean),by='ID']
+  dt.gwl[,id := vect.sel$id]
+  setnames(dt.gwl,c('ID','B_GWL_GHG','B_GWL_GLG','id'))
+  saveRDS(dt.gwl,'D:/DATA/18 bln/brp24_gwl.rds')
+  rm(tmp1,dt.gwl,r.gwl.ghg,r.gwl.glg,vect.sel);gc()
+
+
 
 
 require(terra)
@@ -199,110 +297,16 @@ tmp1 <- sf::st_read(paste0(nmi.dat, 'topo/landbouwgebieden/raw/landbouwgebieden_
 dt.aer <- fex(spv = spv,s=tmp1,r=r,varname = 'statcode',vn_new = 'B_AER_CBS')
 
 
-
-# load HELP code for OBIC
-tmp1 <- sf::st_read(paste0(nmi.dat, 'nmi/obi_helpcode/bodemtype_helpcode.gpkg'))
-dt.help <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = 'st_intersects')
-dt.help <- as.data.table(dt.help)
-dt.help <- extractwithbuffer(dtte = dt.help,spo = sf.sel,dt.sf = tmp1, dbn = 'HELP',parm='helpcode')
-print(paste0('dataset merged with HELP code ',dt.help[is.na(helpcode),length(unique(id))],' samples are missing'))
-rm(tmp1)
-
-# load soil compaction
-tmp1 <- st_read(paste0(nmi.dat, 'bodem/alterra/ondergrondverdichting/B41_Risico_op_ondergrondverdichtingPolygon.shp'))
-dt.sc <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = 'st_nearest_feature')
-dt.sc <- as.data.table(dt.sc)
-dt.sc <- extractwithbuffer(dtte = dt.sc,spo = sf.sel,dt.sf = tmp1, dbn = 'verdichting',parm='VALUE')
-print(paste0('dataset merged with soil compaction ',dt.sc[is.na(VALUE),length(unique(id))],' samples are missing'))
-rm(tmp1)
-
-# load data bodemkaart
-tmp1 <- st_read(paste0(nmi.dat, 'bodem/alterra/Bodemkaart50/products/bodemkaart50.gpkg'))
-tmp1 <- sf::st_set_crs(tmp1,28992)
-dt.bk <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = 'st_nearest_feature')
-dt.bk <- as.data.table(dt.bk)
-dt.bk <- extractwithbuffer(dtte = dt.bk,spo = sf.sel,dt.sf = tmp1, dbn = 'Bodemkaart',parm='bd50.hoofd')
-print(paste0('dataset merged with Bodemkaart50 ',dt.bk[is.na(bd50.hoofd),length(unique(id))],' samples are missing'))
-rm(tmp1)
-
-# load carbon saturation
-tmp1 <- st_read(paste0(nmi.proj, 'Carbon_Saturation_Potential/results/agg_2019_84703f52aa91e09d.gpkg'))
-tmp1 <- tmp1[,c('sc.id','a_som_loi_pred_mean_bau','a_som_loi_pred_mean_top','d_cs_bau','d_cs_top','geom')]
-dt.cs <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = 'st_nearest_feature')
-dt.cs <- as.data.table(dt.cs)
-dt.cs[,sc.id := NULL]
-dt.cs <- extractwithbuffer(dtte = dt.cs,spo = sf.sel,dt.sf = tmp1, dbn = 'C saturation',parm='a_som_loi_pred_mean_bau')
-rm(tmp1)
-
-# Load the GWLdata from rasters LHM
-require(terra)
-r.gwl.ghg <- terra::rast(paste0(nmi.dat, 'watersysteem/Grondwaterniveau/raw/LHM GHG_2011-2018_L1.tif'))
-r.gwl.glg <- terra::rast(paste0(nmi.dat, 'watersysteem/Grondwaterniveau/raw/LHM GLG_2011-2018_L1.tif'))
-tmp1 <- c(r.gwl.ghg,r.gwl.glg)
-vect.sel <- terra::vect(sf.sel)
-dt.gwl <- terra::extract(tmp1,vect.sel,method='bilinear') # for shapes bilinear otherwis simple
-dt.gwl <- as.data.table(dt.gwl)
-dt.gwl <- dt.gwl[,lapply(.SD,mean),by='ID']
-dt.gwl[,id := vect.sel$id]
-setnames(dt.gwl,c('ID','B_GWL_GHG','B_GWL_GLG','id'))
-print(paste0('dataset merged with GWL maps ',dt.gwl[is.na(B_GWL_GHG),length(unique(id))],' samples are missing'))
-rm(tmp1)
-
-# load Z crit (distance between groundwater table and root zone (30cm -mv) for delivering 2mm of water per day)
-tmp1 <- st_read(paste0(nmi.dat, 'watersysteem/Grondwaterniveau/products/b_z_crit_two.gpkg'))
-dt.zcrit <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = 'st_nearest_feature')
-dt.zcrit <- as.data.table(dt.zcrit)
-dt.zcrit <- extractwithbuffer(dtte = dt.zcrit,spo = sf.sel,dt.sf = tmp1, dbn = 'zcrit',parm='B_Z_TWO')
-rm(tmp1)
-
-# load in ground water protection zone
-tmp1 <- st_read(paste0(nmi.dat, "watersysteem/Grondwaterbeschermingsgebieden/raw/gwbg_nederland.gpkg"))
-dt.gwpz <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = 'st_nearest_feature')
-dt.gwpz <- as.data.table(dt.gwpz)
-dt.gwpz[, B_GWP := fifelse(is.na(sid) & is.na(omschrijvi),FALSE,TRUE)]
-print(paste0('dataset merged with GroundWater Protection Zone ',dt.gwpz[is.na(B_GWP),length(unique(id))],' samples are missing'))
-rm(tmp1)
-
-# load in LSW
-tmp1 <- st_read(paste0(nmi.dat, "watersysteem/Opgave_oppervlaktewater/products/20240625_oppervlaktewateropgave.gpkg")) # 30213_oppervlaktewateropgave.gpkg"))
-dt.lsw <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = st_intersects)
-dt.lsw <- as.data.table(dt.lsw)
-dt.lsw[,B_CT_PSW := fifelse(is.na(oow_phosphate),1, oow_phosphate)]
-dt.lsw[,B_CT_NSW := fifelse(is.na(oow_nitrogen), 1, oow_nitrogen)]
-print(paste0('dataset merged with LSW ',dt.lsw[is.na(B_CT_NSW),length(unique(id))],' samples are missing'))
-rm(tmp1)
-
-## load D_RO_R runoff risk
-tmp1 <- st_read(paste0(nmi.dat, 'nmi/runoff_risk/runoff_risk19_v2.gpkg'))
-dt.ro <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = st_nearest_feature)
-dt.ro <- as.data.table(dt.ro)
-dt.ro <- extractwithbuffer(dtte = dt.ro,spo = sf.sel,dt.sf = tmp1, dbn = 'runof risks',parm='D_RO_R')
-rm(tmp1)
-
-## load D_SA_W wet surrounding
-tmp1 <- st_read(paste0(nmi.dat, 'landgebruik/brp/natte omtrek/2021/brp_2021_natteomtrek_zonder_2m.gpkg'))
-dt.saw <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = st_nearest_feature)
-dt.saw <- as.data.table(dt.saw)
-dt.saw <- extractwithbuffer(dtte = dt.saw,spo = sf.sel,dt.sf = tmp1, dbn = 'wet surrounding',parm='fr_natte_omtrek')
-rm(tmp1)
-
 # save files
-saveRDS(dt.aer,'D:/DATA/18 bln/brp21_aer.rds')
 
-saveRDS(dt.bk,'D:/DATA/18 bln/brp21_bk.rds')
 
-saveRDS(dt.cs,'D:/DATA/18 bln/brp21_cs.rds')
-saveRDS(dt.gwl,'D:/DATA/18 bln/brp21_gwl.rds')
-saveRDS(dt.gwpz,'D:/DATA/18 bln/brp21_gwpz.rds')
-saveRDS(dt.help,'D:/DATA/18 bln/brp21_help.rds')
-saveRDS(dt.lsw,'D:/DATA/18 bln/brp21_lsw.rds')
 
-saveRDS(dt.ro,'D:/DATA/18 bln/brp21_ro.rds')
-saveRDS(dt.saw,'D:/DATA/18 bln/brp21_saw.rds')
-saveRDS(dt.sc,'D:/DATA/18 bln/brp21_sc.rds')
-saveRDS(dt.zcrit,'D:/DATA/18 bln/brp21_zcrit.rds')
-saveRDS(sf.sel,'D:/DATA/18 bln/brp21_sfsel.rds')
-saveRDS(s1.sel,'D:/DATA/18 bln/brp21_s1sel.rds')
+
+
+
+
+
+
 
 # remove files
 rm(dt.aer,dt.bb,dt.bk,dt.bs,dt.cs,dt.gwl,dt.gwpz,dt.help,dt.lsw,dt.mok,dt.ro,dt.saw,dt.sc,dt.zcrit)
