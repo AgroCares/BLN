@@ -278,6 +278,19 @@ nmi.site<- Sys.getenv('NMI_SITE')
   saveRDS(dt.gwl,'D:/DATA/18 bln/brp24_gwl.rds')
   rm(tmp1,dt.gwl,r.gwl.ghg,r.gwl.glg,vect.sel);gc()
 
+  # load the GWL data from WDM
+  r.gwl.ghg <- terra::rast(paste0(nmi.dat, 'watersysteem/Grondwaterniveau/raw/wdm-ghg-mediaan.tif'))
+  r.gwl.glg <- terra::rast(paste0(nmi.dat, 'watersysteem/Grondwaterniveau/raw/wdm-glg-mediaan.tif'))
+  tmp1 <- c(r.gwl.ghg,r.gwl.glg)
+  vect.sel <- terra::vect(sf.sel)
+  dt.gwl <- terra::extract(tmp1,vect.sel,method='simple') # for shapes bilinear otherwis simple
+  dt.gwl <- as.data.table(dt.gwl)
+  dt.gwl <- dt.gwl[,lapply(.SD,mean),by='ID']
+  dt.gwl[,id := vect.sel$id]
+  setnames(dt.gwl,c('ID','B_GWL_GHG_WDM','B_GWL_GLG_WDM','id'))
+  saveRDS(dt.gwl,'D:/DATA/18 bln/brp24_gwl_wdm.rds')
+  rm(tmp1,dt.gwl,r.gwl.ghg,r.gwl.glg,vect.sel);gc()
+
   # load SOMERS
   tmp1 <- st_read('D:/ROSG/2057.N.24 Bodemkwaliteit RVB/01 data/parcels_rekenregels_nobv_website.shp')
   dt.somers <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = st_nearest_feature)
