@@ -147,7 +147,7 @@ nmi.site<- Sys.getenv('NMI_SITE')
   saveRDS(sf.sel,'D:/DATA/18 bln/brp24_sfsel.rds')
   saveRDS(s1.sel,'D:/DATA/18 bln/brp24_s1sel.rds')
 
-# -- Load BLN input data for spatial points object ----------------------------------------------------
+# --step 2. load BLN input data for spatial points object ----------------------------------------------------
 
   # load the spatial object
   sf.sel <- readRDS('D:/DATA/18 bln/brp24_sfsel.rds')
@@ -382,100 +382,149 @@ nmi.site<- Sys.getenv('NMI_SITE')
   rm(dt.brp);gc()
 
 
-# load previous prepared databases
-dt.brp <- readRDS('D:/DATA/18 bln/brp21_brp1620.rds')
-dt.brp.old <- readRDS('D:/DATA/18 bln/brp21_brp1115.rds')
-setnames(dt.brp.old,old = 'ref_id_2015',new = 'ref_id')
-setnames(dt.brp,old = 'ref_id_2020',new = 'ref_id')
-dt.brp <- rbind(dt.brp,dt.brp.old)
-rm(dt.brp.old)
-dt.aer <- readRDS('D:/DATA/18 bln/brp21_aer.rds')
-dt.bb <- readRDS('D:/DATA/18 bln/brp21_bb.rds')
-dt.bk <- readRDS('D:/DATA/18 bln/brp21_bk.rds')
-dt.bs <- readRDS('D:/DATA/18 bln/brp21_bs.rds')
-dt.cs <- readRDS('D:/DATA/18 bln/brp21_cs.rds')
-dt.gwl <- readRDS('D:/DATA/18 bln/brp21_gwl.rds')
-dt.gwpz <- readRDS('D:/DATA/18 bln/brp21_gwpz.rds')
-dt.help <- readRDS('D:/DATA/18 bln/brp21_help.rds')
-dt.lsw <- readRDS('D:/DATA/18 bln/brp21_lsw.rds')
-dt.mok <- readRDS('D:/DATA/18 bln/brp21_mok.rds')
-dt.ro <- readRDS('D:/DATA/18 bln/brp21_ro.rds')
-dt.saw <- readRDS('D:/DATA/18 bln/brp21_saw.rds')
-dt.sc <- readRDS('D:/DATA/18 bln/brp21_sc.rds')
-dt.zcrit <- readRDS('D:/DATA/18 bln/brp21_zcrit.rds')
+# -- step 3. prepare BLN input dataset -----
 
-# merge collected data and estimate derivates
-dt.out <- copy(dt.brp)
-ncols <- c('id', colnames(dt.bs)[grepl('^A_',colnames(dt.bs))])
-dt.sf <- as.data.table(s1.sel)
-dt.sf <- dt.sf[,.(id,ref_id_2021 = ref_id)]
-dt.bs[,c('geom.x','geom.y') := NULL]
-dt.bs <- merge(dt.bs,dt.sf,by.x='ref_id',by.y='ref_id_2021',all.x=TRUE)
-dt.out <- merge(dt.out,dt.bs[,mget(ncols)],by='id',all.x = TRUE)
-rm(dt.bs)
-dt.out[, A_CA_CO_PO := A_CA_CO * 100 / A_CEC_CO]
-dt.out[, A_MG_CO_PO := A_MG_CO * 100 / A_CEC_CO]
-dt.out[, A_K_CO_PO := A_K_CO * 100 / A_CEC_CO]
-ncols <- colnames(dt.bb)[grepl('^A_|^B_',colnames(dt.bb))]
-ncols <- c('id',ncols[!ncols %in% colnames(dt.out)])
-dt.out <- merge(dt.out,dt.bb[,mget(ncols)],by='id',all.x = TRUE)
-rm(dt.bb)
-dt.out <- merge(dt.out,
-                dt.mok[,.(id,B_DRAIN = buisdrains,B_SLOPE_DEGREE = helling,own = ow_Nopg_lb,owp = ow_Popg_lb,gw = gw_status)],
+  # load in the geometry of all BRP fields
+  s1.sel <- readRDS('D:/DATA/18 bln/brp24_s1sel.rds')
+
+  # load in te BRP
+  dt.brp <- readRDS('D:/DATA/18 bln/brp24_brp.rds')
+
+  # load in the spatial inputs
+  dt.aer <- readRDS('D:/DATA/18 bln/brp24_aer.rds')
+  dt.bb <- readRDS('D:/DATA/18 bln/brp24_bb.rds')
+  dt.bk <- readRDS('D:/DATA/18 bln/brp24_bk.rds')
+  dt.bs <- readRDS('D:/DATA/18 bln/brp24_bs.rds')
+  dt.cs <- readRDS('D:/DATA/18 bln/brp24_cs.rds')
+  dt.gwl <- readRDS('D:/DATA/18 bln/brp24_gwl.rds')
+  dt.gwl.wdm <- readRDS('D:/DATA/18 bln/brp24_gwl_wdm.rds')
+  dt.gwl.agv <- readRDS('D:/DATA/18 bln/brp24_gwl_agv.rds')
+  dt.gwpz <- readRDS('D:/DATA/18 bln/brp24_gwpz.rds')
+  dt.help <- readRDS('D:/DATA/18 bln/brp24_help.rds')
+  dt.lsw <- readRDS('D:/DATA/18 bln/brp24_lsw.rds')
+  dt.mok <- readRDS('D:/DATA/18 bln/brp24_mok.rds')
+  dt.ro <- readRDS('D:/DATA/18 bln/brp24_ro.rds')
+  dt.saw <- readRDS('D:/DATA/18 bln/brp24_saw.rds')
+  dt.sc <- readRDS('D:/DATA/18 bln/brp24_sc.rds')
+  dt.zcrit <- readRDS('D:/DATA/18 bln/brp24_zcrit.rds')
+  dt.somers <- readRDS('D:/DATA/18 bln/brp24_somers2.rds')
+
+  # merge collected data and estimate derivates
+  dt.out <- copy(dt.brp)
+  ncols <- c('id', colnames(dt.bs)[grepl('^A_',colnames(dt.bs))])
+
+  dt.sf <- as.data.table(s1.sel)
+  dt.sf <- dt.sf[,.(id,ref_id_2024 = ref_id,b_lu_brp = gewascode,geom)]
+
+  # add soil properties BodemSchat and BodemBedrijf
+  dt.out <- merge(dt.out,dt.bs[,mget(ncols)],by='id',all.x = TRUE)
+  rm(dt.bs);gc()
+  dt.out[, A_CA_CO_PO := A_CA_CO * 100 / A_CEC_CO]
+  dt.out[, A_MG_CO_PO := A_MG_CO * 100 / A_CEC_CO]
+  dt.out[, A_K_CO_PO := A_K_CO * 100 / A_CEC_CO]
+
+  ncols <- colnames(dt.bb)[grepl('^A_|^B_',colnames(dt.bb))]
+  ncols <- c('id',ncols[!ncols %in% colnames(dt.out)])
+  dt.out <- merge(dt.out,dt.bb[,mget(ncols)],by='id',all.x = TRUE)
+  rm(dt.bb);gc()
+
+  # add MOK, AER, andHELP
+  dt.out <- merge(dt.out,
+                dt.mok[,.(id,B_DRAIN = buisdrains,B_SLOPE_DEGREE = helling,
+                          own = ow_Nopg_lb,owp = ow_Popg_lb,gw = gw_status)],
                 by= 'id',all.x=TRUE)
-rm(dt.mok);gc()
-dt.out <- merge(dt.out,
-                dt.aer,by='id',all.x=TRUE)
-rm(dt.aer);gc()
-dt.out <- merge(dt.out,
-                dt.help[,.(id,B_HELP_WENR = helpcode)],by='id',all.x=TRUE)
-rm(dt.help);gc()
-dt.out <- merge(dt.out,
-                dt.sc[,.(id,B_SC_WENR = VALUE)], by= 'id',all.x=TRUE)
-rm(dt.sc);gc()
-dt.out <- merge(dt.out,
-                dt.bk[,.(id,B_GWL_CLASS = bd50.gwt.org)], by= 'id',all.x=TRUE)
-rm(dt.bk);gc()
-dt.out <- merge(dt.out,
-                dt.cs[,.(id,
-                         a_som_loi_csat_bau = a_som_loi_pred_mean_bau,
-                         a_som_loi_csat_top = a_som_loi_pred_mean_top,
-                         d_cs_bau,d_cs_top)], by= 'id',all.x=TRUE)
-rm(dt.cs);gc()
-dt.out <- merge(dt.out,
-                dt.gwl[,.(id,B_GWL_GHG = B_GWL_GHG *100,B_GWL_GLG = B_GWL_GLG * 100)], by= 'id',all.x=TRUE)
-rm(dt.gwl);gc()
-dt.out <- merge(dt.out,
-                dt.zcrit[,.(id,B_GWL_ZCRIT = B_Z_TWO)], by= 'id',all.x=TRUE)
-rm(dt.zcrit);gc()
-dt.out <- merge(dt.out,
-                dt.gwpz[,.(id,B_GWP)], by= 'id',all.x=TRUE)
-rm(dt.gwpz);gc()
-dt.out <- merge(dt.out,
-                dt.lsw[,.(id,B_CT_PSW, B_CT_NSW,B_LSW_ID = oow_id)], by= 'id',all.x=TRUE)
-rm(dt.lsw);gc()
-dt.out <- merge(dt.out,
-                dt.ro[,.(id,D_RO_R)], by= 'id',all.x=TRUE)
-rm(dt.ro);gc()
-dt.out <- merge(dt.out,
-                dt.saw[,.(id,D_SA_W = fr_natte_omtrek)], by= 'id',all.x=TRUE)
-rm(dt.saw);gc()
-rm(dt.sf)
+  rm(dt.mok);gc()
+  dt.out <- merge(dt.out,dt.aer,by='id',all.x=TRUE)
+  rm(dt.aer);gc()
+  dt.out <- merge(dt.out,dt.help[,.(id,B_HELP_WENR = helpcode)],by='id',all.x=TRUE)
+  rm(dt.help);gc()
 
-# data conversions
-dt.out[is.na(B_DRAIN)| B_DRAIN == 'nee', B_DRAIN := FALSE]
-dt.out[B_DRAIN == 'ja', B_DRAIN := TRUE]
-dt.out[,B_DRAIN := as.logical(B_DRAIN)]
-dt.out[B_SLOPE_DEGREE > 30, B_SLOPE_DEGREE := 30]
-dt.out[is.na(B_SLOPE_DEGREE), B_SLOPE_DEGREE := 0.1]
-dt.out[,B_AREA_DROUGHT := TRUE]
-dt.out[, B_FERT_NORM_FR := 1]
-dt.out[,B_GWL_CLASS := OBIC::format_gwt(B_GWL_CLASS)]
+  # add soil compaction, Soil map and max C saturation
+  dt.out <- merge(dt.out,dt.sc[,.(id,B_SC_WENR = VALUE)], by= 'id',all.x=TRUE)
+  rm(dt.sc);gc()
+  dt.out <- merge(dt.out,dt.bk[,.(id,B_GWL_CLASS = bd50.gwt.org)], by= 'id',all.x=TRUE)
+  rm(dt.bk);gc()
+  dt.out <- merge(dt.out,
+                  dt.cs[,.(id,
+                           a_som_loi_csat_bau = a_som_loi_pred_mean_bau,
+                           a_som_loi_csat_top = a_som_loi_pred_mean_top,
+                           d_cs_bau,d_cs_top)], by= 'id',all.x=TRUE)
+  rm(dt.cs);gc()
 
-# add crop categories
-dt.out <- merge(dt.out,
-                pandex::b_lu[!is.na(B_LU_BRP),.(B_LU_BRP, B_LU_WATERSTRESS_OBIC, B_LU_BBWP, B_LU_CULTCAT4, B_LU_SEASON)],
-                by = 'B_LU_BRP',all.x=TRUE)
+  # add groundwater levels, zcrit and B_GWP and LSW
+  dt.out <- merge(dt.out,
+                  dt.gwl[,.(id,B_GWL_GHG = B_GWL_GHG *100,B_GWL_GLG = B_GWL_GLG * 100)], by= 'id',all.x=TRUE)
+  rm(dt.gwl);gc()
+  dt.out <- merge(dt.out,
+                  dt.gwl.wdm[,.(id,B_GWL_GHG_WDM,B_GWL_GLG_WDM)], by= 'id',all.x=TRUE)
+  rm(dt.gwl.wdm);gc()
+  dt.out <- merge(dt.out,
+                  dt.gwl.agv[,.(id,B_GWL_GHG_AGV,B_GWL_GLG_AGV)], by= 'id',all.x=TRUE)
+  rm(dt.gwl.agv);gc()
+  dt.out <- merge(dt.out,dt.zcrit[,.(id,B_GWL_ZCRIT = B_Z_TWO)], by= 'id',all.x=TRUE)
+  rm(dt.zcrit);gc()
+  dt.out <- merge(dt.out,dt.gwpz[,.(id,B_GWP)], by= 'id',all.x=TRUE)
+  rm(dt.gwpz);gc()
+  dt.out <- merge(dt.out,
+                  dt.lsw[,.(id,B_CT_PSW, B_CT_NSW,B_LSW_ID = oow_id)], by= 'id',all.x=TRUE)
+  rm(dt.lsw);gc()
+
+  # add runoff risk, somers and natte omtrek
+  dt.out <- merge(dt.out,
+                  dt.ro[,.(id,D_RO_R)], by= 'id',all.x=TRUE)
+  rm(dt.ro);gc()
+  dt.out <- merge(dt.out,
+                  dt.saw[,.(id,D_SA_W = fr_natte_omtrek)], by= 'id',all.x=TRUE)
+  rm(dt.saw);gc()
+  dt.out <- merge(dt.out,dt.somers, by= 'id',all.x=TRUE)
+  rm(dt.somers);gc()
+
+  # remove files not needed any more
+  rm(dt.sf,d1.sf,dt.brp,s1.sel,sf.sel,brp);gc()
+
+  # check missing properties (one field without data, so remove the field)
+  dt.out <- dt.out[!is.na(A_SOM_LOI)]
+
+  # data conversions
+  dt.out[is.na(B_DRAIN)| B_DRAIN == 'nee', B_DRAIN := FALSE]
+  dt.out[B_DRAIN == 'ja', B_DRAIN := TRUE]
+  dt.out[,B_DRAIN := as.logical(B_DRAIN)]
+  dt.out[B_SLOPE_DEGREE > 30, B_SLOPE_DEGREE := 30]
+  dt.out[is.na(B_SLOPE_DEGREE), B_SLOPE_DEGREE := 0.1]
+  dt.out[,B_AREA_DROUGHT := TRUE]
+  dt.out[, B_FERT_NORM_FR := 1]
+  dt.out[,B_GWL_CLASS := OBIC::format_gwt(B_GWL_CLASS)]
+
+  # calculate GWL_CLASS_WDM
+  dt.out[B_GWL_GLG_WDM <= 50, B_GWL_CLASS_WDM := 'GtI']
+  dt.out[B_GWL_GLG_WDM > 50 & B_GWL_GLG_WDM <= 80 & B_GWL_GHG_WDM <= 40, B_GWL_CLASS_WDM := 'GtII']
+  dt.out[B_GWL_GLG_WDM > 80 & B_GWL_GLG_WDM <= 120 & B_GWL_GHG_WDM <= 40, B_GWL_CLASS_WDM := 'GtIII']
+  dt.out[B_GWL_GLG_WDM > 80 & B_GWL_GLG_WDM <= 120 & B_GWL_GHG_WDM > 40, B_GWL_CLASS_WDM := 'GtIV']
+  dt.out[B_GWL_GLG_WDM > 120 & B_GWL_GHG_WDM <= 40, B_GWL_CLASS_WDM := 'GtV']
+  dt.out[B_GWL_GLG_WDM > 120 & B_GWL_GHG_WDM > 40 & B_GWL_GHG_WDM <= 80, B_GWL_CLASS_WDM := 'GtVI']
+  dt.out[B_GWL_GLG_WDM > 120 & B_GWL_GHG_WDM > 80 & B_GWL_GHG_WDM <= 140, B_GWL_CLASS_WDM := 'GtVII']
+  dt.out[B_GWL_GLG_WDM > 120 & B_GWL_GHG_WDM > 140, B_GWL_CLASS_WDM := 'GtVII']
+  dt.out[B_GWL_GHG_WDM==B_GWL_GLG_WDM & B_GWL_GLG_WDM > 50 & B_GWL_GLG_WDM <= 80,B_GWL_CLASS_WDM := 'GtII']
+  dt.out[is.na(B_GWL_CLASS_WDM), B_GWL_CLASS_WDM := B_GWL_CLASS]
+
+  # calculate GWL_CLASS_AGV
+  dt.out[B_GWL_GLG_AGV <= 50, B_GWL_CLASS_AGV := 'GtI']
+  dt.out[B_GWL_GLG_AGV > 50 & B_GWL_GLG_AGV <= 80 & B_GWL_GHG_AGV <= 40, B_GWL_CLASS_AGV := 'GtII']
+  dt.out[B_GWL_GLG_AGV > 80 & B_GWL_GLG_AGV <= 120 & B_GWL_GHG_AGV <= 40, B_GWL_CLASS_AGV := 'GtIII']
+  dt.out[B_GWL_GLG_AGV > 80 & B_GWL_GLG_AGV <= 120 & B_GWL_GHG_AGV > 40, B_GWL_CLASS_AGV := 'GtIV']
+  dt.out[B_GWL_GLG_AGV > 120 & B_GWL_GHG_AGV <= 40, B_GWL_CLASS_AGV := 'GtV']
+  dt.out[B_GWL_GLG_AGV > 120 & B_GWL_GHG_AGV > 40 & B_GWL_GHG_AGV <= 80, B_GWL_CLASS_AGV := 'GtVI']
+  dt.out[B_GWL_GLG_AGV > 120 & B_GWL_GHG_AGV > 80 & B_GWL_GHG_AGV <= 140, B_GWL_CLASS_AGV := 'GtVII']
+  dt.out[B_GWL_GLG_AGV > 120 & B_GWL_GHG_AGV > 140, B_GWL_CLASS_AGV := 'GtVII']
+  dt.out[B_GWL_GHG_AGV==B_GWL_GLG_AGV & B_GWL_GLG_AGV > 50 & B_GWL_GLG_AGV <= 80,B_GWL_CLASS_AGV := 'GtII']
+
+  # remove geoms
+  dt.out[,c('geom.x','geom.y') := NULL]
+
+  # add crop categories
+  dt.out <- merge(dt.out,
+                  pandex::b_lu[!is.na(B_LU_BRP),.(B_LU_BRP, B_LU_WATERSTRESS_OBIC, B_LU_BBWP, B_LU_CULTCAT4, B_LU_SEASON)],
+                  by = 'B_LU_BRP',all.x=TRUE)
 
 # ensure sum of most important occupation variables does not exceed 100
 dt.out[A_CA_CO_PO + A_MG_CO_PO + A_K_CO_PO + A_NA_CO_PO > 100,
