@@ -21,7 +21,7 @@ nmi.site<- Sys.getenv('NMI_SITE')
     dtte.c[,checkparm := get(parm)]
 
     # set buffer size to extract
-    if(is.null(sbuffer)){buffersize = c(100, 500, 1000,5000)}
+    if(is.null(sbuffer)){buffersize = c(100, 500, 1000,5000)} else { buffersize = sbuffer}
 
     # for loop for extraction
     for(i in buffersize){
@@ -74,6 +74,58 @@ nmi.site<- Sys.getenv('NMI_SITE')
     return(out)
   }
 
+  # a helper function to read the brp
+  readBRP <- function(years,sf.sel){
+
+    syear <- sort(years,decreasing = TRUE)
+    syear <- as.character(syear)
+
+    for(i in syear){
+
+      # read in the BRP for the selected years
+      if(i <= 2022){
+        tmp1 <- st_read(paste0(nmi.dat, 'landgebruik/brp/products/brpgewaspercelen_',i,'.gpkg'))
+      } else {
+        tmp1 <- st_read(paste0(nmi.dat, 'landgebruik/brp/products/brpgewaspercelen_',i,'_concept.gpkg'))
+      }
+
+      # set the crs to Amersfoort new and join
+      tmp1 <- sf::st_set_crs(tmp1,28992)
+      brp <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = st_nearest_feature)
+      brp <- as.data.table(brp)
+
+      # extract with buffer works with spatial points
+      brp <- extractwithbuffer(dtte = brp,spo = sf.sel,dt.sf = tmp1, dbn = paste0('brp',i),parm='ref_id')
+
+      # ensure that names are identical
+      setnames(brp,old='gewascode',new='GWS_GEWASCODE',skip_absent = TRUE)
+
+      # add and select correct columns
+      brp[,c(i) := GWS_GEWASCODE]
+
+      if(i == syear[1]){
+        brp[,c(paste0('ref_id_',i)) := ref_id]
+        cgeom <- if('geom' %in% colnames(brp)){'geom'} else {'geometry'}
+        dt.brp <- brp[,mget(c('id',i,paste0('ref_id_',i),cgeom))]
+      } else{
+        dt.brp <- merge(dt.brp,brp[,mget(c('id',i))],by='id')
+      }
+    }
+
+    # adapt the table in format
+    cgeom <- if('geom' %in% colnames(dt.brp)){'geom'} else {'geometry'}
+    dt.brp <- melt(dt.brp,
+                   id.vars = c('id',paste0('ref_id_',syear[1]),cgeom),
+                   variable.name = 'year',value.name = 'B_LU_BRP')
+    dt.brp[,year := as.integer(as.character(year))]
+    dt.brp[,B_LU_BRP := as.integer(B_LU_BRP)]
+    setorder(dt.brp,id,-year)
+    dt.brp[, B_LU_BRP := nafill(B_LU_BRP,type='locf'),by='id']
+    dt.brp[, B_LU_BRP := nafill(B_LU_BRP,type='nocb'),by='id']
+
+    return(dt.brp)
+  }
+
 
 
 # -- step 1. prepare spatial file for data extraction ----
@@ -96,6 +148,9 @@ nmi.site<- Sys.getenv('NMI_SITE')
   saveRDS(s1.sel,'D:/DATA/18 bln/brp24_s1sel.rds')
 
 # -- Load BLN input data for spatial points object ----------------------------------------------------
+
+  # load the spatial object
+  sf.sel <- readRDS('D:/DATA/18 bln/brp24_sfsel.rds')
 
   # load in bodemschat, do spatial join with the object, save object
   tmp1 <- sf::st_read(paste0(nmi.dat, 'bodem/bodemschat/products/BS6/BS6_2021.gpkg'))
@@ -205,8 +260,9 @@ nmi.site<- Sys.getenv('NMI_SITE')
   tmp1 <- sf::st_read(paste0(nmi.dat, 'topo/landbouwgebieden/raw/landbouwgebieden_2016/landbouwgebieden_2016.shp'))
   dt.aer <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = st_nearest_feature)
   dt.aer <- as.data.table(dt.aer)
-  dt.aer <- extractwithbuffer(dtte = dt.aer,spo = sf.sel,dt.sf = tmp1, dbn = 'statcode',parm='B_AER_CBS')
+  dt.aer <- extractwithbuffer(dtte = dt.aer,spo = sf.sel,dt.sf = tmp1, dbn = 'CBS region',parm='statcode')
   saveRDS(dt.aer,'D:/DATA/18 bln/brp24_aer.rds')
+  rm(tmp1,dt.aer);gc()
 
   # Load the GWLdata from rasters LHM
   require(terra)
@@ -222,149 +278,83 @@ nmi.site<- Sys.getenv('NMI_SITE')
   saveRDS(dt.gwl,'D:/DATA/18 bln/brp24_gwl.rds')
   rm(tmp1,dt.gwl,r.gwl.ghg,r.gwl.glg,vect.sel);gc()
 
+  # load SOMERS
+  tmp1 <- st_read('D:/ROSG/2057.N.24 Bodemkwaliteit RVB/01 data/parcels_rekenregels_nobv_website.shp')
+  dt.somers <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = st_nearest_feature)
+  dt.somers <- as.data.table(dt.somers)
+  dt.somers <- extractwithbuffer(dtte = dt.somers,spo = sf.sel,dt.sf = tmp1, dbn = 'somers',parm='Basiscomb',sbuffer=c(100,500))
+  saveRDS(dt.somers,'D:/DATA/18 bln/brp24_somers1.rds')
 
+  # load peilgebieden
+  # https://service.pdok.nl/hwh/waterbeheergebiedenimwa/atom/waterschappen_waterbeheergebieden_imwa.xml
+  tmp1 <-  as.data.table(st_read('D:/ROSG/2057.N.24 Bodemkwaliteit RVB/01 data/peilgebieden_gecombineerd.gpkg'))
+  tmp2 <-  as.data.table(st_read('D:/ROSG/2057.N.24 Bodemkwaliteit RVB/01 data/peilgebieden/LEGGER_PEILBESLUITEN.gpkg'))
+  tmp3 <-  as.data.table(st_read('D:/ROSG/2057.N.24 Bodemkwaliteit RVB/01 data/peilgebieden/zzl_Peilgebieden.shp'))
+  tmp4 <-  as.data.table(st_read('D:/ROSG/2057.N.24 Bodemkwaliteit RVB/01 data/peilgebieden/peilgebieden_hhnk.gpkg'))
+  tmp5 <-  as.data.table(st_read('D:/ROSG/2057.N.24 Bodemkwaliteit RVB/01 data/peilgebieden/peilgebieden_wdod.gpkg'))
+  tmp6 <-  as.data.table(st_read('D:/ROSG/2057.N.24 Bodemkwaliteit RVB/01 data/peilgebieden/peilgebieden_ha.gpkg'))
+  tmp7 <-  as.data.table(st_read('D:/ROSG/2057.N.24 Bodemkwaliteit RVB/01 data/peilgebieden/peilgebieden_wf.gpkg'))
+  tmp8 <-  as.data.table(st_read('D:/ROSG/2057.N.24 Bodemkwaliteit RVB/01 data/peilgebieden/peilgebieden_zeeland.gpkg'))
 
+  # update and standardize
+  tmp4[,ws_zomerpeil := rowMeans(.SD,na.rm=T),.SDcols = c('Zomer','Streefpeil_Zomer','Bovengrens_Zomer','Ondergrens_Zomer')]
+  tmp4[is.na(ws_zomerpeil),ws_zomerpeil := rowMeans(.SD,na.rm=T),.SDcols = c('Streefpeil_Jaarrond', 'Ondergrens_Jaarrond' ,'Bovengrens_Jaarrond')]
+  tmp4[,ws_winterpeil := rowMeans(.SD,na.rm=T),.SDcols = c('Winter','Streefpeil_Winter','Bovengrens_Winter','Ondergrens_Winter')]
+  tmp4[is.na(ws_winterpeil),ws_winterpeil := rowMeans(.SD,na.rm=T),.SDcols = c('Streefpeil_Jaarrond', 'Ondergrens_Jaarrond' ,'Bovengrens_Jaarrond')]
+  tmp4[,ws_vastpeil := rowMeans(.SD,na.rm=T),.SDcols = c('Vast','Streefpeil_Jaarrond', 'Ondergrens_Jaarrond' ,'Bovengrens_Jaarrond')]
 
-require(terra)
-r <- terra::rast(paste0(nmi.dat, 'watersysteem/Grondwaterniveau/raw/LHM GHG_2011-2018_L1.tif'))
-r <- aggregate(r, fact=4)
+  tmp1 <- tmp1[,.(pgid = CODE,ws_zomerpeil = ws_zomerpeil,ws_winterpeil = ws_winterpeil, ws_vastpeil = ws_vastpeil,geom)]
+  tmp2 <- tmp2[,.(pgid = Code,ws_zomerpeil = BovenPeil,ws_winterpeil = OnderPeil, ws_vastpeil = VastPeil,geom = SHAPE)]
+  tmp3 <- tmp3[,.(pgid= GPGIDENT, ws_zomerpeil = GPGZMRPL, ws_winterpeil = GPGWNTPL, ws_vastpeil = NA, geom= geometry)]
+  tmp4 <- tmp4[,.(pgid= Code, ws_zomerpeil , ws_winterpeil , ws_vastpeil , geom)]
+  tmp5 <- tmp5[,.(pgid= GPGIDENT, ws_zomerpeil = GPGZMRPL, ws_winterpeil = GPGWNTPL, ws_vastpeil = NA, geom)]
+  tmp6 <- tmp6[,.(pgid= GPGIDENT, ws_zomerpeil = GPGZMRPL, ws_winterpeil = GPGWNTPL, ws_vastpeil = NA, geom)]
+  tmp7 <- tmp7[,.(pgid= GPGIDENT, ws_zomerpeil = GPGZMRPL, ws_winterpeil = GPGWNTPL, ws_vastpeil = IWS_GPGVASTP, geom)]
+  tmp8 <- tmp8[,.(pgid= peilgebied, ws_zomerpeil = zomerpeil_m , ws_winterpeil = winterpeil_m, ws_vastpeil = NA, geom)]
 
-# function to rasterize categorial or numeric variable
-fc <- function(var,d,r) terra::rasterize(x = d,y = r,field=var,na.rm=T)
-fn <- function(var,d,r) terra::rasterize(x = d,y = r,field=var,fun = mean,na.rm=T)
-mfv <- function(x) names(sort(table(test),decreasing=T)[1])
+  d1 <- rbind(tmp1,tmp2,tmp3,tmp4,tmp5,tmp6,tmp7,tmp8)
+  d1.sf <- st_as_sf(d1)
+  d1.sf <- st_cast(d1.sf,'MULTIPOLYGON')
+  d1.sf <- st_zm(d1.sf)
+  # st_write(d1.sf,'../01 data/peilgebieden/peilgebieden_veengebieden.gpkg',append=FALSE)
 
-# convert sampling points to vect
-spv <- terra::vect(sf.sel)
+  # join peilen to fields
+  d1.peilen <- st_join(sf.sel,d1.sf,largest = TRUE, left = TRUE, join = st_nearest_feature)
+  d1.peilen <- as.data.table(d1.peilen)
+  saveRDS(d1.peilen,'D:/DATA/18 bln/brp24_peilen.rds')
+  rm(tmp1,tmp2,tmp3,tmp4,tmp5,tmp6,tmp7,tmp8)
 
-# function to extract data
-fex <- function(spv,s,r,varname,vn_new = NULL){
+  # combine both sets to prepare SOMERS file
+  d1.peilen <- readRDS('D:/DATA/18 bln/brp24_peilen.rds')
+  dt.somers <- readRDS('D:/DATA/18 bln/brp24_somers.rds')
 
-  # check variable type
-  vars <- unlist(sapply(s[varname],is.numeric))
-  vars <- vars[names(vars)[!grepl('geom',names(vars))]]
+  dt.somers <- merge(dt.somers,d1.peilen[,.(id,ws_zomerpeil,ws_winterpeil,ws_vastpeil)],by='id',all.x=TRUE)
+  setnames(dt.somers,gsub('\\.','',colnames(dt.somers)))
 
-  # define length of the stack
-  r2 <- c()
+  # do conversions
+  dt.somers[, B_DRAIN_SP := ahn4mNAP - ws_zomerpeil]
+  dt.somers[, B_DRAIN_WP := ahn4mNAP - ws_winterpeil]
+  dt.somers[ws_winterpeil == ws_zomerpeil & ws_zomerpeil != ws_vastpeil, B_DRAIN_SP := ahn4mNAP - ws_vastpeil]
+  dt.somers[ws_winterpeil == ws_zomerpeil & ws_winterpeil != ws_vastpeil, B_DRAIN_WP := ahn4mNAP - ws_vastpeil]
 
-  # set counter
-  count = 1
+  dt.somers[, B_DRAIN_SP := round(B_DRAIN_SP, 1)]
+  dt.somers[, B_DRAIN_WP := round(B_DRAIN_WP, 1)]
+  dt.somers[B_DRAIN_SP > 1.2, B_DRAIN_SP := 1.2]
+  dt.somers[B_DRAIN_SP < 0.2, B_DRAIN_SP := 0.2]
+  dt.somers[B_DRAIN_WP < B_DRAIN_SP, B_DRAIN_WP := B_DRAIN_SP]
+  dt.somers[(B_DRAIN_WP - B_DRAIN_SP) > 0.2, B_DRAIN_WP := 0.2]
 
-  # extract the value
-  for(i in varname){
+  dt.somers <- dt.somers[,.(id,B_SOMERS_BC = Basiscomb,B_DRAIN_WP,B_DRAIN_SP)]
+  saveRDS(dt.somers,'D:/DATA/18 bln/brp24_somers2.rds')
+  rm(dt.somers,d1.peilen,d1)
 
-    # convert shape file to raster
-    if(vars[i]==TRUE){r2 <- fn(var=i,d=s,r=r)} else {r2 <- fc(var=i,d=s,r=r)}
+  brp <- readRDS('D:/DATA/18 bln/brp24_brp.rds')
 
-    # extract the value from the raster for sampling points (bilinear for shapes, when point also simple for numeric)
-    #if(vars[i]==TRUE){e1 <- terra::extract(r2,spv,method='bilinear')} else {e1 <- terra::extract(r2,spv,method='simple')}
-    e1 <- terra::extract(r2,spv,method='simple')
+  # read in all the BRP files
+  dt.brp <- readBRP(2014:2024,sf.sel = sf.sel)
+  saveRDS(dt.brp,'D:/DATA/18 bln/brp24_brp.rds')
+  rm(dt.brp);gc()
 
-    # convert to data.table and take median per ID
-    e1 <- as.data.table(e1)
-
-    # adapt the names
-    if(!is.null(vn_new)) {setnames(e1,i,vn_new[count])}
-
-    # remove duplicated
-    if(nrow(e1) != nrow(spv)){
-
-      print(paste0('duplicates removed: ',e1[duplicated(ID),N],' samples'))
-      e1 <- e1[!duplicated(ID)]
-      #if(vars[i]==TRUE){e1 <- e1[,lapply(.SD,mean), by='ID']} else {e1 <- e1[!duplicated(ID)]}
-    }
-
-    # add to data.table
-    if(count==1){dt <- copy(e1);dt[,id := spv$id]} else {dt <- merge(dt,e1,by='ID',all.x=TRUE)}
-
-    # add counter
-    count = count + 1
-
-    # print
-    print(paste0('parameter ',i,' has been extracted for ',nrow(e1),' sites'))
-  }
-
-  dt[,ID := NULL]
-  setcolorder(dt,'id')
-
-  print(paste0('dataset merged with input sf variables: ',paste(varname,collapse=', ')))
-  rm(r2,e1)
-  return(dt)
-}
-
-# load in landbouwgebied, do spatial join with the object
-tmp1 <- sf::st_read(paste0(nmi.dat, 'topo/landbouwgebieden/raw/landbouwgebieden_2016/landbouwgebieden_2016.shp'))
-dt.aer <- fex(spv = spv,s=tmp1,r=r,varname = 'statcode',vn_new = 'B_AER_CBS')
-
-
-# save files
-
-
-
-
-
-
-
-
-
-
-# remove files
-rm(dt.aer,dt.bb,dt.bk,dt.bs,dt.cs,dt.gwl,dt.gwpz,dt.help,dt.lsw,dt.mok,dt.ro,dt.saw,dt.sc,dt.zcrit)
-
-# a helper function to read the brp
-readBRP <- function(years,sf.sel){
-
-  syear <- sort(years,decreasing = TRUE)
-  syear <- as.character(syear)
-
-  for(i in syear){
-
-    # read in the BRP
-    tmp1 <- st_read(paste0(nmi.dat, 'landgebruik/brp/products/brpgewaspercelen_',i,'.gpkg'))
-    tmp1 <- sf::st_set_crs(tmp1,28992)
-    brp <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = st_nearest_feature)
-    brp <- as.data.table(brp)
-
-    # extract with buffer works with spatial points
-    brp <- extractwithbuffer(dtte = brp,spo = sf.sel,dt.sf = tmp1, dbn = paste0('brp',i),parm='ref_id')
-
-    # ensure that names are identical
-    setnames(brp,old='gewascode',new='GWS_GEWASCODE',skip_absent = TRUE)
-
-    # add and select correct columns
-    brp[,c(i) := GWS_GEWASCODE]
-
-    if(i == syear[1]){
-      brp[,c(paste0('ref_id_',i)) := ref_id]
-      cgeom <- if('geom' %in% colnames(brp)){'geom'} else {'geometry'}
-      dt.brp <- brp[,mget(c('id',i,paste0('ref_id_',i),cgeom))]
-    } else{
-      dt.brp <- merge(dt.brp,brp[,mget(c('id',i))],by='id')
-    }
-  }
-
-  # adapt the table in format
-  cgeom <- if('geom' %in% colnames(dt.brp)){'geom'} else {'geometry'}
-  dt.brp <- melt(dt.brp,
-                 id.vars = c('id',paste0('ref_id_',syear[1]),cgeom),
-                 variable.name = 'year',value.name = 'B_LU_BRP')
-  dt.brp[,year := as.integer(as.character(year))]
-  dt.brp[,B_LU_BRP := as.integer(B_LU_BRP)]
-  setorder(dt.brp,id,-year)
-  dt.brp[, B_LU_BRP := nafill(B_LU_BRP,type='locf'),by='id']
-  dt.brp[, B_LU_BRP := nafill(B_LU_BRP,type='nocb'),by='id']
-
-  return(dt.brp)
-}
-
-# read in all the BRP files
-dt.brp <- readBRP(2016:2020,sf.sel = sf.sel)
-saveRDS(dt.brp,'D:/DATA/18 bln/brp21_brp1620.rds')
-rm(dt.brp);gc()
-
-# read in older BRP files
-dt.brp.old <- readBRP(2011:2015,sf.sel = sf.sel)
-saveRDS(dt.brp.old,'D:/DATA/18 bln/brp21_brp1115.rds')
 
 # load previous prepared databases
 dt.brp <- readRDS('D:/DATA/18 bln/brp21_brp1620.rds')
