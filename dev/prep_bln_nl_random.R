@@ -231,6 +231,16 @@ nmi.site<- Sys.getenv('NMI_SITE')
   saveRDS(dt.gwpz,'D:/DATA/18 bln/brp24_gwpz.rds')
   rm(tmp1,dt.gwpz);gc()
 
+  # load in provincie
+  tmp1 <- st_read(paste0(nmi.dat, "topo/provincies/2018-Imergis_provinciegrenzen_kustlijn.shp"))
+  colnames(tmp1) <- c('idc','provincien','geometry')
+  dt.prov <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = 'st_nearest_feature')
+  dt.prov <- as.data.table(dt.prov)
+  dt.prov <- extractwithbuffer(dtte = dt.prov,spo = sf.sel,dt.sf = tmp1, dbn = 'provincie',parm='provincien',sbuffer = c(5000,9000))
+  dt.prov <- dt.prov[,.(id,provincien)]
+  saveRDS(dt.prov,'D:/DATA/18 bln/brp24_prov.rds')
+  rm(tmp1,dt.prov);gc()
+
   # load in LSW
   tmp1 <- st_read(paste0(nmi.dat, "watersysteem/Opgave_oppervlaktewater/products/20240625_oppervlaktewateropgave.gpkg")) # 30213_oppervlaktewateropgave.gpkg"))
   dt.lsw <- st_join(sf.sel,tmp1,largest = TRUE, left = TRUE, join = st_intersects)
@@ -283,11 +293,11 @@ nmi.site<- Sys.getenv('NMI_SITE')
   r.gwl.glg <- terra::rast(paste0(nmi.dat, 'watersysteem/Grondwaterniveau/raw/wdm-glg-mediaan.tif'))
   tmp1 <- c(r.gwl.ghg,r.gwl.glg)
   vect.sel <- terra::vect(sf.sel)
-  dt.gwl <- terra::extract(tmp1,vect.sel,method='simple') # for shapes bilinear otherwis simple
+  dt.gwl <- terra::extract(tmp1,vect.sel,method='bilinear') # for shapes bilinear otherwis simple
   dt.gwl <- as.data.table(dt.gwl)
-  dt.gwl <- dt.gwl[,lapply(.SD,mean),by='ID']
+  setnames(dt.gwl,c('id','B_GWL_GHG_WDM','B_GWL_GLG_WDM'))
+  dt.gwl <- dt.gwl[,lapply(.SD,mean),by='id']
   dt.gwl[,id := vect.sel$id]
-  setnames(dt.gwl,c('ID','B_GWL_GHG_WDM','B_GWL_GLG_WDM','id'))
   saveRDS(dt.gwl,'D:/DATA/18 bln/brp24_gwl_wdm.rds')
   rm(tmp1,dt.gwl,r.gwl.ghg,r.gwl.glg,vect.sel);gc()
 
@@ -384,6 +394,9 @@ nmi.site<- Sys.getenv('NMI_SITE')
 
 # -- step 3. prepare BLN input dataset -----
 
+  # clean memory
+  rm(list=ls())
+
   # load in the geometry of all BRP fields
   s1.sel <- readRDS('D:/DATA/18 bln/brp24_s1sel.rds')
 
@@ -408,15 +421,18 @@ nmi.site<- Sys.getenv('NMI_SITE')
   dt.sc <- readRDS('D:/DATA/18 bln/brp24_sc.rds')
   dt.zcrit <- readRDS('D:/DATA/18 bln/brp24_zcrit.rds')
   dt.somers <- readRDS('D:/DATA/18 bln/brp24_somers2.rds')
+  dt.prov <- readRDS('D:/DATA/18 bln/brp24_prov.rds')
 
   # merge collected data and estimate derivates
-  dt.out <- copy(dt.brp)
-  ncols <- c('id', colnames(dt.bs)[grepl('^A_',colnames(dt.bs))])
+  dt.out <- copy(dt.brp[,.(id,ref_id_2024,B_LU_BRP)])
 
+  # add geometry of fields
   dt.sf <- as.data.table(s1.sel)
-  dt.sf <- dt.sf[,.(id,ref_id_2024 = ref_id,b_lu_brp = gewascode,geom)]
+  dt.sf <- dt.sf[,.(id,geom)]
+  dt.out <- merge(dt.out,dt.sf,by='id',all.x=TRUE)
 
   # add soil properties BodemSchat and BodemBedrijf
+  ncols <- c('id', colnames(dt.bs)[grepl('^A_',colnames(dt.bs))])
   dt.out <- merge(dt.out,dt.bs[,mget(ncols)],by='id',all.x = TRUE)
   rm(dt.bs);gc()
   dt.out[, A_CA_CO_PO := A_CA_CO * 100 / A_CEC_CO]
@@ -428,13 +444,14 @@ nmi.site<- Sys.getenv('NMI_SITE')
   dt.out <- merge(dt.out,dt.bb[,mget(ncols)],by='id',all.x = TRUE)
   rm(dt.bb);gc()
 
-  # add MOK, AER, andHELP
+  # add MOK, AER, and HELP
   dt.out <- merge(dt.out,
                 dt.mok[,.(id,B_DRAIN = buisdrains,B_SLOPE_DEGREE = helling,
                           own = ow_Nopg_lb,owp = ow_Popg_lb,gw = gw_status)],
                 by= 'id',all.x=TRUE)
   rm(dt.mok);gc()
-  dt.out <- merge(dt.out,dt.aer,by='id',all.x=TRUE)
+  dt.out <- merge(dt.out,
+                  dt.aer[,.(id,B_AER_CBS = statcode)],by='id',all.x=TRUE)
   rm(dt.aer);gc()
   dt.out <- merge(dt.out,dt.help[,.(id,B_HELP_WENR = helpcode)],by='id',all.x=TRUE)
   rm(dt.help);gc()
@@ -518,111 +535,146 @@ nmi.site<- Sys.getenv('NMI_SITE')
   dt.out[B_GWL_GLG_AGV > 120 & B_GWL_GHG_AGV > 140, B_GWL_CLASS_AGV := 'GtVII']
   dt.out[B_GWL_GHG_AGV==B_GWL_GLG_AGV & B_GWL_GLG_AGV > 50 & B_GWL_GLG_AGV <= 80,B_GWL_CLASS_AGV := 'GtII']
 
-  # remove geoms
-  dt.out[,c('geom.x','geom.y') := NULL]
-
   # add crop categories
   dt.out <- merge(dt.out,
                   pandex::b_lu[!is.na(B_LU_BRP),.(B_LU_BRP, B_LU_WATERSTRESS_OBIC, B_LU_BBWP, B_LU_CULTCAT4, B_LU_SEASON)],
                   by = 'B_LU_BRP',all.x=TRUE)
 
-# ensure sum of most important occupation variables does not exceed 100
-dt.out[A_CA_CO_PO + A_MG_CO_PO + A_K_CO_PO + A_NA_CO_PO > 100,
-       c('A_CA_CO_PO', 'A_MG_CO_PO', 'A_K_CO_PO', 'A_NA_CO_PO') := .(
-         A_CA_CO_PO * A_CA_CO_PO/(A_CA_CO_PO+A_MG_CO_PO+A_K_CO_PO+A_NA_CO_PO),
-         A_MG_CO_PO * A_MG_CO_PO/(A_CA_CO_PO+A_MG_CO_PO+A_K_CO_PO+A_NA_CO_PO),
-         A_K_CO_PO * A_K_CO_PO/(A_CA_CO_PO+A_MG_CO_PO+A_K_CO_PO+A_NA_CO_PO),
-         A_NA_CO_PO * A_NA_CO_PO/(A_CA_CO_PO+A_MG_CO_PO+A_K_CO_PO+A_NA_CO_PO)
-       )]
+  # ensure sum of most important occupation variables does not exceed 100
+  dt.out[A_CA_CO_PO + A_MG_CO_PO + A_K_CO_PO + A_NA_CO_PO > 100,
+         c('A_CA_CO_PO', 'A_MG_CO_PO', 'A_K_CO_PO', 'A_NA_CO_PO') := .(
+           A_CA_CO_PO * A_CA_CO_PO/(A_CA_CO_PO+A_MG_CO_PO+A_K_CO_PO+A_NA_CO_PO),
+           A_MG_CO_PO * A_MG_CO_PO/(A_CA_CO_PO+A_MG_CO_PO+A_K_CO_PO+A_NA_CO_PO),
+           A_K_CO_PO * A_K_CO_PO/(A_CA_CO_PO+A_MG_CO_PO+A_K_CO_PO+A_NA_CO_PO),
+           A_NA_CO_PO * A_NA_CO_PO/(A_CA_CO_PO+A_MG_CO_PO+A_K_CO_PO+A_NA_CO_PO)
+         )]
 
-# estimate the orginal values
-dt.out <- dt.out[!is.na(ref_id)]
+  # what columns are numeric
+  numeric_bb_cols <- colnames(dt.out[,.SD,.SDcols = is.numeric])
+  numeric_bb_cols <- numeric_bb_cols[!grepl('B_LU|_AGV$|_WDM$|_BC|_WP|_SP|B_LSW|id|year|^a_som|^d_cs',numeric_bb_cols)]
 
-# what columns are numeric
-numeric_bb_cols <- colnames(dt.out[,.SD,.SDcols = is.numeric])
-numeric_bb_cols <- numeric_bb_cols[!grepl('B_LU|B_LSW|id|year|^a_som|^d_cs',numeric_bb_cols)]
+  # set values below minimum to minumum and values above max to max
+  for(bb_param in numeric_bb_cols){
+    dt.out[get(bb_param) > pandex::get_maxval(bb_param), c(bb_param) := pandex::get_maxval(bb_param)]
+    dt.out[get(bb_param) < pandex::get_minval(bb_param), c(bb_param) := pandex::get_minval(bb_param)]
+  }
 
-# set values below minimum to minumum and values above max to max
-for(bb_param in numeric_bb_cols){
-  dt.out[get(bb_param) > pandex::get_maxval(bb_param), c(bb_param) := pandex::get_maxval(bb_param)]
-  dt.out[get(bb_param) < pandex::get_minval(bb_param), c(bb_param) := pandex::get_minval(bb_param)]
-}
+  # add oow_nl for missing LSW
+  dt.out[,B_LSW_ID := as.character(B_LSW_ID)]
+  dt.out[is.na(B_LSW_ID),B_LSW_ID := 'lsw_nlmean']
 
-# add oow_nl for missing LSW
-dt.out$B_LSW_ID <- as.character(dt.out$B_LSW_ID)
-dt.out[is.na(B_LSW_ID),B_LSW_ID := 'lsw_nlmean']
+  # update all inputs for groundwater depth
+  dt.out[B_GWL_GLG > 300, B_GWL_GLG := B_GWL_GLG_WDM]
+  dt.out[is.na(B_GWL_GLG) & B_GWL_CLASS == 'GtI', B_GWL_GLG := 30]
+  dt.out[is.na(B_GWL_GLG) & B_GWL_CLASS == 'GtII', B_GWL_GLG := 65]
+  dt.out[is.na(B_GWL_GLG) & B_GWL_CLASS == 'GtIII', B_GWL_GLG := 100]
+  dt.out[is.na(B_GWL_GLG) & B_GWL_CLASS == 'GtIV', B_GWL_GLG := 100]
+  dt.out[is.na(B_GWL_GLG) & B_GWL_CLASS == 'GtV', B_GWL_GLG := 130]
+  dt.out[is.na(B_GWL_GLG) & B_GWL_CLASS == 'GtVI', B_GWL_GLG := 130]
+  dt.out[is.na(B_GWL_GLG) & B_GWL_CLASS == 'GtVII', B_GWL_GLG := 160]
+  dt.out[is.na(B_GWL_GLG) & B_GWL_CLASS == 'GtVIII', B_GWL_GLG := 160]
 
-saveRDS(dt.out,'D:/DATA/18 bln/brp21_blninput.rds')
+  dt.out[B_GWL_GHG > 300, B_GWL_GHG := B_GWL_GHG_WDM]
+  dt.out[is.na(B_GWL_GHG) & B_GWL_CLASS == 'GtI', B_GWL_GHG := 15]
+  dt.out[is.na(B_GWL_GHG) & B_GWL_CLASS == 'GtII', B_GWL_GHG := 25]
+  dt.out[is.na(B_GWL_GHG) & B_GWL_CLASS == 'GtIII', B_GWL_GHG := 35]
+  dt.out[is.na(B_GWL_GHG) & B_GWL_CLASS == 'GtIV', B_GWL_GHG := 60]
+  dt.out[is.na(B_GWL_GHG) & B_GWL_CLASS == 'GtV', B_GWL_GHG := 35]
+  dt.out[is.na(B_GWL_GHG) & B_GWL_CLASS == 'GtVI', B_GWL_GHG := 60]
+  dt.out[is.na(B_GWL_GHG) & B_GWL_CLASS == 'GtVII', B_GWL_GHG := 120]
+  dt.out[is.na(B_GWL_GHG) & B_GWL_CLASS == 'GtVIII', B_GWL_GHG := 120]
 
-# prepare LSW datafile for calculations BLN
-
-# shape file to extract data for
-#s1.sel <- st_read('dev/bln_demarke.gpkg')
-
-# add unique id
-#s1.sel$fid <- s1.sel$id
-#s1.sel$id <- 1:nrow(s1.sel)
-#sf.sel <- s1.sel[,c('id','geom')]
-
-# make LSW file for whole of NL
-require(sf);require(data.table)
-
-# load in LSW and do subset
-tmp1 <- st_read(paste0(nmi.dat, "watersysteem/Opgave_oppervlaktewater/products/20240625_oppervlaktewateropgave.gpkg"))
-
-# load in all soil properties needed for LSW preparation
-tmp2 <- dt[year==1,.(B_LSW_ID,D_RO_R,D_SA_W,A_SOM_LOI,A_CLAY_MI,A_SAND_MI,A_SILT_MI,
-                     A_N_RT,A_P_AL,A_P_WA,A_P_CC,A_P_SG,A_FE_OX,A_AL_OX)]
-tmp2 <- tmp2[B_LSW_ID != 'lsw_nlmean']
-tmp2 <- tmp2[,list(B_SOM_LOI = mean(A_SOM_LOI),
-                   B_CLAY_MI = mean(A_CLAY_MI),
-                   B_SAND_MI = mean(A_SAND_MI),
-                   B_SILT_MI = mean(A_SILT_MI),
-                   B_N_RT = mean(A_N_RT),
-                   B_P_AL = mean(A_P_AL),
-                   B_P_CC = mean(A_P_CC),
-                   B_P_WA = mean(A_P_WA),
-                   B_P_SG = mean(A_P_SG),
-                   B_FE_OX = mean(A_FE_OX),
-                   B_AL_OX = mean(A_AL_OX),
-                   B_SOM_LOI_SD = sd(A_SOM_LOI),
-                   B_CLAY_MI_SD = sd(A_CLAY_MI),
-                   B_SAND_MI_SD = sd(A_SAND_MI),
-                   B_SILT_MI_SD = sd(A_SILT_MI),
-                   B_N_RT_SD = sd(A_N_RT),
-                   B_P_AL_SD = sd(A_P_AL),
-                   B_P_CC_SD = sd(A_P_CC),
-                   B_P_WA_SD = sd(A_P_WA),
-                   B_P_SG_SD = sd(A_P_SG),
-                   B_FE_OX_SD = sd(A_FE_OX),
-                   B_AL_OX_SD = sd(A_AL_OX),
-                   B_RO_R = mean(D_RO_R),
-                   B_RO_R_SD = sd(D_RO_R),
-                   B_SA_W = mean(D_SA_W),
-                   B_SA_W_SD = sd(D_SA_W)),by = 'B_LSW_ID']
-
-# add averaged NL for missing ones or LSW ids that have only a signle field
-cols <- c('B_SOM_LOI','B_CLAY_MI','B_SAND_MI', 'B_SILT_MI','B_N_RT','B_P_AL','B_P_CC','B_P_WA' ,'B_P_SG',
-          'B_FE_OX' ,'B_AL_OX' ,'B_RO_R' ,'B_SA_W','B_SOM_LOI_SD' ,'B_CLAY_MI_SD',
-          'B_SAND_MI_SD' ,'B_SILT_MI_SD' ,'B_N_RT_SD' ,'B_P_AL_SD' ,'B_P_CC_SD' ,
-          'B_P_WA_SD' ,'B_P_SG_SD' ,'B_FE_OX_SD' ,'B_AL_OX_SD' ,'B_RO_R_SD' ,'B_SA_W_SD'
-          )
-tmp2[is.na(B_SOM_LOI_SD), c(cols) := list(8.65,15.8, 60.5,23.71, 3834, 49, 2.71, 40, 22, 83, 40, 0.5, 0.47, 6.67, 13.45,
-                          23.5, 11.7, 2928, 13.5, 1.51,15.6, 14, 59, 19, 0.3, 0.33)]
-
-# add averaged NL for missing ones
-lsw.nl <- data.table(B_LSW_ID = 'lsw_nlmean', B_SOM_LOI = 8.65,B_CLAY_MI = 15.8,B_SAND_MI = 60.5,
-                     B_SILT_MI = 23.71,B_N_RT = 3834,B_P_AL = 49,B_P_CC = 2.71,B_P_WA = 40,B_P_SG = 22,
-                     B_FE_OX = 83,B_AL_OX = 40,B_RO_R = 0.5,B_SA_W = 0.47,B_SOM_LOI_SD = 6.67,B_CLAY_MI_SD = 13.45,
-                     B_SAND_MI_SD = 23.5,B_SILT_MI_SD = 11.7,B_N_RT_SD = 2928,B_P_AL_SD = 13.5,B_P_CC_SD = 1.51,
-                     B_P_WA_SD = 15.6,B_P_SG_SD = 14,B_FE_OX_SD = 59,B_AL_OX_SD = 19,B_RO_R_SD = 0.3,B_SA_W_SD = 0.33)
-dt.lsw.extr <- rbind(tmp2,lsw.nl)
-
-# save measures as bbwp table
-saveRDS(dt.lsw.extr,'D:/DATA/18 bln/nl_lsw.rds')
+  dt.out[B_GWL_GHG > B_GWL_GLG, B_GWL_GLG :=  B_GWL_GHG - 25]
 
 
-# Apply BLN input for all BRP fields for carbon only ---------
+  dt[B_GWL_GHG < B_GWL_GLG, B_GWL_GLG := B_GWL_GHG + 25]
+  dt[B_SOILTYPE_AGR == 'loss', B_SOILTYPE_AGR := 'loess']
+  dt[,A_DENSITY_SA := NA_real_]
+  dt[,ID := id]
+
+
+  # save input file
+  saveRDS(dt.out,'D:/DATA/18 bln/brp24_blninput.rds')
+
+# ---- step 4. prepare LSW datafile for calculations BLN ----
+
+  # make LSW file for whole of NL
+  require(sf);require(data.table)
+
+  # load in LSW and do subset
+  tmp1 <- st_read(paste0(nmi.dat, "watersysteem/Opgave_oppervlaktewater/products/20240625_oppervlaktewateropgave.gpkg"))
+
+  # load in all soil properties needed for LSW preparation
+  tmp2 <- dt[year==1,.(B_LSW_ID,D_RO_R,D_SA_W,A_SOM_LOI,A_CLAY_MI,A_SAND_MI,A_SILT_MI,
+                       A_N_RT,A_P_AL,A_P_WA,A_P_CC,A_P_SG,A_FE_OX,A_AL_OX)]
+  tmp2 <- tmp2[B_LSW_ID != 'lsw_nlmean']
+  tmp2 <- tmp2[,list(B_SOM_LOI = mean(A_SOM_LOI),
+                     B_CLAY_MI = mean(A_CLAY_MI),
+                     B_SAND_MI = mean(A_SAND_MI),
+                     B_SILT_MI = mean(A_SILT_MI),
+                     B_N_RT = mean(A_N_RT),
+                     B_P_AL = mean(A_P_AL),
+                     B_P_CC = mean(A_P_CC),
+                     B_P_WA = mean(A_P_WA),
+                     B_P_SG = mean(A_P_SG),
+                     B_FE_OX = mean(A_FE_OX),
+                     B_AL_OX = mean(A_AL_OX),
+                     B_SOM_LOI_SD = sd(A_SOM_LOI),
+                     B_CLAY_MI_SD = sd(A_CLAY_MI),
+                     B_SAND_MI_SD = sd(A_SAND_MI),
+                     B_SILT_MI_SD = sd(A_SILT_MI),
+                     B_N_RT_SD = sd(A_N_RT),
+                     B_P_AL_SD = sd(A_P_AL),
+                     B_P_CC_SD = sd(A_P_CC),
+                     B_P_WA_SD = sd(A_P_WA),
+                     B_P_SG_SD = sd(A_P_SG),
+                     B_FE_OX_SD = sd(A_FE_OX),
+                     B_AL_OX_SD = sd(A_AL_OX),
+                     B_RO_R = mean(D_RO_R),
+                     B_RO_R_SD = sd(D_RO_R),
+                     B_SA_W = mean(D_SA_W),
+                     B_SA_W_SD = sd(D_SA_W)),by = 'B_LSW_ID']
+
+  # add averaged NL for missing ones or LSW ids that have only a signle field
+  cols <- c('B_SOM_LOI','B_CLAY_MI','B_SAND_MI', 'B_SILT_MI','B_N_RT','B_P_AL','B_P_CC','B_P_WA' ,'B_P_SG',
+            'B_FE_OX' ,'B_AL_OX' ,'B_RO_R' ,'B_SA_W','B_SOM_LOI_SD' ,'B_CLAY_MI_SD',
+            'B_SAND_MI_SD' ,'B_SILT_MI_SD' ,'B_N_RT_SD' ,'B_P_AL_SD' ,'B_P_CC_SD' ,
+            'B_P_WA_SD' ,'B_P_SG_SD' ,'B_FE_OX_SD' ,'B_AL_OX_SD' ,'B_RO_R_SD' ,'B_SA_W_SD'
+            )
+  tmp2[is.na(B_SOM_LOI_SD), c(cols) := list(8.65,15.8, 60.5,23.71, 3834, 49, 2.71, 40, 22, 83, 40, 0.5, 0.47, 6.67, 13.45,
+                            23.5, 11.7, 2928, 13.5, 1.51,15.6, 14, 59, 19, 0.3, 0.33)]
+
+  # add averaged NL for missing ones
+  lsw.nl <- data.table(B_LSW_ID = 'lsw_nlmean', B_SOM_LOI = 8.65,B_CLAY_MI = 15.8,B_SAND_MI = 60.5,
+                       B_SILT_MI = 23.71,B_N_RT = 3834,B_P_AL = 49,B_P_CC = 2.71,B_P_WA = 40,B_P_SG = 22,
+                       B_FE_OX = 83,B_AL_OX = 40,B_RO_R = 0.5,B_SA_W = 0.47,B_SOM_LOI_SD = 6.67,B_CLAY_MI_SD = 13.45,
+                       B_SAND_MI_SD = 23.5,B_SILT_MI_SD = 11.7,B_N_RT_SD = 2928,B_P_AL_SD = 13.5,B_P_CC_SD = 1.51,
+                       B_P_WA_SD = 15.6,B_P_SG_SD = 14,B_FE_OX_SD = 59,B_AL_OX_SD = 19,B_RO_R_SD = 0.3,B_SA_W_SD = 0.33)
+  dt.lsw.extr <- rbind(tmp2,lsw.nl)
+
+  # save measures as bbwp table
+  saveRDS(dt.lsw.extr,'D:/DATA/18 bln/nl_lsw.rds')
+
+# -- step 5. run BLN ----
+
+  # require packages
+  require(BLN)
+
+  # clean memory
+  rm(list=ls());gc()
+
+  # set paths
+  nmi.dat <- Sys.getenv('NMI_DATA')
+  nmi.proj<- Sys.getenv('NMI-PROJ')
+  nmi.site<- Sys.getenv('NMI_SITE')
+
+  # load in the BLN input data and LSW
+  LSW <- readRDS('D:/DATA/18 bln/nl_lsw.rds')
+  BLNi <- readRDS('D:/DATA/18 bln/brp24_blninput.rds')
+
+
+
+# --- step 5. Apply BLN input for all BRP fields for carbon only ---------
 
   # clean memory
   rm(list=ls())
