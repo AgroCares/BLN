@@ -1,0 +1,45 @@
+---
+title: "Everything carbon"
+output: rmarkdown::html_vignette
+bibliography: references.bib
+csl: nmi-csl-nmi-v1_11.csl
+vignette: >
+  %\VignetteIndexEntry{Everything carbon}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include=FALSE}
+
+# required packages
+require(data.table); require(BLN); require(ggplot2);require(patchwork)
+
+# set some default options for the html page
+knitr::opts_chunk$set(echo = FALSE,
+                      collapse = TRUE,
+                      comment = "#>")
+options(rmarkdown.html_vignette.check_title = FALSE)
+setDTthreads(1)
+
+```
+
+```{r setup}
+
+# load library for BLN
+library(BLN)
+
+# set default plotting theme
+ggplot2::theme_set(theme_bw() +
+                   theme(plot.title = element_text(size=10),
+                         legend.text = element_text(size=10),
+                         axis.text = element_text(size=10, colour = 'black'),
+                         legend.position="inside",
+                         legend.position.inside = c(0.7,0.2),
+                         panel.grid.minor = element_blank(),
+                         panel.grid.major = element_blank())
+                  )
+```
+
+# Everything carbon
+Well, not EVERYTHING carbon but anything you want to know about soil carbon in
+the BLN package.
