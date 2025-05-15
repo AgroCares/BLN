@@ -60,6 +60,7 @@ The simulation of C via the RothC model can be adapted by the following paramete
 These have to be in a list called 'rothc_parms'.
 }
 \examples{
+require(data.table)
 # make rotation table
 dt.rotation <- data.table(year = seq(1,4,1),
                           B_LU_EOM = c(875, 1640, 375, 1640),

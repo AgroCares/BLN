@@ -31,6 +31,7 @@
 #' These have to be in a list called 'rothc_parms'.
 #'
 #' @examples
+#' require(data.table)
 #' # make rotation table
 #' dt.rotation <- data.table(year = seq(1,4,1),
 #'                           B_LU_EOM = c(875, 1640, 375, 1640),
@@ -338,7 +339,7 @@ bln_rothc_sim <- function(A_SOM_LOI,
 
 #' RothC calculation motor
 #'
-#' Set of differential equations to calculate the evolutotion of Soil Organic Carbon using the RothC model.
+#' Set of differential equations to calculate the evolution of Soil Organic Carbon using the RothC model.
 #'
 #' @param y state variables to run RothC
 #' @param time time to print output
