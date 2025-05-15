@@ -30,6 +30,39 @@
 #' The simulation of C via the RothC model can be adapted by the following parameters: initialize, c_fractions, dec_rates, simyears and unit.
 #' These have to be in a list called 'rothc_parms'.
 #'
+#' @examples
+#' # make rotation table
+#' dt.rotation <- data.table(year = seq(1,4,1),
+#'                           B_LU_EOM = c(875, 1640, 375, 1640),
+#'                           B_LU_EOM_RESIDUE = c(0, 990, 900, 900),
+#'                           B_LU_HC = c(0.22, 0.31, 0.24, 0.31),
+#'                           M_GREEN_TIMING = c("october", "never", "never", "never"),
+#'                           M_CROPRESIDUE = rep(FALSE, 4),
+#'                           B_LU = c("nl_2015", "nl_233", "nl_256", "nl_233")
+#'                           )
+#'
+#' # make soil amendment table
+#' dt.amendment <- data.table(P_NAME = rep("cattle_slurry", 4),
+#'                            year = seq(1, 4, 1),
+#'                            month = rep(3, 4),
+#'                            P_OM = rep(7.1, 4),
+#'                            P_HC = rep(0.7, 4),
+#'                            p_p2o5 = rep(0.15, 4),
+#'                            P_DOSE = c(46700, 46700, 0, 46700))
+#'
+#' # run simulation
+#' out <- bln_rothc_sim(A_SOM_LOI = 4.5,
+#'                      A_CLAY_MI = 3.5,
+#'                      A_DEPTH = 0.3,
+#'                      B_DEPTH = 0.3,
+#'                      cf_yield = 1,
+#'                      M_TILLAGE_SYSTEM = 'CT',
+#'                      rothc_rotation = dt.rotation,
+#'                      rothc_amendment = dt.amendment,
+#'                      rothc_parms = list(simyears = 50, init = FALSE, spinup = 10, method ='adams'))
+#'
+#' @returns a data.table with two columns (year, A_SOM_LOI) and simyears + spinup + 1 rows (default is 61). The table gives the soil organic matter content at the start (year 0) and each year after spinup and simulation
+#'
 #' @import deSolve
 #'
 #' @export
