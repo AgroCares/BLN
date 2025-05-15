@@ -444,6 +444,10 @@ nmi.site<- Sys.getenv('NMI_SITE')
   dt.out <- merge(dt.out,dt.bb[,mget(ncols)],by='id',all.x = TRUE)
   rm(dt.bb);gc()
 
+  # add province
+  dt.out <- merge(dt.out,dt.prov,by= 'id',all.x=TRUE)
+  rm(dt.prov);gc()
+
   # add MOK, AER, and HELP
   dt.out <- merge(dt.out,
                 dt.mok[,.(id,B_DRAIN = buisdrains,B_SLOPE_DEGREE = helling,
@@ -584,14 +588,15 @@ nmi.site<- Sys.getenv('NMI_SITE')
   dt.out[is.na(B_GWL_GHG) & B_GWL_CLASS == 'GtVII', B_GWL_GHG := 120]
   dt.out[is.na(B_GWL_GHG) & B_GWL_CLASS == 'GtVIII', B_GWL_GHG := 120]
 
-  dt.out[B_GWL_GHG > B_GWL_GLG, B_GWL_GLG :=  B_GWL_GHG - 25]
+  dt.out[B_GWL_GHG > B_GWL_GLG, B_GWL_GLG :=  B_GWL_GHG + 25]
 
-
-  dt[B_GWL_GHG < B_GWL_GLG, B_GWL_GLG := B_GWL_GHG + 25]
-  dt[B_SOILTYPE_AGR == 'loss', B_SOILTYPE_AGR := 'loess']
-  dt[,A_DENSITY_SA := NA_real_]
-  dt[,ID := id]
-
+  # update soiltype and add variables
+  dt.out[B_SOILTYPE_AGR == 'loss', B_SOILTYPE_AGR := 'loess']
+  dt.out[,A_DENSITY_SA := NA_real_]
+  dt.out[,ID := id]
+  dt.out[,B_CT_PSW_MAX := 0.5]
+  dt.out[,B_CT_NSW_MAX := 5.0]
+  dt.out[, A_SOM_LOI_MLMAX := a_som_loi_csat_top]
 
   # save input file
   saveRDS(dt.out,'D:/DATA/18 bln/brp24_blninput.rds')
@@ -658,7 +663,7 @@ nmi.site<- Sys.getenv('NMI_SITE')
 # -- step 5. run BLN ----
 
   # require packages
-  require(BLN)
+  require(BLN);require(data.table)
 
   # clean memory
   rm(list=ls());gc()
@@ -670,10 +675,229 @@ nmi.site<- Sys.getenv('NMI_SITE')
 
   # load in the BLN input data and LSW
   LSW <- readRDS('D:/DATA/18 bln/nl_lsw.rds')
-  BLNi <- readRDS('D:/DATA/18 bln/brp24_blninput.rds')
+  dt.farm <- readRDS('D:/DATA/18 bln/brp24_blninput.rds')
+
+  # select only PNH
+  dt.farm <- dt.farm[provincien == 'Noord-Holland']
+  LSW <- LSW[B_LSW_ID %in% dt.farm$B_LSW_ID]
+
+  # adjust GT
+  dt.farm[!is.na(B_GWL_CLASS_AGV), B_GWL_CLASS2 := B_GWL_CLASS_AGV]
+  dt.farm[is.na(B_GWL_CLASS_AGV), B_GWL_CLASS2 := B_GWL_CLASS_WDM]
+  dt.farm[!is.na(B_GWL_CLASS_AGV), B_GWL_GHG2 := B_GWL_GHG_AGV]
+  dt.farm[is.na(B_GWL_CLASS_AGV), B_GWL_GHG2 := B_GWL_GHG_WDM]
+  dt.farm[!is.na(B_GWL_CLASS_AGV), B_GWL_GLG2 := B_GWL_GLG_AGV]
+  dt.farm[is.na(B_GWL_CLASS_AGV), B_GWL_GLG2 := B_GWL_GLG_WDM]
+  dt.farm[is.na(B_GWL_CLASS2), B_GWL_CLASS2 := B_GWL_CLASS]
+  dt.farm[is.na(B_GWL_GHG2), B_GWL_GHG2 := B_GWL_GHG]
+  dt.farm[is.na(B_GWL_GLG2), B_GWL_GLG2 := B_GWL_GLG]
+  dt.farm[B_GWL_GLG2 == B_GWL_GHG2, B_GWL_GLG2 := B_GWL_GHG+25]
+
+  # some LSW_IDS are non existent
+  dt.farm[B_LSW_ID %in% c('924','1039','301','894'), B_LSW_ID := 'lsw_nlmean']
+
+  # in OBIC crops table is nf NA for few cases, overwrite for now
+  dt.farm[B_LU_BRP == 7121, B_LU_BRP := 242]
+  dt.farm[B_LU_BRP %in% c(7129,7130),B_LU_BRP := 6806]
+  dt.farm[B_LU_BRP == 7125,B_LU_BRP := 2299]
+
+  # update
+  dt.farm[, B_DRAIN_WP := pmin(1.2,B_DRAIN_WP)]
+  dt.farm[, B_SOMERS_BC := as.integer(B_SOMERS_BC)]
+
+  # run BLN c('gld_permanent','sms_permanent','bld_arable_int','bld_vegetable_int'
+  d1 <- bln_field_optimiser(ID = dt.farm$ref_id_2024,
+                  B_LU_BRP = dt.farm$B_LU_BRP,
+                  B_SC_WENR = dt.farm$B_SC_WENR,
+                  B_GWL_CLASS = dt.farm$B_GWL_CLASS2,
+                  B_SOILTYPE_AGR = dt.farm$B_SOILTYPE_AGR,
+                  B_HELP_WENR = dt.farm$B_HELP_WENR,
+                  B_AER_CBS = dt.farm$B_AER_CBS,
+                  B_GWL_GLG = dt.farm$B_GWL_GLG2,
+                  B_GWL_GHG = pmax(0,dt.farm$B_GWL_GHG2),
+                  B_GWL_ZCRIT = dt.farm$B_GWL_ZCRIT,
+                  B_DRAIN = dt.farm$B_DRAIN,
+                  B_FERT_NORM_FR = dt.farm$B_FERT_NORM_FR,
+                  B_SLOPE_DEGREE = dt.farm$B_SLOPE_DEGREE,
+                  B_GWP = dt.farm$B_GWP,
+                  B_AREA_DROUGHT = dt.farm$B_AREA_DROUGHT,
+                  B_CT_PSW = dt.farm$B_CT_PSW,
+                  B_CT_NSW = dt.farm$B_CT_NSW,
+                  B_SOMERS_BC = dt.farm$B_SOMERS_BC,
+                  B_DRAIN_SP = dt.farm$B_DRAIN_SP,
+                  B_DRAIN_WP = dt.farm$B_DRAIN_WP,
+                  A_SOM_LOI = dt.farm$A_SOM_LOI,
+                  A_SOM_LOI_MLMAX = dt.farm$A_SOM_LOI_MLMAX,
+                  A_CLAY_MI = dt.farm$A_CLAY_MI,
+                  A_SAND_MI = dt.farm$A_SAND_MI,
+                  A_SILT_MI = dt.farm$A_SILT_MI,
+                  A_DENSITY_SA = NA_real_,
+                  A_FE_OX = dt.farm$A_FE_OX,
+                  A_AL_OX = dt.farm$A_AL_OX,
+                  A_PH_CC = dt.farm$A_PH_CC,
+                  A_N_RT = dt.farm$A_N_RT,
+                  A_CN_FR = dt.farm$A_CN_FR,
+                  A_S_RT = dt.farm$A_S_RT,
+                  A_N_PMN = dt.farm$A_N_PMN,
+                  A_P_AL = dt.farm$A_P_AL,
+                  A_P_CC = dt.farm$A_P_CC,
+                  A_P_WA = dt.farm$A_P_WA,
+                  A_P_SG = pmax(0.11,dt.farm$A_P_SG),
+                  A_CEC_CO = dt.farm$A_CEC_CO,
+                  A_CA_CO_PO = dt.farm$A_CA_CO_PO,
+                  A_MG_CO_PO = dt.farm$A_MG_CO_PO,
+                  A_K_CO_PO = pmax(0.2,dt.farm$A_K_CO_PO),
+                  A_K_CC = dt.farm$A_K_CC,
+                  A_MG_CC = dt.farm$A_MG_CC,
+                  A_MN_CC = dt.farm$A_MN_CC,
+                  A_ZN_CC = dt.farm$A_ZN_CC,
+                  A_CU_CC = dt.farm$A_CU_CC,
+                  D_SA_W = dt.farm$D_SA_W,
+                  D_RO_R = dt.farm$D_RO_R,
+                  M_COMPOST = NA_real_,M_GREEN = NA,
+                  B_LSW_ID = dt.farm$B_LSW_ID,LSW = LSW,
+                  foptim = list(scenarios = c('gld_permanent','sms_permanent','bld_arable_int','bld_vegetable_int'),
+                                b_lu_brp = NULL, outputtype = "all", mc = TRUE,
+                                runrothc = FALSE))
+  saveRDS(d1,'D:/DATA/18 bln/brp24_nh_scen.rds')
+
+  # add year
+  dt.farm[,year := 1:.N,by=ref_id_2024]
+  dt.farm <- dt.farm[year<=10]
+  dt.farm[,B_LU_BRP := 265]
+  dt.farm[,B_LU_BRP := 259]
+
+  d2 <- bln_field(ID = dt.farm$ref_id_2024,
+                  B_LU_BRP = dt.farm$B_LU_BRP,
+                  B_SC_WENR = dt.farm$B_SC_WENR,
+                  B_GWL_CLASS = dt.farm$B_GWL_CLASS2,
+                  B_SOILTYPE_AGR = dt.farm$B_SOILTYPE_AGR,
+                  B_HELP_WENR = dt.farm$B_HELP_WENR,
+                  B_AER_CBS = dt.farm$B_AER_CBS,
+                  B_GWL_GLG = dt.farm$B_GWL_GLG2,
+                  B_GWL_GHG = pmax(0,dt.farm$B_GWL_GHG2),
+                  B_GWL_ZCRIT = dt.farm$B_GWL_ZCRIT,
+                  B_DRAIN = dt.farm$B_DRAIN,
+                  B_FERT_NORM_FR = dt.farm$B_FERT_NORM_FR,
+                  B_SLOPE_DEGREE = dt.farm$B_SLOPE_DEGREE,
+                  B_GWP = dt.farm$B_GWP,
+                  B_AREA_DROUGHT = dt.farm$B_AREA_DROUGHT,
+                  B_CT_PSW = dt.farm$B_CT_PSW,
+                  B_CT_NSW = dt.farm$B_CT_NSW,
+                  B_CT_PSW_MAX =0.5,
+                  B_CT_NSW_MAX = 5.0,
+                  B_SOMERS_BC = dt.farm$B_SOMERS_BC,
+                  B_DRAIN_SP = dt.farm$B_DRAIN_SP,
+                  B_DRAIN_WP = dt.farm$B_DRAIN_WP,
+                  A_SOM_LOI = dt.farm$A_SOM_LOI,
+                  A_SOM_LOI_MLMAX = dt.farm$A_SOM_LOI_MLMAX,
+                  A_CLAY_MI = dt.farm$A_CLAY_MI,
+                  A_SAND_MI = dt.farm$A_SAND_MI,
+                  A_SILT_MI = dt.farm$A_SILT_MI,
+                  A_DENSITY_SA = NA_real_,
+                  A_FE_OX = dt.farm$A_FE_OX,
+                  A_AL_OX = dt.farm$A_AL_OX,
+                  A_PH_CC = dt.farm$A_PH_CC,
+                  A_N_RT = dt.farm$A_N_RT,
+                  A_CN_FR = dt.farm$A_CN_FR,
+                  A_S_RT = dt.farm$A_S_RT,
+                  A_N_PMN = dt.farm$A_N_PMN,
+                  A_P_AL = dt.farm$A_P_AL,
+                  A_P_CC = dt.farm$A_P_CC,
+                  A_P_WA = dt.farm$A_P_WA,
+                  A_P_SG = dt.farm$A_P_SG,
+                  A_CEC_CO = dt.farm$A_CEC_CO,
+                  A_CA_CO_PO = dt.farm$A_CA_CO_PO,
+                  A_MG_CO_PO = dt.farm$A_MG_CO_PO,
+                  A_K_CO_PO = dt.farm$A_K_CO_PO,
+                  A_K_CC = dt.farm$A_K_CC,
+                  A_MG_CC = dt.farm$A_MG_CC,
+                  A_MN_CC = dt.farm$A_MN_CC,
+                  A_ZN_CC = dt.farm$A_ZN_CC,
+                  A_CU_CC = dt.farm$A_CU_CC,
+                  A_EW_BCS = NA,A_SC_BCS = NA,A_GS_BCS = NA,A_P_BCS = NA,A_C_BCS = NA,
+                  A_RT_BCS = NA,A_RD_BCS = NA,A_SS_BCS = NA,A_CC_BCS = NA,
+                  D_SA_W = dt.farm$D_SA_W,
+                  D_RO_R = dt.farm$D_RO_R,
+                  M_COMPOST = NA_real_,M_GREEN = NA,M_NONBARE = NA,M_EARLYCROP = NA,
+                  M_SLEEPHOSE = NA,M_DRAIN = NA,M_DITCH = NA,M_UNDERSEED = NA,
+                  M_LIME = NA,M_NONINVTILL = NA,M_SSPM = NA,M_SOLIDMANURE = NA,
+                  M_STRAWRESIDUE = NA,M_MECHWEEDS = NA,M_PESTICIDES_DST = NA,
+                  B_LSW_ID = dt.farm$B_LSW_ID,LSW = LSW,
+                  output ='all',
+                  runrothc = TRUE,
+                  mc = TRUE)
+  saveRDS(d2,'D:/DATA/18 bln/brp24_nh_baseline.rds')
+  saveRDS(d2,'D:/DATA/18 bln/brp24_nh_gld_permanent.rds')
+  saveRDS(d2,'D:/DATA/18 bln/brp24_nh_sms_permanent.rds')
+
+  # make gpkg for Aequator (sms)
+  d2 <- readRDS('D:/DATA/18 bln/brp24_nh_sms_permanent.rds')
+  s1 <- dt.farm[year==1,.(id,ref_id_2024,A_SOM_LOI,A_PH_CC,geom)]
+  s1[,A_SOM_LOI := round(A_SOM_LOI,1)]
+  s1[,A_PH_CC := round(A_PH_CC,1)]
+  s2 <- merge(s1,d2,by.x='ref_id_2024',by.y='ID',all.x=TRUE)
+  setorder(s2,id)
+  s2 <- sf::st_as_sf(s2)
+  sf::st_write(s2,'D:/DATA/18 bln/brp24_nh_sms_permanent.gpkg')
+
+  # make gpkg for Aequator (permanent grassland)
+  d2 <- readRDS('D:/DATA/18 bln/brp24_nh_gld_permanent.rds')
+  s1 <- dt.farm[year==1,.(id,ref_id_2024,A_SOM_LOI,A_PH_CC,geom)]
+  s1[,A_SOM_LOI := round(A_SOM_LOI,1)]
+  s1[,A_PH_CC := round(A_PH_CC,1)]
+  s2 <- merge(s1,d2,by.x='ref_id_2024',by.y='ID',all.x=TRUE)
+  setorder(s2,id)
+  s2 <- sf::st_as_sf(s2)
+  sf::st_write(s2,'D:/DATA/18 bln/brp24_nh_gld_permanent.gpkg')
+
+  # make gpkg for Aequator (baseline)
+  d2 <- readRDS('D:/DATA/18 bln/brp24_nh_baseline.rds')
+  s1 <- dt.farm[year==1,.(id,ref_id_2024,A_SOM_LOI,A_PH_CC,geom)]
+  s1[,A_SOM_LOI := round(A_SOM_LOI,1)]
+  s1[,A_PH_CC := round(A_PH_CC,1)]
+  s2 <- merge(s1,d2,by.x='ref_id_2024',by.y='ID',all.x=TRUE)
+  setorder(s2,id)
+  s2 <- sf::st_as_sf(s2)
+  sf::st_write(s2,'D:/DATA/18 bln/brp24_nh_baseline.gpkg')
+
+  # make gpkg for Aequator (intensief bouwland)
+  d2 <- readRDS('D:/DATA/18 bln/brp24_nh_scen.rds')
+  cols <- colnames(d2)[grepl('^bld_arable_int|ID',colnames(d2))]
+  cols <- cols[!grepl('_bnc$',cols)]
+  d3 <- d2[,mget(cols)]
+  setnames(d3,gsub('bld_arable_int_|_hs$','',colnames(d3)))
+  d3[,i_clim_rothc := NA_real_]
+  s1 <- dt.farm[year==1,.(id,ref_id_2024,A_SOM_LOI,A_PH_CC,geom)]
+  s1[,A_SOM_LOI := round(A_SOM_LOI,1)]
+  s1[,A_PH_CC := round(A_PH_CC,1)]
+  s2 <- merge(s1,d3,by.x='ref_id_2024',by.y='ID',all.x=TRUE)
+  setorder(s2,id)
+  s2 <- sf::st_as_sf(s2)
+  sf::st_write(s2,'D:/DATA/18 bln/brp24_nh_bld_intensive.gpkg',append=FALSE)
+
+  # make gpkg for Aequator (intensief tuinbouw)
+  d2 <- readRDS('D:/DATA/18 bln/brp24_nh_scen.rds')
+  cols <- colnames(d2)[grepl('^bld_vegetable_int|ID',colnames(d2))]
+  cols <- cols[!grepl('_bnc$',cols)]
+  d3 <- d2[,mget(cols)]
+  setnames(d3,gsub('bld_vegetable_int_|_hs$','',colnames(d3)))
+  d3[,i_clim_rothc := NA_real_]
+  s1 <- dt.farm[year==1,.(id,ref_id_2024,A_SOM_LOI,A_PH_CC,geom)]
+  s1[,A_SOM_LOI := round(A_SOM_LOI,1)]
+  s1[,A_PH_CC := round(A_PH_CC,1)]
+  s2 <- merge(s1,d3,by.x='ref_id_2024',by.y='ID',all.x=TRUE)
+  setorder(s2,id)
+  s2 <- sf::st_as_sf(s2)
+  sf::st_write(s2,'D:/DATA/18 bln/brp24_bld_vegetable_int.gpkg')
 
 
 
+
+
+
+
+  saveRDS(d1,'D:/DATA/18 bln/brp24_nh_scen.rds')
 # --- step 5. Apply BLN input for all BRP fields for carbon only ---------
 
   # clean memory
@@ -694,15 +918,6 @@ nmi.site<- Sys.getenv('NMI_SITE')
   # load all LSW
   LSW <- readRDS('D:/DATA/18 bln/nl_lsw.rds')
 
-  # update all inputs
-  dt[is.na(B_AER_CBS),B_AER_CBS := 'LG09']
-  dt[,B_GWL_GLG := pmin(B_GWL_GLG,300,na.rm=T)]
-  dt[is.na(B_GWL_GHG), B_GWL_GHG := 136.47]
-  dt[B_GWL_GHG >= B_GWL_GLG, B_GWL_GLG := B_GWL_GHG + 25]
-  dt[B_SOILTYPE_AGR == 'loss', B_SOILTYPE_AGR := 'loess']
-  dt[,A_DENSITY_SA := NA_real_]
-  dt[,ID := id]
-
   # add default management
   cols <- c('M_GREEN', 'M_NONBARE', 'M_EARLYCROP','M_COMPOST','M_SLEEPHOSE','M_DRAIN','M_DITCH','M_UNDERSEED',
             'M_LIME', 'M_NONINVTILL', 'M_SSPM', 'M_SOLIDMANURE','M_STRAWRESIDUE','M_MECHWEEDS','M_PESTICIDES_DST')
@@ -711,9 +926,7 @@ nmi.site<- Sys.getenv('NMI_SITE')
   cols <- c( 'A_EW_BCS' ,'A_SC_BCS' , 'A_GS_BCS' ,'A_P_BCS' ,  'A_C_BCS' ,'A_RT_BCS' ,'A_RD_BCS',  'A_SS_BCS' ,  'A_CC_BCS')
   dt[,c(cols) := NA]
 
-  dt[,B_CT_PSW_MAX :=0.5]
-  dt[,B_CT_NSW_MAX := 5.0]
-  dt[, A_SOM_LOI_MLMAX := a_som_loi_csat_top]
+
 
   # load RothC calculations
   dt2 <- readRDS('D:/DATA/18 bln/brp21_i_clim_rothc.rds')
