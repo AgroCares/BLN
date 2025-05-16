@@ -137,6 +137,21 @@ bln_rothc_input_crop <- function(dt = NULL,B_LU_BRP = NULL,cf_yield){
 #'  and  B_LU_HC (the humification coeffient,-).
 #' if dt is NULL, then the crop input will be prepared using function \link{rothc_scenario} using scenario 'BAU'
 #'
+#' @examples
+#' bln_rothc_input_rmf(B_LU_BRP = 265,
+#'					 cf_yield = 1,
+#'					 A_CLAY_MI = 5,
+#'					 simyears =50,
+#'					 dt = data.table::data.table(M_GREEN_TIMING = 'never',
+#'						M_IRRIGATION = FALSE,
+#'						M_CROPRESIDUE = FALSE,
+#'						cf_yield = 2,
+#'						B_LU = "nl_265",
+#'						year = 1))
+#'
+#'
+#' @returns A list with a value R1 and two functions: abc, and d
+#'
 #' @export
 bln_rothc_input_rmf <- function(dt = NULL, B_LU_BRP = NULL, B_DEPTH = 0.3, A_CLAY_MI, simyears = 50, cf_yield){
 
