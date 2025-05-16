@@ -126,15 +126,19 @@ bln_rothc_input_crop <- function(dt = NULL,B_LU_BRP = NULL,cf_yield){
 #' @param B_LU_BRP (numeric) The crop code
 #' @param B_DEPTH (numeric) Depth of the cultivated soil layer (m), simulation depth. Default set to 0.3.
 #' @param A_CLAY_MI (numeric) The clay content of the soil (\%)
-#' @param simyears (numeric) Amount of years for which the simulation should run, default: 50 years
+#' @param simyears (numeric) Number of years for which the simulation should run, default: 50 years
 #' @param cf_yield (numeric) A yield correction factor (fraction) if yield is higher than regional average
 #'
 #' @details
-#' To run this function, the dt requires as input: B_LU (a crop id), B_LU_NAME (a crop name, optional), B_LU_EOM (the effective organic matter content, kg/ha), B_LU_EOM_RESIDUE (the effective organic matter content for crop residues, kg/ha), and the B_LU_HC (the humification coeffient,-).
+#' To run this function, the dt requires as input: B_LU (a crop id),
+#'  B_LU_NAME (a crop name, optional),
+#'  B_LU_EOM (the effective organic matter content, kg/ha),
+#'  B_LU_EOM_RESIDUE (the effective organic matter content for crop residues, kg/ha),
+#'  and  B_LU_HC (the humification coeffient,-).
 #' if dt is NULL, then the crop input will be prepared using function \link{rothc_scenario} using scenario 'BAU'
 #'
 #' @export
-bln_rothc_input_rmf <- function(dt = NULL,B_LU_BRP = NULL, B_DEPTH = 0.3, A_CLAY_MI, simyears,cf_yield){
+bln_rothc_input_rmf <- function(dt = NULL, B_LU_BRP = NULL, B_DEPTH = 0.3, A_CLAY_MI, simyears = 50, cf_yield){
 
   # add visual bindings
   B_LU = crop_name = M_RENEWAL = B_LU_MAKKINK = B_LU_NAME = M_GREEN_TIMING = NULL
@@ -185,8 +189,10 @@ bln_rothc_input_rmf <- function(dt = NULL,B_LU_BRP = NULL, B_DEPTH = 0.3, A_CLAY
               by = 'B_LU',
               all.x = TRUE)
 
-  # update input for mandatory catch crops (after maize and potato on sandy soils) and set NA for grassland
-  if(A_CLAY_MI <20){ dt[grepl('mais|aardappel',B_LU_NAME) & grepl('^nl_',B_LU), M_GREEN_TIMING := 'october'] }
+  # update input for mandatory catch crops (after maize and potato on sandy soils) and set NA for grassland and beets
+  if(A_CLAY_MI <20){ dt[grepl('mais|aardappel',B_LU_NAME) &
+                          grepl('^nl_',B_LU) &
+                          !M_GREEN_TIMING %in% c("a;ugust", "september", "october"), M_GREEN_TIMING := 'october'] }
   dt[grepl('gras|bieten, suiker|bieten, voeder',B_LU_NAME) & grepl('^nl_',B_LU), M_GREEN_TIMING := 'never']
 
   # add crop cover and makkink correction factor
