@@ -15,6 +15,20 @@ bln_rothc_event(crops, amendment, A_CLAY_MI, simyears)
 
 \item{simyears}{(numeric) Amount of years for which the simulation should run, default: 50 years}
 }
+\value{
+A data.table with columns time, var, method, and value which represents the events that take place during the simulation.
+}
 \description{
 This function combines required inputs into a data.table that is needed as input for the RothC model.
+}
+\examples{
+  scen.inp <- rothc_scenario(B_LU_BRP = 2015, scen = 'BAU')
+  rothc_rotation <- scen.inp$rotation
+  rothc_amendment <- scen.inp$amendment
+
+  # run bln_rothc_event
+  dt.crop <- bln_rothc_input_crop(dt = rothc_rotation, B_LU_BRP = NULL, cf_yield = 1)
+  dt.org <- bln_rothc_input_amendment(dt = rothc_amendment, B_LU_BRP = NULL)
+  out <- bln_rothc_event(crops = dt.crop,amendment = dt.org, A_CLAY_MI = 4.5, simyears = 50)
+
 }

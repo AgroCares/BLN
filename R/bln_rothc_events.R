@@ -7,6 +7,18 @@
 #' @param A_CLAY_MI (numeric) The clay content of the soil (\%).
 #' @param simyears (numeric) Amount of years for which the simulation should run, default: 50 years
 #'
+#' @examples
+#'   scen.inp <- rothc_scenario(B_LU_BRP = 2015, scen = 'BAU')
+#'   rothc_rotation <- scen.inp$rotation
+#'   rothc_amendment <- scen.inp$amendment
+#'
+#'   # run bln_rothc_event
+#'   dt.crop <- bln_rothc_input_crop(dt = rothc_rotation, B_LU_BRP = NULL, cf_yield = 1)
+#'   dt.org <- bln_rothc_input_amendment(dt = rothc_amendment, B_LU_BRP = NULL)
+#'   out <- bln_rothc_event(crops = dt.crop,amendment = dt.org, A_CLAY_MI = 4.5, simyears = 50)
+#'
+#' @returns A data.table with columns time, var, method, and value which represents the events that take place during the simulation.
+#'
 #' @export
 bln_rothc_event <- function(crops,amendment,A_CLAY_MI,simyears){
 
@@ -58,6 +70,28 @@ bln_rothc_event <- function(crops,amendment,A_CLAY_MI,simyears){
 #' @param crops (data.table) Table with crop rotation, crop management measures, year and potential Carbon inputs.
 #' @param A_CLAY_MI (numeric) The clay content of the soil (\%).
 #'
+#' @examples
+#'  crops <- data.table::data.table(
+#'    year = c(1, 2, 3, 4),
+#'    B_LU = c("nl_2015", "nl_233", "nl_256", "nl_233"),
+#'    cin_crop_dpm = c(1200, 1520, 468, 1517),
+#'    cin_corp_rpm = c(782, 1127, 312, 1127),
+#'    cin_res_dpm = rep(0, 4),
+#'    cin_res_repm = rep(0, 4),
+#'    M_GREEN_TIMING = c("october", "never", "never", "never"),
+#'    M_IRRIGATION = rep(FALSE, 4),
+#'    M_CROPRESIDUE = rep(FALSE, 4),
+#'    M_RENEWAL = rep(FALSE, 4),,
+#'    cf_yield = rep(1, 4))
+#'
+#'  bln_rothc_event_crop(crops = crops, A_CLAY_MI = 5)
+#'
+#' @returns a data table with columns time, var, value, and method
+#'
+#' @details
+#' The crops data.table is typically the output of \link{bln_rothc_input_crop}
+#'
+#'
 #' @export
 bln_rothc_event_crop <- function(crops,A_CLAY_MI){
 
@@ -72,7 +106,7 @@ bln_rothc_event_crop <- function(crops,A_CLAY_MI){
 
   # check crops input data.table
   checkmate::assert_data_table(crops,nrows = arg.length)
-  checkmate::assert_true(sum(c('M_GREEN_TIMING','M_CROPRESIDUE','cf_yield') %in% colnames(crops)) == 3)
+  checkmate::assert_true(all(c('M_GREEN_TIMING','M_CROPRESIDUE','cf_yield', 'year', 'B_LU') %in% colnames(crops)))
   checkmate::assert_numeric(crops$cf_yield,lower = 0, upper = 2.0, any.missing = FALSE, len = arg.length)
   checkmate::assert_character(crops$M_GREEN_TIMING, any.missing = FALSE, len = arg.length)
   checkmate::assert_subset(crops$M_GREEN_TIMING, choices = c("august","september", "october","november","never"))
@@ -186,12 +220,50 @@ bln_rothc_event_crop <- function(crops,A_CLAY_MI){
 #' This function calculates the timing of carbon inputs (kg C per ha) based on type of organic matter amendments and land use.
 #'
 #' @param crops (data.table) Table with crop rotation, year and potential Carbon inputs.
-#' @param amendment (data.table) A table with the following column names: year, month, cin_tot, cin_hum, cin_dpm, cin_rpm and the fraction eoc over p (fr_eoc_p). Month is optional.
+#' @param amendment (data.table) A table with the following column names: year, month, cin_tot,
+#'  cin_hum, cin_dpm, cin_rpm and the fraction eoc over p (fr_eoc_p). Month is optional.
 #'
 #' @details This function increases temporal detail for time series of C inputs of organic amendments.
 #' The inputs for organic amendments are organised in the data.table amendment, where the carbon inputs has the unit kg C / ha.
 #'
 #' The output is an EVENT object.
+#'
+#' Typically the inputs for this function are results from functions \link{bln_rothc_input_crop} and \link{bln_rothc_input_amendment}
+#'
+#' @examples
+#'  crops <- data.table::data.table(
+#'    year = c(1, 2, 3, 4),
+#'    B_LU = c("nl_2015", "nl_233", "nl_256", "nl_233"),
+#'    cin_crop_dpm = c(1200, 1520, 468, 1517),
+#'    cin_corp_rpm = c(782, 1127, 312, 1127),
+#'    cin_res_dpm = rep(0, 4),
+#'    cin_res_repm = rep(0, 4),
+#'    M_GREEN_TIMING = c("october", "never", "never", "never"),
+#'    M_IRRIGATION = rep(FALSE, 4),
+#'    M_CROPRESIDUE = rep(FALSE, 4),
+#'    M_RENEWAL = rep(FALSE, 4),,
+#'    cf_yield = rep(1, 4))
+#'  amendment = data.table::data.table(
+#'                 p_name = rep("cattle_slurry", 4),
+#'                 year = c(1, 2, 3, 4),
+#'                 cin_tot = c(1660, 1660, 0, 1660),
+#'                 cin_hum = c(33, 33, 0, 33),
+#'                 cin_dpm = c(540, 540, 0, 540),
+#'                 cin_rpm = c(1000, 1000, 0, 1000),
+#'                 fr_eoc_p = rep(16, 4))
+#'
+#' bln_rothc_event_amendment(crops = crops, amendment = amendment)
+#'
+#' # example using the input functions
+#' scen.inp <- rothc_scenario(B_LU_BRP = 2015, scen = 'BAU')
+#' rothc_rotation <- scen.inp$rotation
+#' rothc_amendment <- scen.inp$amendment
+#'
+#' # run bln_rothc_event
+#' dt.crop <- bln_rothc_input_crop(dt = rothc_rotation,B_LU_BRP = NULL,cf_yield = 1)
+#' dt.org <- bln_rothc_input_amendment(dt = rothc_amendment,B_LU_BRP = NULL)
+#'
+#' @returns a data table with columns time, var, value, and method representing amendment events
 #'
 #' @export
 bln_rothc_event_amendment <- function(crops,amendment = NULL){
