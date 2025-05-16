@@ -7,11 +7,15 @@
 bln_rothc_input_crop(dt = NULL, B_LU_BRP = NULL, cf_yield)
 }
 \arguments{
-\item{dt}{(data.table) Table with crop rotation and related crop properties for Carbon input.}
+\item{dt}{(data.table) Table with crop rotation and related crop properties for Carbon input. (optional see details)}
 
 \item{B_LU_BRP}{(numeric) The crop code}
 
 \item{cf_yield}{(numeric) A yield correction factor (fraction) if yield is higher than regional average}
+}
+\value{
+A data.table with columns year, B_LU, cin_crop_dpm, cin_corp_rpm, cin_res_dpm,
+cin_res_rpm, M_GREEN_TIMING, M_IRRIGATION, M_CROPRESIDUE, M_RENEWAL, cf_yield
 }
 \description{
 Helper function to check the content and format of the crop input table.
@@ -20,6 +24,32 @@ Helper function to check the content and format of the crop input table.
 The crop table used as input for carbon modelling requires at minimum data on effective organic matter inputs and related year.
 This helper function assists the checking and controlling of crop properties involved.
 
-To run this function, the dt requires as input: B_LU (a crop id), B_LU_NAME (a crop name, optional), B_LU_EOM (the effective organic matter content, kg/ha), B_LU_EOM_RESIDUE (the effective organic matter content for crop residues, kg/ha), and the B_LU_HC (the humification coeffient,-).
+To run this function, the dt requires as input:
+* year (the number of years, e.g. 1, 2, 3)
+* B_LU (a crop id),
+* B_LU_EOM (the effective organic matter content, kg/ha),
+* B_LU_EOM_RESIDUE (the effective organic matter content for crop residues, kg/ha), and
+* B_LU_HC (the humification coeffient,-).
+ the table may contain:
+ * M_GREEN_TIMING (boolean) Application of crop residues
+ * M_CROPRESIDUE The month in which green manure is sown (either august, september, october, november, or never)
+
 if dt is NULL, then the crop input will be prepared using function \link{rothc_scenario} using scenario 'BAU'
+}
+\examples{
+# example without providing dt
+bln_rothc_input_crop(B_LU_BRP = c(256, 265),
+                     cf_yield = 1)
+
+# example with dt provided
+dt.in <- data.table::data.table(
+            B_LU = c("nl_256", "nl265"),
+            B_LU_EOM = c(375, 3975),
+            B_LU_EOM_RESIDUE = c(900, 0),
+            B_LU_HC = c(0.24, 0.35),
+            year = c(1, 2))
+
+bln_rothc_input_crop(dt = dt.in,
+                     cf_yield = 1)
+
 }
