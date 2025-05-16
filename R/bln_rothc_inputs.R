@@ -379,6 +379,23 @@ bln_rothc_input_rmf <- function(dt = NULL, B_LU_BRP = NULL, B_DEPTH = 0.3, A_CLA
 #' To run this function, the dt requires as input:"P_NAME", "year","month","P_OM","P_HC","p_p2o5", and "P_DOSE"
 #' if dt is NULL, then the amendment input will be prepared using function \link{rothc_scenario} using scenario 'BAU'
 #'
+#' @examples
+#' # example without dt
+#' bln_rothc_input_amendment(B_LU_BRP = 256)
+#'
+#' # example with dt
+#' dt.in <- data.table::data.table(
+#'             P_NAME = "cattle_slurry",
+#'             year = 1,
+#'             month = 3,
+#'             P_OM = 800,
+#'             P_HC = 0.25,
+#'             p_p2o5 = 20,
+#'             P_DOSE = 15)
+#' bln_rothc_input_amendment(dt = dt.in, B_LU_BRP = 256)
+#'
+#' @returns A data table with columns p_name, year, cin_tot, cin_hum, cin_dpm, cin_rpm, and fr_eoc_p
+#'
 #' @export
 bln_rothc_input_amendment <- function(dt = NULL,B_LU_BRP = NULL){
 
