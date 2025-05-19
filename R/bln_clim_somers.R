@@ -8,6 +8,20 @@
 #' @param B_DRAIN_WP (numeric) the drooglegging of a field in winter (difference field height and ditch level, in meters)
 #' @param B_DRAIN_SP_CHANGE (numeric) the decrease in drooglegging of a field in summer (in meters). Allowed decrease varies from 0 to 0.5m.
 #'
+#' @examples
+#' bln_clim_somers(
+#' ID = 1,
+#' B_SOILTYPE_AGR = c('veen', 'dalgrond'),
+#' A_SOM_LOI = c(25,21),
+#' B_SOMERS_BC = c(25,25),
+#' B_DRAIN_SP = c(0.63, 0.63),
+#' B_DRAIN_WP = c(0.49, 0.49),
+#' B_DRAIN_SP_CHANGE = c(0.2, 0.2)
+#' )
+#'
+#' @returns Returns an indicator score (between 0 and 1) for carbon saturation of
+#'  peat and peaty (A_SOM_LOI > 20%) soils where 1 means that the soil is optimally saturated.
+#'
 #' @import data.table
 #'
 #' @export
