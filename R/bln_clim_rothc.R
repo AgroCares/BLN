@@ -8,6 +8,20 @@
 #' @param quiet (boolean) showing progress bar for calculation RothC C-saturation for each field
 #' @param mc (boolean) option to run rothc in parallel on multicores
 #'
+#' @examples
+#' bln_clim_rothc(
+#' ID = 15,
+#' A_SOM_LOI = 7.92,
+#' B_GWL_GLG = 75,
+#' A_CLAY_MI = 3.5,
+#' B_LU_BRP = 3732,
+#' quiet = TRUE,
+#' mc = FALSE
+#' )
+#'
+#' @returns An indicator value for carbon saturation ranging from 0 to 1 where 1
+#' is optimal.
+#'
 #' @import data.table
 #' @importFrom utils setTxtProgressBar
 #' @importFrom utils txtProgressBar
@@ -166,6 +180,19 @@ bln_clim_rothc <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI,quiet = FAL
 #'
 #' @import data.table
 #'
+#' @examples
+#' bln_rothc_field(A_SOM_LOI = 7.92,
+#' A_CLAY_MI = 3.5,
+#' B_LU_BRP = 3732,
+#' simyears = 50,
+#' init = TRUE,
+#' scen = c("BAU", "ALL"),
+#' spinup = 10
+#' )
+#'
+#' @returns A data.table with a row for each year + year 0 (51 total) and, a year column, and a column for each scenario.
+#' The scenario columns hold the calculated soil organic matter content in each year.
+#'
 #' @export
 bln_rothc_field <- function(B_LU_BRP, A_SOM_LOI, A_CLAY_MI, simyears = 50, init = FALSE,
                             scen = c('BAU','ALL'),spinup = 10){
@@ -247,6 +274,13 @@ bln_rothc_field <- function(B_LU_BRP, A_SOM_LOI, A_CLAY_MI, simyears = 50, init 
 #'
 #' @import data.table
 #'
+#' @examples
+#' rothc_initialise(B_LU_BRP = 265,
+#'                  A_SOM_LOI = 15,
+#'                  A_CLAY_MI = 10)
+#'
+#' @returns A data table with the fractions IOM, DPM, RPM and BIO
+#'
 #' @export
 rothc_initialise <- function(B_LU_BRP,A_SOM_LOI,A_CLAY_MI){
 
@@ -288,6 +322,14 @@ rothc_initialise <- function(B_LU_BRP,A_SOM_LOI,A_CLAY_MI){
 #' Function to prepare inputs for various scenarios with RothC
 #' @param B_LU_BRP (numeric) value of the BRP crop code
 #' @param scen (character) possible scenarios. Include BAU, CLT, BAUIMPR and ALL
+#'
+#' @examples
+#' rothc_scenario(B_LU_BRP = c(256, 266, 3555), scen = "BAU")
+#'
+#' @returns A list of two data.tables, rotation and amendment. Rotation is empty
+#' whilst amendment contains fertiliser and soil amendment applications for each
+#' year in a rotation as well as the month of application, organic matter content,
+#' hummification coëfficient, P2O5 content and total P applied.
 #'
 #' @export
 rothc_scenario <- function(B_LU_BRP, scen){
@@ -485,6 +527,18 @@ rothc_scenario <- function(B_LU_BRP, scen){
 #' @param simyears (integer) value for the amount of years to simulate, default is 50 years
 #' @param p (progress bar) progress bar
 #' @param final (boolean) option to select only the last year
+#'
+#' @examples
+#' bln_rothc_multicore(ID = 1:10,
+#' B_LU_BRP = rep(c(3732,265),5),
+#' B_GWL_GLG = rep(95, 10),
+#' A_SOM_LOI = seq(1,15,length.out = 10),
+#' A_CLAY_MI = rep(4.5,10),
+#' scen = c('BAU','ALL'),
+#' quiet = FALSE)
+#'
+#' @returns A data table with the eventual soil organic matter content for of
+#' each field for each scenario.
 #'
 #' @export
 rothc_parallel <- function(this.xs, dt.c, scen, simyears = 50,p = NULL,final = TRUE){

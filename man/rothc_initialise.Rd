@@ -13,6 +13,15 @@ rothc_initialise(B_LU_BRP, A_SOM_LOI, A_CLAY_MI)
 
 \item{A_CLAY_MI}{(numeric) value for the clay content of the soil}
 }
+\value{
+A data table with the fractions IOM, DPM, RPM and BIO
+}
 \description{
 Function for initializing the RothC model
+}
+\examples{
+rothc_initialise(B_LU_BRP = 265,
+                 A_SOM_LOI = 15,
+                 A_CLAY_MI = 10)
+
 }
