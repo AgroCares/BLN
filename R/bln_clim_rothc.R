@@ -604,7 +604,7 @@ bln_rothc_multicore <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI, scen,
   cm.versions <- c('CM4')
 
   # Run the simulations
-  future::plan(future::multisession, workers = parallelly::availableCores()-1)
+  future::plan(future::multisession, workers = parallelly::availableCores(omit = 1))
 
   # add seed
   dt.c$mc <- 111

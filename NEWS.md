@@ -1,3 +1,8 @@
+# BLN X.X.X 2025-MM-DD
+
+## Fixed
+* potential bug when running RothC in parrallel if there is only one core available fixes https://github.com/AgroCares/BLN/issues/20
+
 # BLN 0.9.3 2025-04-10
 ## Deprecated
 * function argument A_SOM_LOI in `bln_bbwp_ngw` is deprecated as it was not used by the function
