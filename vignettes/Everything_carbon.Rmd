@@ -41,5 +41,39 @@ ggplot2::theme_set(theme_bw() +
 ```
 
 # Everything carbon
+## Introduction
 Well, not EVERYTHING carbon but anything you want to know about soil carbon in
-the BLN package.
+the BLN package. This vignette delves into the functions underlying the evaluation
+of climate soil ecosystem service functions.
+
+BLN currently has four indicators which together determine the climate score
+s_bln_esd_clim. These are:
+
+* *i_clim_osb* using an organic matter balance approach, calculated by `bln_clim_cbalance()`,
+* *i_clim_rothc* using RothC to simulate future soil carbon concentrations, calculated by `bln_clim_rothc()`,
+* *i_clim_csat* comparing current soil carbon content with potential carbon content, calculated by `bln_clim_csat()`, and
+* *i_clim_somers* calculated by `bln_clim_somers()` and is only applicable to peat soils.
+
+This vignette first discusses each of these indicators and their function one
+by one and closes with a look at how these three or four indicators are aggregated
+to a single climate ecosystem service score.
+
+## Organic matter balance
+The organic matter balance method is a relatively straight forward method to estimate
+whether, with a given management, the organic matter content of a soil is stable,
+likely to decrease, or likely to increase. In short, one sums all inputs of
+organic matter (crop residues, organic amendments, and green manures) and subtracts
+the expected organic matter decomposition. This approach is used by the Dutch
+tool \link[OS-balans]{https://os-balans.nl/nl/}.
+
+BLN's OM balance differs somewhat from OS-balans but in essence uses the same approach.
+The `bln_clim_cbalance` function checks the function input and wraps two functions
+from the OBIC package. Of these `OBIC::calc_sombalance()` does the heavy lifting
+as it calculates the balance. The organic matter fluxes are derived as follows:
+
+* crop input: a fixed cultivation dependent value which can be found in 
+`BLN::bln_crops[,.(B_LU_EOM, B_LU_EOM_RESIDUE)]` or `OBIC::crops.obic[,.(B_LU_EOM, B_LU_EOM_RESIDUE)]`
+* compost input:
+* manure input:
+* green manure/cover crop input:
+* organic matter decomposition:
