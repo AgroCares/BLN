@@ -12,7 +12,7 @@ vignette: >
 ```{r, include=FALSE}
 
 # required packages
-require(data.table); require(BLN); require(ggplot2);require(patchwork)
+require(data.table); require(BLN); require(ggplot2)
 
 # set some default options for the html page
 knitr::opts_chunk$set(echo = FALSE,
