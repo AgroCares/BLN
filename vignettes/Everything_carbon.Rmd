@@ -1,8 +1,12 @@
 ---
 title: "Everything carbon"
-output: rmarkdown::html_vignette
+output: 
+  bookdown::html_document2:
+    base_format: rmarkdown::html_vignette
 bibliography: references.bib
 csl: nmi-csl-nmi-v1_11.csl
+pkgdown:
+  as_is: true
 vignette: >
   %\VignetteIndexEntry{Everything carbon}
   %\VignetteEngine{knitr::rmarkdown}
@@ -73,7 +77,22 @@ as it calculates the balance. The organic matter fluxes are derived as follows:
 
 * crop input: a fixed cultivation dependent value which can be found in 
 `BLN::bln_crops[,.(B_LU_EOM, B_LU_EOM_RESIDUE)]` or `OBIC::crops.obic[,.(B_LU_EOM, B_LU_EOM_RESIDUE)]`
-* compost input:
-* manure input:
+* compost input: depends on the M_COMPOST input argument, which is frequency of compost application (i.e. once every M_COMPOST years)
+The actual OM input from compost is calculated only for arable crops as 15 * 218 / M_COMPOST
+* manure input: for the contribution of manure to organic matter built up, it is assumed
+that the available legal room to apply manure is filled with dairy slurry, see table \@ref(tab:manureInput) .
 * green manure/cover crop input:
 * organic matter decomposition:
+
+```{r manureInput, tab.cap="Organic matter input (kg/ha) given a landuse and soil P status."}
+tab <- data.table::data.table(
+  Landuse = c("arable", "arable", "arable", "arable", "grassland", "grassland", "grassland", "grassland"),
+  `Soil P method` = c("P-water", "P-water", "P-water", "P-water", "P-Al", "P-Al", "P-Al", "P-Al"),
+  `Soil P value` = c("<=25", "25:36", "36:55", ">55", "<=16", "16:27", "27:50", ">50"),
+  `OM dose` = c(2584, 1615, 1292, 1077, 4000, 3333, 3000, 2667)
+)
+
+kableExtra::kable(tab)
+```
+
+
