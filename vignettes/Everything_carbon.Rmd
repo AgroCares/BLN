@@ -3,6 +3,7 @@ title: "Everything carbon"
 output: 
   bookdown::html_document2:
     base_format: rmarkdown::html_vignette
+    toc: true
 bibliography: references.bib
 csl: nmi-csl-nmi-v1_11.csl
 pkgdown:
@@ -44,8 +45,7 @@ ggplot2::theme_set(theme_bw() +
                   )
 ```
 
-# Everything carbon
-## Introduction
+# Introduction
 Well, not EVERYTHING carbon but anything you want to know about soil carbon in
 the BLN package. This vignette delves into the functions underlying the evaluation
 of climate soil ecosystem service functions.
@@ -62,7 +62,7 @@ This vignette first discusses each of these indicators and their function one
 by one and closes with a look at how these three or four indicators are aggregated
 to a single climate ecosystem service score.
 
-## Organic matter balance
+# Organic matter balance
 The organic matter balance method is a relatively straight forward method to estimate
 whether, with a given management, the organic matter content of a soil is stable,
 likely to decrease, or likely to increase. In short, one sums all inputs of
@@ -81,8 +81,15 @@ as it calculates the balance. The organic matter fluxes are derived as follows:
 The actual OM input from compost is calculated only for arable crops as 15 * 218 / M_COMPOST
 * manure input: for the contribution of manure to organic matter built up, it is assumed
 that the available legal room to apply manure is filled with dairy slurry, see table \@ref(tab:manureInput) .
-* green manure/cover crop input:
-* organic matter decomposition:
+* green manure/catch crop input: if green manure is used, it is assumed  that
+there is an organic matter input of 850 kg/ha. If the landuse's name contains
+"mais" or "aardappel", a catch crop is mandatory and a green manure OM input of 850
+kg/ha is used.
+* organic matter decomposition: for fields where the soil organic matter content
+is higher than 23%, the decomposition rate is 3145.513 kg/ha/year. For fields
+with lower SOM concentrations, the decomposition rate is calculated as:
+SOM * 0.1 * 0.3 * (-0.37 * log(SOM) + 1.8398) * (10 ^ 6) * 0.0487 * SOM ^ -0.453 * 0.57
+see figure \@ref(fig:decompRate)
 
 ```{r manureInput, tab.cap="Organic matter input (kg/ha) given a landuse and soil P status."}
 tab <- data.table::data.table(
@@ -95,4 +102,33 @@ tab <- data.table::data.table(
 kableExtra::kable(tab)
 ```
 
+```{r decompRate, fig.cap="Decomposition rate at a given soil organic matter content.", fig.align='left', fig.width=7}
+dt <- data.table::data.table(
+  SOM = seq(0.2, 25, 0.2)
+)
+
+dt[,`decomposition rate` := SOM * 0.1 * 0.3 * (-0.37 * log(SOM) + 1.8398) * (10 ^ 6) * 0.0487 * SOM ^ -0.453 * 0.57]
+dt[SOM>23, `decomposition rate` := 3145.513]
+
+ggplot(data = dt,
+       mapping = aes(x = SOM,
+                     y = `decomposition rate`)) +
+  geom_line() +
+  xlab("soil organic matter content, (%)") +
+  ylab("decomposition rate, (kg/ha/year)")
+
+```
+# RothC
+
+
+# Carbon saturation
+
+
+# Carbon on peat soils (somers)
+
+
+# Indicator aggregation
+
+
+# Further reading
 
