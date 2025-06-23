@@ -185,7 +185,7 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
 
   # check formats B_SC_WENR and B_GWL_CLASS
   #dt[, B_SC_WENR := OBIC::format_soilcompaction(B_SC_WENR)]
-  dt[, B_GWL_CLASS := OBIC::format_gwt(B_GWL_CLASS)]
+  checkmate::assert_subset(B_GWL_CLASS, choices = unlist(BLN::bln_parms[code == "B_GWL_CLASS", choices]))
   dt[, B_AER_CBS := bln_format_aer(B_AER_CBS,type='name')]
 
   # estimate missing data

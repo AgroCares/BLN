@@ -584,9 +584,6 @@ An example of this function is illustrated below for six different soils varying
   # add different Gt levels
   dt.test <- merge(dt.test,CJ(ID=1:6,B_GWL_CLASS = c('I','III','VI','VIII')),by='ID')
   
-  # reformat
-  dt.test[, B_GWL_CLASS := OBIC::format_gwt(B_GWL_CLASS)]
-   
   # calculate drought stress and wetness stress
   dt.test[, i_p_ds := bln_p_droughtstress(B_HELP_WENR, B_LU_BRP, B_GWL_CLASS, WSI = "droughtstress")]
   dt.test[, i_p_ws := bln_p_wetnessstress(B_HELP_WENR, B_LU_BRP, B_GWL_CLASS, WSI = "wetnessstress")]
