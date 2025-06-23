@@ -8,9 +8,7 @@
 
   # loaddata
   bln_parms <- fread('dev/bln_parameters.csv',encoding = 'UTF-8')
-
-  # remove prefix
-  setnames(bln_parms,gsub('bln_parm_','',colnames(bln_parms)))
+  bln_parms <- pandex::nmi_parameters[code %in% bln_parms$bln_parm_code]
 
   # Unpack options
   for(this.code in bln_parms[enum == TRUE, code]){
@@ -21,7 +19,19 @@
     }
 
   }
-  bln_parms[code == 'B_GWL_CLASS', choices := list(paste0('Gt',pandex::enum_opts("B_GWL_CLASS")))]
+  bln_parms[code == 'B_GWL_CLASS', choices := list(pandex::enum_opts("B_GWL_CLASS"))]
+
+  # add id
+  bln_parms[, id := 1:nrow(bln_parms)]
+
+  # add type
+  bln_parms[, type := 'measurement']
+  bln_parms[grepl('_BCS$', code), type := 'visual soil assessment']
+  bln_parms[grepl('^B_', code), type := 'field property']
+
+  # select columns
+  setnames(bln_parms, 'parameter', 'description')
+  bln_parms <- bln_parms[,.(id, code , type, description, unit, value_min, value_max, data_type, enum, options, choices)]
 
   # save updated BLN parameter table
   usethis::use_data(bln_parms,overwrite = TRUE)
