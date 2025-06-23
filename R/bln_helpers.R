@@ -375,7 +375,7 @@ bln_format_aer <- function(B_AER_CBS,type='name') {
   # all input options
   aer.all <- c(aer.text,aer.code)
 
-  # Check if B_GT values are appropriate
+  # Check if B_AER_CBS values are appropriate
   checkmate::assert_subset(B_AER_CBS, empty.ok = FALSE, choices = aer.all)
 
   if(type=='name'){

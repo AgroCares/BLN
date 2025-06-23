@@ -40,7 +40,7 @@ bln_wat_nretention_gw(
 ID = 15,
 B_LU_BRP = c(233,259,2014,308),
 B_SOILTYPE_AGR = rep('rivierklei',4),
-B_GWL_CLASS = rep('GtIII',4),
+B_GWL_CLASS = rep('III',4),
 B_AER_CBS = rep('LG06',4),
 A_SOM_LOI = rep(3,4),
 A_N_RT = c(1000,2500,3500,9800),

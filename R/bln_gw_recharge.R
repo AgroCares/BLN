@@ -19,7 +19,7 @@
 #' ID = 15,
 #' B_LU_BRP = c(233,259,2014,308),
 #' B_SC_WENR = rep(11,4),
-#' B_GWL_CLASS = rep('GtVI',4),
+#' B_GWL_CLASS = rep('VI',4),
 #' B_DRAIN = rep(TRUE,4),
 #' A_CLAY_MI = rep(20,4),
 #' A_SAND_MI = rep(15,4),
@@ -73,7 +73,6 @@ bln_wat_groundwater_recharge <- function(ID,B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_DRA
 
   ### format inputs for OBIC
   dt[, B_SC_WENR := OBIC::format_soilcompaction(B_SC_WENR)]
-  dt[, B_GWL_CLASS := OBIC::format_gwt(B_GWL_CLASS)]
 
   # estimate derivatives: sealing risk, precipitation surplus and saturated permeability
   dt[, D_SE := OBIC::calc_sealing_risk(A_SOM_LOI, A_CLAY_MI)]

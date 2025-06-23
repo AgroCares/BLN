@@ -117,11 +117,6 @@ bln_bbwp_psw <- function(ID,B_LU_BRP,B_SC_WENR,B_AER_CBS,B_GWL_CLASS,B_SLOPE_DEG
                    B_FE_OX_SD = B_FE_OX_SD
   )
 
-  # check on BBWP format Gt
-  cols <- c('GtI','GtII','GtIII','GtIV','GtV', 'GtVI','GtVII','GtVIII')
-  dt[!B_GWL_CLASS %in% cols & grepl('lg14|limburg',tolower(B_AER_CBS)), B_GWL_CLASS := 'GtVIII']
-  dt[!B_GWL_CLASS %in% cols & !grepl('lg14|limburg',tolower(B_AER_CBS)), B_GWL_CLASS := 'GtII']
-
   # replace missing LSW properties
   dt[is.na(B_P_CC), B_P_CC := dt.lsw$B_P_CC]
   dt[is.na(B_P_CC_SD), B_P_CC_SD := dt.lsw$B_P_CC_SD]
@@ -153,13 +148,13 @@ bln_bbwp_psw <- function(ID,B_LU_BRP,B_SC_WENR,B_AER_CBS,B_GWL_CLASS,B_SLOPE_DEG
   dt[,psw_scr := 1 - ngw_scr]
 
   # reclassify the groundwater table (gwt) into a numeric value
-  dt[B_GWL_CLASS %in% c('GtI', '-'), psw_gwt := 1]
-  dt[B_GWL_CLASS %in% c('GtIIb','GtIIIb','GtVb'), psw_gwt := 0.9]
-  dt[B_GWL_CLASS %in% c('GtII','GtIII','GtV'), psw_gwt := 0.8]
-  dt[B_GWL_CLASS %in% c('GtIV'), psw_gwt := 0.7]
-  dt[B_GWL_CLASS %in% c('GtVI'), psw_gwt := 0.6]
-  dt[B_GWL_CLASS %in% c('GtVII'), psw_gwt := 0.5]
-  dt[B_GWL_CLASS %in% c('GtVIII'), psw_gwt := 0.4]
+  dt[B_GWL_CLASS %in% c('I', 'Ia', 'Ic'), psw_gwt := 1]
+  dt[B_GWL_CLASS %in% c('II','III','V', 'IIa', 'IIIa', 'Va', 'Vao', 'Vad'), psw_gwt := 0.9] # GHG <25
+  dt[B_GWL_CLASS %in% c('IIb','IIIb','Vb', 'Vbo', 'Vbd'), psw_gwt := 0.8] # GHG 25-40
+  dt[B_GWL_CLASS %in% c('IIc','IV', 'IVu'), psw_gwt := 0.7] # GHG 40-80
+  dt[B_GWL_CLASS %in% c('VI', 'VIo', 'VId'), psw_gwt := 0.6] # GHG 40-80
+  dt[B_GWL_CLASS %in% c('IVc', 'VII', 'VIIo', 'VIId'), psw_gwt := 0.5] # GHG 80-140
+  dt[B_GWL_CLASS %in% c('VIII', 'VIIIo', 'VIIId'), psw_gwt := 0.4] # GHG >140
 
   # rank the risk for surface runoff (van Hattum, 2011)
   # higher risk is associated to increased risks for N runoff
