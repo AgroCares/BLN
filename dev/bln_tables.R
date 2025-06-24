@@ -15,7 +15,8 @@
     if(grepl('_HELP$',this.code)){
       bln_parms[code == this.code, choices := list(pandex::enum_opts('B_HELP_WENR'))]
     } else {
-      bln_parms[code == this.code, choices := list(pandex::enum_opts(this.code))]
+      # omit '-' from choices
+      bln_parms[code == this.code, choices := list(pandex::enum_opts("B_GWL_CLASS")[!pandex::enum_opts("B_GWL_CLASS") == '-'])]
     }
 
   }
