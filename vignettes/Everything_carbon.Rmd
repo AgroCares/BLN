@@ -68,7 +68,7 @@ whether, with a given management, the organic matter content of a soil is stable
 likely to decrease, or likely to increase. In short, one sums all inputs of
 organic matter (crop residues, organic amendments, and green manures) and subtracts
 the expected organic matter decomposition. This approach is used by the Dutch
-tool \link[OS-balans]{https://os-balans.nl/nl/}.
+tool [OS-balans](https://os-balans.nl/nl/).
 
 BLN's OM balance differs somewhat from OS-balans but in essence uses the same approach.
 The `bln_clim_cbalance` function checks the function input and wraps two functions
@@ -90,6 +90,7 @@ is higher than 23%, the decomposition rate is 3145.513 kg/ha/year. For fields
 with lower SOM concentrations, the decomposition rate is calculated as:
 SOM * 0.1 * 0.3 * (-0.37 * log(SOM) + 1.8398) * (10 ^ 6) * 0.0487 * SOM ^ -0.453 * 0.57
 see figure \@ref(fig:decompRate)
+
 
 ```{r manureInput, tab.cap="Organic matter input (kg/ha) given a landuse and soil P status."}
 tab <- data.table::data.table(
@@ -119,7 +120,9 @@ ggplot(data = dt,
 
 ```
 # RothC
-
+RothC is a dynamic soil carbon model with a long history of use. A complete 
+description of the model is beyond the scope of this vignette, for an in-depth
+description see @Coleman1996. RothC calculations in BLN are based on [RothC 26.3](https://www.verdeterreprod.fr/wp-content/uploads/2020/05/RothC_guide_WIN.pdf).
 
 # Carbon saturation
 
