@@ -341,6 +341,9 @@ dt.out[is.na(B_LSW_ID),B_LSW_ID := 'lsw_nlmean']
 
 bln_farm_hf <- copy(dt.out)
 
+# rm Gt
+bln_farm_hf[, B_GWL_CLASS := gsub('Gt', '', B_GWL_CLASS)]
+
 # save measures as bbwp table
 usethis::use_data(bln_farm_hf, overwrite = TRUE)
 
