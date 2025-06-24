@@ -19,7 +19,7 @@
 bln_p_waterstress <- function(B_HELP_WENR, B_LU_BRP, B_GWL_CLASS, WSI = 'waterstress') {
 
   # add visual bindings
-  D_WSI = NULL
+  D_WSI = code = choices = NULL
 
   # Check input
   arg.length <- max(length(B_HELP_WENR), length(B_LU_BRP), length(B_GWL_CLASS))
@@ -73,7 +73,7 @@ bln_p_waterstress <- function(B_HELP_WENR, B_LU_BRP, B_GWL_CLASS, WSI = 'waterst
 bln_p_droughtstress <- function(B_HELP_WENR, B_LU_BRP, B_GWL_CLASS, WSI = 'droughtstress') {
 
   # add visual bindings
-  D_WSI = NULL
+  D_WSI = code = choices = NULL
 
   # Check input
   arg.length <- max(length(B_HELP_WENR), length(B_LU_BRP), length(B_GWL_CLASS))
