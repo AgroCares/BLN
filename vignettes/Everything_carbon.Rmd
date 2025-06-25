@@ -127,8 +127,63 @@ description see @Coleman1996. RothC calculations in BLN are based on [RothC 26.3
 # Carbon saturation
 
 
-# Carbon on peat soils (somers)
+# Carbon on peat soils (SOMERS)
+Carbon fluxes on peat and peaty soils are modelled with the SOMERS (Subsurface 
+Organic Matter Emission Registration System) model [@Erkens2022]. SOMERS has been
+developed specially to CO~2~ emissions of peat soils with
+differing climatological and hydrological conditions.
 
+SOMERS can be used to estimate the effect of drainage measures on CO~2~ emissions and is
+intended to be used on national or regional scale, not for individual fields.
+The model uses standardised values for parameters such as temperature, field width,
+and seepage. This creates a larger margin of error when applying SOMERS to smaller
+scales such as on farm level, making the calculations very much indicative. On
+larger scales, these errors cancel each other out. By using input data specific 
+to a local context, the model becomes more accurate for small scale application [@SOMERSteam2025].
+
+BLN uses SOMERS version 2.0. The indicator `i_clim_somers` is calculated by the
+`bln_clim_somers` function. This function uses agricultural soil type to determine
+whether it should calculate the indicator, calculations are only made for peat soils.
+Furthermore, the function requires the soil organic matter content, a base combination
+of SOMERS peat soil classification, the vertical distance between field height and
+ditch hight in summer and winter, and the decrease in drainage during the summer.
+
+The SOMERS peat soil class and summer and winter drainage levels are used to lookup
+data in the `bln_somers` table and together represent the weather conditions,
+ditch distance, seepage, soil type and drainage situation of a field. 
+This table contains the median CO~2~ emission for
+a soil when no measures are taken (reference situation), when passive water infiltration
+is applied (PWIS), and when active water infiltration is applied (AWIS)
+
+These infiltration systems and change in summer drainage affect CO~2~ emissions
+\@ref(fig:SOMERS).
+
+```{r SOMERS, fig.cap="Indicative CO2 emission for different infiltration systems at different drainage levels", fig.align='left', fig.width=7}
+dt <- melt(BLN::bln_somers[b_somers_bc == 1 & b_drain_wp == 0.0],
+           measure.vars = c('awis', 'pwis', 'ref'), variable.name = 'measure')
+
+ggplot(data = dt[!is.na(value)],
+       mapping = aes(x = b_drain_sp,
+                     y = value, 
+                     col = measure)) +
+  geom_line() +
+  xlab("Summer drainage level, (m-mv)") +
+  ylab("CO2 emission, (kg/ha/year)") +
+  scale_color_viridis_d() +
+  theme(legend.position = 'right')
+
+```
+
+Within BLN, there are three measures that can be calculated using SOMERS to reduce
+CO~2~ emissions: using pwis, using awis, or reducing the summer drainage level (
+increasing the water level in the ditches during summer). The indicator `i_clim_somers`
+is finally calculated by taking the measure with the lowest emission, dividing this
+by the reference emission and subtracting this from 1.
+
+1 - min(awis, pwis, reduced summer drainage)/reference
+
+The `i_clim_somers` indicator represents the indicative potential to reduce CO~2~
+emissions on a field.
 
 # Indicator aggregation
 
