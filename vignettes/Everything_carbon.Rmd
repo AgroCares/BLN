@@ -165,6 +165,21 @@ ggplot(data = dt.peat,
   theme(legend.position = 'bottom')
 
 ```
+For non-peat soils (i.e. the soil organic matter content <20%), RothC simulations 
+are actually performed. For the `i_clim_rothc` indicator, one hundred years are 
+simulated. As this can take some time, the BLN package supports multicore processing
+of the RothC simulations which is the default setting for the `bln_clim_rothc` function
+but is not default for the overarching `bln_field` function. Multicore processing
+can be turned on and of with the boolean input argument "mc" for both functions.
+
+For the RothC indicator, two scenario's are simulated (each for a 100 years), BAU
+(business as usual) and ALL (everything that can be done to increase or maintain soil carbon, is done).
+For more details on these scenarios, see @Ros2024.
+
+By dividing the predicted soil organic matter content in the BAU scenario by that 
+predicted in the ALL scenario, a value between 0 and 1 is obtained which represents
+the gap between how much carbon can be stored in the soil with the current management
+compared to the potential of the soil to store carbon.
 
 # Carbon saturation
 The carbon saturation indicator `i_clim_csat` is based on @Ros2024. This indicator
