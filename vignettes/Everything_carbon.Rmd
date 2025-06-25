@@ -124,6 +124,48 @@ RothC is a dynamic soil carbon model with a long history of use. A complete
 description of the model is beyond the scope of this vignette, for an in-depth
 description see @Coleman1996. RothC calculations in BLN are based on [RothC 26.3](https://www.verdeterreprod.fr/wp-content/uploads/2020/05/RothC_guide_WIN.pdf).
 
+BLN determines the `i_clim_rothc` indicator with the function `bln_clim_rothc`. 
+Because RothC is not intended for peat soils, this function applies a different method
+for soils with a soil organic matter content higher than 20%. For soils characterised
+as peat by their high soil organic matter content, RothC is not applied. Instead
+the future soil organic matter content is predicted with the same procedure used 
+by INITIATOR [@deVries2023]. In effect, this makes the predicted soil organic 
+matter content a function of summer groundwater level \@ref(fig:rothcPeat).
+
+```{r rothcPeat, fig.cap="Predicted soil organic matter contents for peat soils calculated by the bln_clim_roth function.", fig.align='left', fig.width=7}
+dt.peat <- data.table::data.table(
+  B_GWL_GLG = rep(seq(20, 120, 10), 3),
+  A_SOM_LOI = c(rep(20, 11), rep(30, 11), rep(40, 11)),
+  ID = c(rep(1, 11), rep(2, 11), rep(3, 11))
+)
+
+# lowering surface due to oxidation (Beuving and van den Akker, 1996)
+fsmv <- stats::approxfun(x = seq(0,130,10),
+                         y = c(0,0.008,0.017,0.026,0.038,0.051,0.074,0.098,
+                               0.122,0.145,0.169,0.192,0.216,0.239),
+                         rule = 2)
+# estimate relative carbon storage compared to GLG with 45 cm higher water level
+dt.peat[, fr_smv := pmin(1,(fsmv(B_GWL_GLG) - pmax(0,fsmv(B_GWL_GLG-45)))/fsmv(B_GWL_GLG)),by=ID]
+# estimate A_SOM_BAU and A_SOM_ALL
+dt.peat[,A_SOM_LOI_BAU := A_SOM_LOI * fr_smv]
+dt.peat[, A_SOM_LOI_ALL := A_SOM_LOI]
+
+
+# format for plot
+dt.peat[, `Initial soil organic matter content` := factor(A_SOM_LOI)]
+
+ggplot(data = dt.peat,
+       mapping = aes(x = B_GWL_GLG,
+                     y = A_SOM_LOI_BAU,
+                     col = `Initial soil organic matter content`)) +
+  geom_line() +
+  xlab("Summer groundwater level, (m-mv)") +
+  ylab("Predicted soil organic matter content, (%)") +
+  scale_color_viridis_d() +
+  theme(legend.position = 'bottom')
+
+```
+
 # Carbon saturation
 The carbon saturation indicator `i_clim_csat` is based on @Ros2024. This indicator
 is ratio between the current soil organic matter content and the potential soil organic
