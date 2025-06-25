@@ -89,7 +89,7 @@ kg/ha is used.
 is higher than 23%, the decomposition rate is 3145.513 kg/ha/year. For fields
 with lower SOM concentrations, the decomposition rate is calculated as:
 SOM * 0.1 * 0.3 * (-0.37 * log(SOM) + 1.8398) * (10 ^ 6) * 0.0487 * SOM ^ -0.453 * 0.57
-see figure \@ref(fig:decompRate)
+see figure \@ref(fig:decompRate).
 
 
 ```{r manureInput, tab.cap="Organic matter input (kg/ha) given a landuse and soil P status."}
@@ -125,7 +125,42 @@ description of the model is beyond the scope of this vignette, for an in-depth
 description see @Coleman1996. RothC calculations in BLN are based on [RothC 26.3](https://www.verdeterreprod.fr/wp-content/uploads/2020/05/RothC_guide_WIN.pdf).
 
 # Carbon saturation
+The carbon saturation indicator `i_clim_csat` is based on @Ros2024. This indicator
+is ratio between the current soil organic matter content and the potential soil organic
+matter content. The potential soil organic matter content can be supplied to the
+function directly or estimated using the cultivation, clay content, and soil organic
+matter content \@ref(fig:csat1).
 
+```{r csat1, fig.cap="Estimated potential soil organic matter content.", fig.align='left', fig.width=7}
+# mock up data
+dt <- data.table::data.table(
+  A_CLAY_MI = rep(seq(0.2, 20.2, 1), 12),
+  A_SOM_LOI = rep(c(rep(2, 21), rep(4, 21), rep(8, 21)), 2),
+  crop_cat1 = c(rep('arable', 126), rep('grassland', 126))
+)
+
+# make a very rough estimate via a linear regression model trained on C-saturation data in case that C-max unknown
+  dt[crop_cat1 %in% c('arable','maize'), cfcrop := 0.13569913]
+  dt[crop_cat1 == 'grassland', cfcrop := 0.01793042]
+  dt[crop_cat1 == 'nature', cfcrop := 0.05885480 ]
+  dt[, A_SOM_LOI_MLMAX := 2.6018 + 0.8525 * A_SOM_LOI + 0.003067 * A_SOM_LOI^2 + A_CLAY_MI * cfcrop]
+  
+  dt[, A_SOM_LOI := factor(A_SOM_LOI)]
+  
+  setnames(dt, c('crop_cat1', 'A_SOM_LOI'), c('crop category', 'current soil organic matter content'))
+
+ggplot(data = dt,
+       mapping = aes(x = A_CLAY_MI,
+                     y = A_SOM_LOI_MLMAX,
+                     shape = `current soil organic matter content`,
+                     col = `crop category`)) +
+  geom_point() +
+  xlab("clay content, (%)") +
+  ylab("maximum soil organic matter content, (%)") +
+  scale_color_viridis_d() +
+  theme(legend.position = 'right')
+
+```
 
 # Carbon on peat soils (SOMERS)
 Carbon fluxes on peat and peaty soils are modelled with the SOMERS (Subsurface 
