@@ -6,6 +6,9 @@
 * increased minimum value for A_SOM_LOI in functions from 0.1 to 0.5
 * decreased maximum value for A_SOM_LOI in functions from 100 to 75
 
+## Fixed
+* potential bug when running RothC in parrallel if there is only one core available fixes https://github.com/AgroCares/BLN/issues/20
+
 # BLN 0.9.3 2025-04-10
 ## Deprecated
 * function argument A_SOM_LOI in `bln_bbwp_ngw` is deprecated as it was not used by the function
