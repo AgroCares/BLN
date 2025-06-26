@@ -92,7 +92,7 @@ water_buffering <- bln_bbwp_bw(
 
 Below we illustrate how these indicators react to changes in soil texture, groundwater level, and crop type.
 
-```{r groundwater_recharge_sensitivity_figures, fig.width=8, fig.height=10, cache=TRUE}
+```{r groundwater_recharge_sensitivity_figures, fig.width=8, fig.height=10, cache=FALSE}
 
 # create table with variety in texture ====
 dt.tex <- data.table(ID = 15,
@@ -249,7 +249,7 @@ have higher risks and score lower if all else stays the same. See the difference
 for sand, peat, and clay when soil organic matter = 1.7%, total nitrogen = 2500 
 mg N kg^-1^, and the C:N ratio is 10.
 
-```{r nitrogen_retention_demo_soiltype, fig.width=7, fig.height=3, cache=TRUE}
+```{r nitrogen_retention_demo_soiltype, fig.width=7, fig.height=3, cache=FALSE}
 
 # make data.table with inputs
 dt <-  data.table(ID = 15,
