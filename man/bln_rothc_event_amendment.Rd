@@ -33,7 +33,7 @@ Typically the inputs for this function are results from functions \link{bln_roth
    cin_crop_dpm = c(1200, 1520, 468, 1517),
    cin_corp_rpm = c(782, 1127, 312, 1127),
    cin_res_dpm = rep(0, 4),
-   cin_res_repm = rep(0, 4),
+   cin_res_rpm = rep(0, 4),
    M_GREEN_TIMING = c("october", "never", "never", "never"),
    M_IRRIGATION = rep(FALSE, 4),
    M_CROPRESIDUE = rep(FALSE, 4),
