@@ -1,4 +1,4 @@
-# BLN 0.x.x 2025-xx-xx
+# BLN 0.9.4 2025-xx-xx
 ## Added
 * examples and return descriptions to `bln_clim_*` and RothC functions
 * DeepWiki link to the README
