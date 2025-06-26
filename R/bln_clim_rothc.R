@@ -619,6 +619,21 @@ rothc_parallel <- function(this.xs, dt.c, scen, simyears = 50,p = NULL,final = T
 #' @import future
 #' @import parallelly
 #'
+#' @returns A data.table with an ID column and one column for each scenario selected
+#' with the scen argument which contain the predicted soil organic matter content
+#' of that scenario at the end of the simulation.
+#'
+#' @examples
+#' \donttest{
+#' bln_rothc_multicore(ID = 1:10,
+#' B_LU_BRP = rep(c(3732,265),5),
+#' B_GWL_GLG = rep(95, 10),
+#' A_SOM_LOI = seq(1,15,length.out = 10),
+#' A_CLAY_MI = rep(4.5,10),
+#' scen = c('BAU','ALL'),
+#' quiet = FALSE)
+#' }
+#'
 #' @export
 bln_rothc_multicore <- function(ID,B_LU_BRP,B_GWL_GLG,A_SOM_LOI,A_CLAY_MI, scen, simyears = 50, quiet = TRUE){
 

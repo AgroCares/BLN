@@ -32,6 +32,23 @@ bln_rothc_multicore(
 
 \item{quiet}{(boolean) showing progress bar for calculation RothC C-saturation for each field}
 }
+\value{
+A data.table with an ID column and one column for each scenario selected
+with the scen argument which contain the predicted soil organic matter content
+of that scenario at the end of the simulation.
+}
 \description{
 Function to evaluate the carbon saturation via RothC simulation on multiple fields using multicore processing
+}
+\examples{
+\donttest{
+bln_rothc_multicore(ID = 1:10,
+B_LU_BRP = rep(c(3732,265),5),
+B_GWL_GLG = rep(95, 10),
+A_SOM_LOI = seq(1,15,length.out = 10),
+A_CLAY_MI = rep(4.5,10),
+scen = c('BAU','ALL'),
+quiet = FALSE)
+}
+
 }
