@@ -1,4 +1,7 @@
 # Bodemindicatorenset Landbouwgronden Nederland (BLN)
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/AgroCares/BLN)
+
 Bodemindicatoren voor Landbouwgronden in Nederland. A soil quality assessment framework for application in the Netherlands.
 
 This R package can be used to calculate the BLN index for agricultural fields in the Netherlands.
