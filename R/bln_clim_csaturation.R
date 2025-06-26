@@ -29,7 +29,7 @@ bln_clim_csat <- function(B_LU_BRP,A_SOM_LOI,A_CLAY_MI,A_SOM_LOI_MLMAX = NA_real
   checkmate::assert_numeric(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)
   checkmate::assert_subset(B_LU_BRP, choices = unique(BLN::bln_crops$crop_code), empty.ok = FALSE)
   checkmate::assert_numeric(A_CLAY_MI, lower = 0, upper = 100, any.missing = FALSE, min.len = 1)
-  checkmate::assert_numeric(A_SOM_LOI, lower = 0.1, upper = 100, any.missing = FALSE, min.len = 1, len = arg.length)
+  checkmate::assert_numeric(A_SOM_LOI, lower = 0.5, upper = 75, any.missing = FALSE, min.len = 1, len = arg.length)
   checkmate::assert_numeric(A_SOM_LOI_MLMAX, lower = 0.1, upper = 100, any.missing = TRUE, min.len = 1)
   if(length(A_SOM_LOI_MLMAX)>1){checkmate::assert_numeric(A_SOM_LOI_MLMAX,lower = 0.1, upper = 100,len = arg.length)}
 

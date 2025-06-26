@@ -39,7 +39,7 @@ bln_clim_somers <- function(ID,B_SOILTYPE_AGR,A_SOM_LOI,B_SOMERS_BC,B_DRAIN_SP,B
                     length(B_DRAIN_SP), length(B_DRAIN_WP))
   checkmate::assert_character(B_SOILTYPE_AGR, any.missing = FALSE, min.len = 1, len = arg.length)
   checkmate::assert_subset(B_SOILTYPE_AGR, choices = BLN::bln_soiltype[bln_country=='NL',bln_soil_cat1], empty.ok = FALSE)
-  checkmate::assert_numeric(A_SOM_LOI, lower = 0.1, upper = 100, any.missing = FALSE, min.len = 1, len = arg.length)
+  checkmate::assert_numeric(A_SOM_LOI, lower = 0.5, upper = 75, any.missing = FALSE, min.len = 1, len = arg.length)
   checkmate::assert_integerish(B_SOMERS_BC, min.len = 1, len = arg.length)
   checkmate::assert_subset(B_SOMERS_BC, choices = c(NA,unique(BLN::bln_somers$b_somers_bc)))
   checkmate::assert_numeric(B_DRAIN_SP, lower = 0, upper = 1.2, min.len = 1, len = arg.length)
