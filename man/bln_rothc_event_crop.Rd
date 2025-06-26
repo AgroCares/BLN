@@ -31,7 +31,7 @@ The crops data.table is typically the output of \link{bln_rothc_input_crop}
    M_GREEN_TIMING = c("october", "never", "never", "never"),
    M_IRRIGATION = rep(FALSE, 4),
    M_CROPRESIDUE = rep(FALSE, 4),
-   M_RENEWAL = rep(FALSE, 4),,
+   M_RENEWAL = rep(FALSE, 4),
    cf_yield = rep(1, 4))
 
  bln_rothc_event_crop(crops = crops, A_CLAY_MI = 5)

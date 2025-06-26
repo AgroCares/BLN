@@ -81,7 +81,7 @@ bln_rothc_event <- function(crops,amendment,A_CLAY_MI,simyears){
 #'    M_GREEN_TIMING = c("october", "never", "never", "never"),
 #'    M_IRRIGATION = rep(FALSE, 4),
 #'    M_CROPRESIDUE = rep(FALSE, 4),
-#'    M_RENEWAL = rep(FALSE, 4),,
+#'    M_RENEWAL = rep(FALSE, 4),
 #'    cf_yield = rep(1, 4))
 #'
 #'  bln_rothc_event_crop(crops = crops, A_CLAY_MI = 5)
@@ -241,7 +241,7 @@ bln_rothc_event_crop <- function(crops,A_CLAY_MI){
 #'    M_GREEN_TIMING = c("october", "never", "never", "never"),
 #'    M_IRRIGATION = rep(FALSE, 4),
 #'    M_CROPRESIDUE = rep(FALSE, 4),
-#'    M_RENEWAL = rep(FALSE, 4),,
+#'    M_RENEWAL = rep(FALSE, 4),
 #'    cf_yield = rep(1, 4))
 #'  amendment = data.table::data.table(
 #'                 p_name = rep("cattle_slurry", 4),

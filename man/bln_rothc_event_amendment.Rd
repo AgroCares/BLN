@@ -37,7 +37,7 @@ Typically the inputs for this function are results from functions \link{bln_roth
    M_GREEN_TIMING = c("october", "never", "never", "never"),
    M_IRRIGATION = rep(FALSE, 4),
    M_CROPRESIDUE = rep(FALSE, 4),
-   M_RENEWAL = rep(FALSE, 4),,
+   M_RENEWAL = rep(FALSE, 4),
    cf_yield = rep(1, 4))
  amendment = data.table::data.table(
                 p_name = rep("cattle_slurry", 4),
