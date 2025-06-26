@@ -9,7 +9,7 @@ bln_rothc_input_rmf(
   B_LU_BRP = NULL,
   B_DEPTH = 0.3,
   A_CLAY_MI,
-  simyears,
+  simyears = 50,
   cf_yield
 )
 }
@@ -22,14 +22,35 @@ bln_rothc_input_rmf(
 
 \item{A_CLAY_MI}{(numeric) The clay content of the soil (\%)}
 
-\item{simyears}{(numeric) Amount of years for which the simulation should run, default: 50 years}
+\item{simyears}{(numeric) Number of years for which the simulation should run, default: 50 years}
 
 \item{cf_yield}{(numeric) A yield correction factor (fraction) if yield is higher than regional average}
+}
+\value{
+A list with a value R1 and two functions: abc, and d
 }
 \description{
 This function prepares the rate modifying factors for RothC given crop cover
 }
 \details{
-To run this function, the dt requires as input: B_LU (a crop id), B_LU_NAME (a crop name, optional), B_LU_EOM (the effective organic matter content, kg/ha), B_LU_EOM_RESIDUE (the effective organic matter content for crop residues, kg/ha), and the B_LU_HC (the humification coeffient,-).
+To run this function, the dt requires as input: B_LU (a crop id),
+ B_LU_NAME (a crop name, optional),
+ B_LU_EOM (the effective organic matter content, kg/ha),
+ B_LU_EOM_RESIDUE (the effective organic matter content for crop residues, kg/ha),
+ and  B_LU_HC (the humification coeffient,-).
 if dt is NULL, then the crop input will be prepared using function \link{rothc_scenario} using scenario 'BAU'
+}
+\examples{
+bln_rothc_input_rmf(B_LU_BRP = 265,
+				 cf_yield = 1,
+				 A_CLAY_MI = 5,
+				 simyears =50,
+				 dt = data.table::data.table(M_GREEN_TIMING = 'never',
+					M_IRRIGATION = FALSE,
+					M_CROPRESIDUE = FALSE,
+					cf_yield = 2,
+					B_LU = "nl_265",
+					year = 1))
+
+
 }

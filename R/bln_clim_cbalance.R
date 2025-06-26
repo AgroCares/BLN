@@ -10,6 +10,21 @@
 #
 #' @import data.table
 #'
+#' @examples
+#' bln_clim_cbalance(
+#' ID = 1,
+#' A_SOM_LOI = 7.92,
+#' A_P_AL = 63,
+#' A_P_WA = 65,
+#' B_LU_BRP = 3732,
+#' M_COMPOST = 3,
+#' M_GREEN = TRUE
+#' )
+#'
+#'
+#' @returns An indicator score for the organic matter balance ranging from 0 (low)
+#' to 1 (optimal)
+#'
 #' @export
 bln_clim_cbalance <- function(ID,B_LU_BRP,A_SOM_LOI,A_P_AL,A_P_WA,M_COMPOST = 0,M_GREEN = FALSE){
 

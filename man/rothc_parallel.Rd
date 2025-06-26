@@ -19,6 +19,20 @@ rothc_parallel(this.xs, dt.c, scen, simyears = 50, p = NULL, final = TRUE)
 
 \item{final}{(boolean) option to select only the last year}
 }
+\value{
+A data table with the eventual soil organic matter content for of
+each field for each scenario.
+}
 \description{
 function to run RothC parallel for a series of fields
+}
+\examples{
+bln_rothc_multicore(ID = 1:10,
+B_LU_BRP = rep(c(3732,265),5),
+B_GWL_GLG = rep(95, 10),
+A_SOM_LOI = seq(1,15,length.out = 10),
+A_CLAY_MI = rep(4.5,10),
+scen = c('BAU','ALL'),
+quiet = FALSE)
+
 }

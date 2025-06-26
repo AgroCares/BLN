@@ -7,6 +7,17 @@
 #
 #' @import data.table
 #'
+#' @examples
+#' bln_clim_csat(
+#' A_SOM_LOI = 7.92,
+#' A_CLAY_MI = 3.5,
+#' B_LU_BRP = 3732,
+#' A_SOM_LOI_MLMAX = 14
+#' )
+#'
+#' @returns A value between 0 and 1 which represents how close to the current
+#' soil organic matter content is to carbon saturation. Where 1 is the point of carbon saturation.
+#'
 #' @export
 bln_clim_csat <- function(B_LU_BRP,A_SOM_LOI,A_CLAY_MI,A_SOM_LOI_MLMAX = NA_real_){
 

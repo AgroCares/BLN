@@ -15,6 +15,19 @@ bln_clim_csat(B_LU_BRP, A_SOM_LOI, A_CLAY_MI, A_SOM_LOI_MLMAX = NA_real_)
 
 \item{A_SOM_LOI_MLMAX}{(numeric) maximum value for the soil organic matter content of the soil estimated with ML model of Ros et al. (2024)}
 }
+\value{
+A value between 0 and 1 which represents how close to the current
+soil organic matter content is to carbon saturation. Where 1 is the point of carbon saturation.
+}
 \description{
 Function to evaluate the carbon saturation via max C saturation potential estimated via ML modelling
+}
+\examples{
+bln_clim_csat(
+A_SOM_LOI = 7.92,
+A_CLAY_MI = 3.5,
+B_LU_BRP = 3732,
+A_SOM_LOI_MLMAX = 14
+)
+
 }
