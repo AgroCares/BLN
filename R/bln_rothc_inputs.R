@@ -2,7 +2,7 @@
 #'
 #' Helper function to check the content and format of the crop input table.
 #'
-#' @param dt (data.table) Table with crop rotation and related crop properties for Carbon input.
+#' @param dt (data.table) Table with crop rotation and related crop properties for Carbon input. (optional see details)
 #' @param B_LU_BRP (numeric) The crop code
 #' @param cf_yield (numeric) A yield correction factor (fraction) if yield is higher than regional average
 #'
@@ -10,8 +10,36 @@
 #' The crop table used as input for carbon modelling requires at minimum data on effective organic matter inputs and related year.
 #' This helper function assists the checking and controlling of crop properties involved.
 #'
-#' To run this function, the dt requires as input: B_LU (a crop id), B_LU_NAME (a crop name, optional), B_LU_EOM (the effective organic matter content, kg/ha), B_LU_EOM_RESIDUE (the effective organic matter content for crop residues, kg/ha), and the B_LU_HC (the humification coeffient,-).
+#' To run this function, the dt requires as input:
+#' * year (the number of years, e.g. 1, 2, 3)
+#' * B_LU (a crop id),
+#' * B_LU_EOM (the effective organic matter content, kg/ha),
+#' * B_LU_EOM_RESIDUE (the effective organic matter content for crop residues, kg/ha), and
+#' * B_LU_HC (the humification coeffient,-).
+#'  the table may contain:
+#'  * M_GREEN_TIMING (boolean) Application of crop residues
+#'  * M_CROPRESIDUE The month in which green manure is sown (either august, september, october, november, or never)
+#'
 #' if dt is NULL, then the crop input will be prepared using function \link{rothc_scenario} using scenario 'BAU'
+#'
+#' @examples
+#' # example without providing dt
+#' bln_rothc_input_crop(B_LU_BRP = c(256, 265),
+#'                      cf_yield = 1)
+#'
+#' # example with dt provided
+#' dt.in <- data.table::data.table(
+#'             B_LU = c("nl_256", "nl265"),
+#'             B_LU_EOM = c(375, 3975),
+#'             B_LU_EOM_RESIDUE = c(900, 0),
+#'             B_LU_HC = c(0.24, 0.35),
+#'             year = c(1, 2))
+#'
+#' bln_rothc_input_crop(dt = dt.in,
+#'                      cf_yield = 1)
+#'
+#' @returns A data.table with columns year, B_LU, cin_crop_dpm, cin_corp_rpm, cin_res_dpm,
+#' cin_res_rpm, M_GREEN_TIMING, M_IRRIGATION, M_CROPRESIDUE, M_RENEWAL, cf_yield
 #'
 #' @export
 bln_rothc_input_crop <- function(dt = NULL,B_LU_BRP = NULL,cf_yield){
@@ -98,15 +126,34 @@ bln_rothc_input_crop <- function(dt = NULL,B_LU_BRP = NULL,cf_yield){
 #' @param B_LU_BRP (numeric) The crop code
 #' @param B_DEPTH (numeric) Depth of the cultivated soil layer (m), simulation depth. Default set to 0.3.
 #' @param A_CLAY_MI (numeric) The clay content of the soil (\%)
-#' @param simyears (numeric) Amount of years for which the simulation should run, default: 50 years
+#' @param simyears (numeric) Number of years for which the simulation should run, default: 50 years
 #' @param cf_yield (numeric) A yield correction factor (fraction) if yield is higher than regional average
 #'
 #' @details
-#' To run this function, the dt requires as input: B_LU (a crop id), B_LU_NAME (a crop name, optional), B_LU_EOM (the effective organic matter content, kg/ha), B_LU_EOM_RESIDUE (the effective organic matter content for crop residues, kg/ha), and the B_LU_HC (the humification coeffient,-).
+#' To run this function, the dt requires as input: B_LU (a crop id),
+#'  B_LU_NAME (a crop name, optional),
+#'  B_LU_EOM (the effective organic matter content, kg/ha),
+#'  B_LU_EOM_RESIDUE (the effective organic matter content for crop residues, kg/ha),
+#'  and  B_LU_HC (the humification coeffient,-).
 #' if dt is NULL, then the crop input will be prepared using function \link{rothc_scenario} using scenario 'BAU'
 #'
+#' @examples
+#' bln_rothc_input_rmf(B_LU_BRP = 265,
+#'					 cf_yield = 1,
+#'					 A_CLAY_MI = 5,
+#'					 simyears =50,
+#'					 dt = data.table::data.table(M_GREEN_TIMING = 'never',
+#'						M_IRRIGATION = FALSE,
+#'						M_CROPRESIDUE = FALSE,
+#'						cf_yield = 2,
+#'						B_LU = "nl_265",
+#'						year = 1))
+#'
+#'
+#' @returns A list with a value R1 and two functions: abc, and d
+#'
 #' @export
-bln_rothc_input_rmf <- function(dt = NULL,B_LU_BRP = NULL, B_DEPTH = 0.3, A_CLAY_MI, simyears,cf_yield){
+bln_rothc_input_rmf <- function(dt = NULL, B_LU_BRP = NULL, B_DEPTH = 0.3, A_CLAY_MI, simyears = 50, cf_yield){
 
   # add visual bindings
   B_LU = crop_name = M_RENEWAL = B_LU_MAKKINK = B_LU_NAME = M_GREEN_TIMING = NULL
@@ -157,8 +204,10 @@ bln_rothc_input_rmf <- function(dt = NULL,B_LU_BRP = NULL, B_DEPTH = 0.3, A_CLAY
               by = 'B_LU',
               all.x = TRUE)
 
-  # update input for mandatory catch crops (after maize and potato on sandy soils) and set NA for grassland
-  if(A_CLAY_MI <20){ dt[grepl('mais|aardappel',B_LU_NAME) & grepl('^nl_',B_LU), M_GREEN_TIMING := 'october'] }
+  # update input for mandatory catch crops (after maize and potato on sandy soils) and set NA for grassland and beets
+  if(A_CLAY_MI <20){ dt[grepl('mais|aardappel',B_LU_NAME) &
+                          grepl('^nl_',B_LU) &
+                          !M_GREEN_TIMING %in% c("a;ugust", "september", "october"), M_GREEN_TIMING := 'october'] }
   dt[grepl('gras|bieten, suiker|bieten, voeder',B_LU_NAME) & grepl('^nl_',B_LU), M_GREEN_TIMING := 'never']
 
   # add crop cover and makkink correction factor
@@ -329,6 +378,23 @@ bln_rothc_input_rmf <- function(dt = NULL,B_LU_BRP = NULL, B_DEPTH = 0.3, A_CLAY
 #'
 #' To run this function, the dt requires as input:"P_NAME", "year","month","P_OM","P_HC","p_p2o5", and "P_DOSE"
 #' if dt is NULL, then the amendment input will be prepared using function \link{rothc_scenario} using scenario 'BAU'
+#'
+#' @examples
+#' # example without dt
+#' bln_rothc_input_amendment(B_LU_BRP = 256)
+#'
+#' # example with dt
+#' dt.in <- data.table::data.table(
+#'             P_NAME = "cattle_slurry",
+#'             year = 1,
+#'             month = 3,
+#'             P_OM = 800,
+#'             P_HC = 0.25,
+#'             p_p2o5 = 20,
+#'             P_DOSE = 15)
+#' bln_rothc_input_amendment(dt = dt.in, B_LU_BRP = 256)
+#'
+#' @returns A data table with columns p_name, year, cin_tot, cin_hum, cin_dpm, cin_rpm, and fr_eoc_p
 #'
 #' @export
 bln_rothc_input_amendment <- function(dt = NULL,B_LU_BRP = NULL){

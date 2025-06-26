@@ -29,6 +29,22 @@ bln_clim_rothc(
 
 \item{mc}{(boolean) option to run rothc in parallel on multicores}
 }
+\value{
+An indicator value for carbon saturation ranging from 0 to 1 where 1
+is optimal.
+}
 \description{
 Function to evaluate the carbon saturation via RothC simulation
+}
+\examples{
+bln_clim_rothc(
+ID = 15,
+A_SOM_LOI = 7.92,
+B_GWL_GLG = 75,
+A_CLAY_MI = 3.5,
+B_LU_BRP = 3732,
+quiet = TRUE,
+mc = FALSE
+)
+
 }

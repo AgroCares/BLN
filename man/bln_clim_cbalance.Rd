@@ -29,6 +29,23 @@ bln_clim_cbalance(
 
 \item{M_GREEN}{(boolean) A soil measure. Are catch crops sown after main crop (optional)}
 }
+\value{
+An indicator score for the organic matter balance ranging from 0 (low)
+to 1 (optimal)
+}
 \description{
 Function to calculate and evaluate a default SOM balance
+}
+\examples{
+bln_clim_cbalance(
+ID = 1,
+A_SOM_LOI = 7.92,
+A_P_AL = 63,
+A_P_WA = 65,
+B_LU_BRP = 3732,
+M_COMPOST = 3,
+M_GREEN = TRUE
+)
+
+
 }

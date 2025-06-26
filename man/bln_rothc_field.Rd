@@ -29,8 +29,23 @@ bln_rothc_field(
 
 \item{spinup}{(numeric) the spinup period that is used for initialisation model}
 }
+\value{
+A data.table with a row for each year + year 0 (51 total) and, a year column, and a column for each scenario.
+The scenario columns hold the calculated soil organic matter content in each year.
+}
 \description{
 This function calculates the optimal sequestration scenario for cropland and grassland with the RothC model over the course of 50 years
 For cropland this function converts the crop to winter wheat where crop residue is left behind, grassland field are converted to permanent grassland
 The function assumes that the P-status of the soil is neutral according to the Dutch fertilization regulation and applies the maximal permitted P-dose in the form of cattle slurry
+}
+\examples{
+bln_rothc_field(A_SOM_LOI = 7.92,
+A_CLAY_MI = 3.5,
+B_LU_BRP = 3732,
+simyears = 50,
+init = TRUE,
+scen = c("BAU", "ALL"),
+spinup = 10
+)
+
 }

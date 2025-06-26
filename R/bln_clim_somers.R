@@ -8,6 +8,20 @@
 #' @param B_DRAIN_WP (numeric) the drooglegging of a field in winter (difference field height and ditch level, in meters)
 #' @param B_DRAIN_SP_CHANGE (numeric) the decrease in drooglegging of a field in summer (in meters). Allowed decrease varies from 0 to 0.5m.
 #'
+#' @examples
+#' bln_clim_somers(
+#' ID = 1,
+#' B_SOILTYPE_AGR = c('veen', 'dalgrond'),
+#' A_SOM_LOI = c(25,21),
+#' B_SOMERS_BC = c(25,25),
+#' B_DRAIN_SP = c(0.63, 0.63),
+#' B_DRAIN_WP = c(0.49, 0.49),
+#' B_DRAIN_SP_CHANGE = c(0.2, 0.2)
+#' )
+#'
+#' @returns Returns an indicator score (between 0 and 1) for carbon saturation of
+#'  peat and peaty (A_SOM_LOI > 20%) soils where 1 means that the soil is optimally saturated.
+#'
 #' @import data.table
 #'
 #' @export
@@ -25,7 +39,7 @@ bln_clim_somers <- function(ID,B_SOILTYPE_AGR,A_SOM_LOI,B_SOMERS_BC,B_DRAIN_SP,B
                     length(B_DRAIN_SP), length(B_DRAIN_WP))
   checkmate::assert_character(B_SOILTYPE_AGR, any.missing = FALSE, min.len = 1, len = arg.length)
   checkmate::assert_subset(B_SOILTYPE_AGR, choices = BLN::bln_soiltype[bln_country=='NL',bln_soil_cat1], empty.ok = FALSE)
-  checkmate::assert_numeric(A_SOM_LOI, lower = 0.1, upper = 100, any.missing = FALSE, min.len = 1, len = arg.length)
+  checkmate::assert_numeric(A_SOM_LOI, lower = 0.5, upper = 75, any.missing = FALSE, min.len = 1, len = arg.length)
   checkmate::assert_integerish(B_SOMERS_BC, min.len = 1, len = arg.length)
   checkmate::assert_subset(B_SOMERS_BC, choices = c(NA,unique(BLN::bln_somers$b_somers_bc)))
   checkmate::assert_numeric(B_DRAIN_SP, lower = 0, upper = 1.2, min.len = 1, len = arg.length)

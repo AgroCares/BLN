@@ -10,6 +10,21 @@
 #
 #' @import data.table
 #'
+#' @examples
+#' bln_clim_cbalance(
+#' ID = 1,
+#' A_SOM_LOI = 7.92,
+#' A_P_AL = 63,
+#' A_P_WA = 65,
+#' B_LU_BRP = 3732,
+#' M_COMPOST = 3,
+#' M_GREEN = TRUE
+#' )
+#'
+#'
+#' @returns An indicator score for the organic matter balance ranging from 0 (low)
+#' to 1 (optimal)
+#'
 #' @export
 bln_clim_cbalance <- function(ID,B_LU_BRP,A_SOM_LOI,A_P_AL,A_P_WA,M_COMPOST = 0,M_GREEN = FALSE){
 
@@ -23,7 +38,7 @@ bln_clim_cbalance <- function(ID,B_LU_BRP,A_SOM_LOI,A_P_AL,A_P_WA,M_COMPOST = 0,
   arg.length <- max(length(B_LU_BRP), length(A_SOM_LOI), length(A_P_AL), length(A_P_WA))
   checkmate::assert_integerish(B_LU_BRP, any.missing = FALSE, min.len = 1, len = arg.length)
   checkmate::assert_subset(B_LU_BRP, choices = unique(BLN::bln_crops$crop_code), empty.ok = FALSE)
-  checkmate::assert_numeric(A_SOM_LOI, lower = 0.1, upper = 100, any.missing = FALSE, min.len = 1, len = arg.length)
+  checkmate::assert_numeric(A_SOM_LOI, lower = 0.5, upper = 75, any.missing = FALSE, min.len = 1, len = arg.length)
   checkmate::assert_numeric(A_P_AL, lower = 1, upper = 250, any.missing = FALSE, len = arg.length)
   checkmate::assert_numeric(A_P_WA, lower = 1, upper = 250, any.missing = FALSE, len = arg.length)
   checkmate::assert_numeric(M_COMPOST, lower = 0, upper = 100, len = arg.length)

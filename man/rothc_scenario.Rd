@@ -11,6 +11,16 @@ rothc_scenario(B_LU_BRP, scen)
 
 \item{scen}{(character) possible scenarios. Include BAU, CLT, BAUIMPR and ALL}
 }
+\value{
+A list of two data.tables, rotation and amendment. Rotation is empty
+whilst amendment contains fertiliser and soil amendment applications for each
+year in a rotation as well as the month of application, organic matter content,
+hummification coëfficient, P2O5 content and total P applied.
+}
 \description{
 Function to prepare inputs for various scenarios with RothC
+}
+\examples{
+rothc_scenario(B_LU_BRP = c(256, 266, 3555), scen = "BAU")
+
 }
