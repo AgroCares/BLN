@@ -1,6 +1,7 @@
 # BLN 0.x.x 2025-xx-xx
 ## Added
 * examples and return descriptions to `bln_clim_*` and RothC functions
+* DeepWiki link to the README
 
 ## Changed
 * increased minimum value for A_SOM_LOI in functions from 0.1 to 0.5
