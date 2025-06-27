@@ -48,7 +48,7 @@ ggplot2::theme_set(theme_bw() +
 # Introduction
 Well, not EVERYTHING carbon but anything you want to know about soil carbon in
 the BLN package. This vignette delves into the functions underlying the evaluation
-of climate soil ecosystem service functions.
+of climate soil ecosystem services.
 
 BLN currently has four indicators which together determine the climate score
 s_bln_esd_clim. These are:
@@ -86,9 +86,9 @@ there is an organic matter input of 850 kg/ha. If the landuse's name contains
 "mais" or "aardappel", a catch crop is mandatory and a green manure OM input of 850
 kg/ha is used.
 * organic matter decomposition: for fields where the soil organic matter content
-is higher than 23%, the decomposition rate is 3145.513 kg/ha/year. For fields
+is higher than 23%, the decomposition rate is 3145.513 kg ha^-1^ year^-1^. For fields
 with lower SOM concentrations, the decomposition rate is calculated as:
-SOM * 0.1 * 0.3 * (-0.37 * log(SOM) + 1.8398) * (10 ^ 6) * 0.0487 * SOM ^ -0.453 * 0.57
+$SOM * 0.1 * 0.3 * (-0.37 * log(SOM) + 1.8398) * 10^6 * 0.0487 * SOM^{-0.453} * 0.57$
 see figure \@ref(fig:decompRate).
 
 
@@ -130,7 +130,7 @@ for soils with a soil organic matter content higher than 20%. For soils characte
 as peat by their high soil organic matter content, RothC is not applied. Instead
 the future soil organic matter content is predicted with the same procedure used 
 by INITIATOR [@deVries2023]. In effect, this makes the predicted soil organic 
-matter content a function of summer groundwater level \@ref(fig:rothcPeat).
+matter content a function of summer groundwater level (Figure \@ref(fig:rothcPeat)).
 
 ```{r rothcPeat, fig.cap="Predicted soil organic matter contents for peat soils calculated by the bln_clim_roth function.", fig.align='left', fig.width=7}
 dt.peat <- data.table::data.table(
@@ -160,7 +160,7 @@ ggplot(data = dt.peat,
                      col = `Initial soil organic matter content`)) +
   geom_line() +
   xlab("Summer groundwater level, (m-mv)") +
-  ylab("Predicted soil organic matter content, (%)") +
+  ylab("Predicted soil organic matter\ncontent, (%)") +
   scale_color_viridis_d() +
   theme(legend.position = 'bottom')
 
@@ -174,7 +174,7 @@ can be turned on and of with the boolean input argument "mc" for both functions.
 
 For the RothC indicator, two scenario's are simulated (each for a 100 years), BAU
 (business as usual) and ALL (everything that can be done to increase or maintain soil carbon, is done).
-For more details on these scenarios, see @Ros2024.
+For more details on the scenarios see [scenarios](#scenarios).
 
 By dividing the predicted soil organic matter content in the BAU scenario by that 
 predicted in the ALL scenario, a value between 0 and 1 is obtained which represents
@@ -182,11 +182,11 @@ the gap between how much carbon can be stored in the soil with the current manag
 compared to the potential of the soil to store carbon.
 
 # Carbon saturation
-The carbon saturation indicator `i_clim_csat` is based on @Ros2024. This indicator
+The carbon saturation indicator `i_clim_csat` is based on @RosInReview. This indicator
 is ratio between the current soil organic matter content and the potential soil organic
 matter content. The potential soil organic matter content can be supplied to the
 function directly or estimated using the cultivation, clay content, and soil organic
-matter content \@ref(fig:csat1).
+matter content (Figure \@ref(fig:csat1)).
 
 ```{r csat1, fig.cap="Estimated potential soil organic matter content.", fig.align='left', fig.width=7}
 # mock up data
@@ -213,7 +213,7 @@ ggplot(data = dt,
                      col = `crop category`)) +
   geom_point() +
   xlab("clay content, (%)") +
-  ylab("maximum soil organic matter content, (%)") +
+  ylab("maximum soil organic matter\ncontent, (%)") +
   scale_color_viridis_d() +
   theme(legend.position = 'right')
 
@@ -248,7 +248,7 @@ a soil when no measures are taken (reference situation), when passive water infi
 is applied (PWIS), and when active water infiltration is applied (AWIS)
 
 These infiltration systems and change in summer drainage affect CO~2~ emissions
-\@ref(fig:SOMERS).
+(Figure \@ref(fig:SOMERS)).
 
 ```{r SOMERS, fig.cap="Indicative CO2 emission for different infiltration systems at different drainage levels", fig.align='left', fig.width=7}
 dt <- melt(BLN::bln_somers[b_somers_bc == 1 & b_drain_wp == 0.0],
@@ -267,18 +267,53 @@ ggplot(data = dt[!is.na(value)],
 ```
 
 Within BLN, there are three measures that can be calculated using SOMERS to reduce
-CO~2~ emissions: using pwis, using awis, or reducing the summer drainage level (
-increasing the water level in the ditches during summer). The indicator `i_clim_somers`
+CO~2~ emissions: using pwis, using awis, or reducing the summer drainage level 
+(increasing the water level in the ditches during summer). The indicator `i_clim_somers`
 is finally calculated by taking the measure with the lowest emission, dividing this
 by the reference emission and subtracting this from 1.
 
-1 - min(awis, pwis, reduced summer drainage)/reference
+$$1 - min(awis, pwis, reduced summer drainage)/reference$$
 
 The `i_clim_somers` indicator represents the indicative potential to reduce CO~2~
 emissions on a field.
 
 # Indicator aggregation
 
+
+# Scenarios
+## BAU (Business As Usual)
+In the BAU scenario the crop rotation remains the same and it is assumed that 
+dairy slurry manure is applied as much as the phosphate content of the manure allows
+for soils with a neutral P-status. Except for onions, carrots, grass seeds, sugar beet, and
+chicory, it is assumed that these crops are only fertilised with mineral fertilisers.
+Furthermore, it is assumed that green manures are only used after a potato or maize
+cultivation and that they are sown in October. In this scenario, straw residues are
+not left in the field and thus, do not contribute to the organic matter input.
+
+## BAUIMPR (Business As Usual Improved)
+This scenario has modest tweaks compared to BAU. 
+* Instead of sowing green manure after maize and potato in October, it is sown in September.
+Other arable crops have a green manure sown in October. This increases the organic matter input from green manure compared to BAU.
+* Five percent of the cattle slurry that would be applied is replaced by compost.
+This increases the organic matter input from organic amendments compared to BAU.
+* 
+
+## CLT
+In CLT it is assumed that farmers can shift to a much simplified and conservation 
+focussed rotation with intense residue management. All arable cultivations
+are replaced by winter wheat and all grassland is turned into permanent grassland. 
+This strongly increases the organic matter input from crops. Furthermore, green
+manure is sown even earlier, in August and all crop residues are incorporated in 
+the soil. Nothing changes with regards to the organic amendments compared to BAU.
+
+## ALL
+The ALL scenario represents the theoretical maximum carbon in built-up case, where
+it is assumed that farmers pull out all stops to store and maintain organic carbon.
+* Arable crop rotations are adjusted to included at least 40% cereals.
+* Green manures are sown as early as the main cultivation allows (if at all possible)
+* All crop residues are incorporated into the soil.
+* Organic amendments are applied to the fullest with 95% cattle slurry and 5% compost.
+* Yields are increased by 5%.
 
 # Further reading
 
