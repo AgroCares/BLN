@@ -278,7 +278,42 @@ The `i_clim_somers` indicator represents the indicative potential to reduce CO~2
 emissions on a field.
 
 # Indicator aggregation
+All BLN indicators are aggregated to obtain a score for a particular ecosystem service.
+The carbon indicators discussed here together aggregate to form the score for 
+climate regulation `s_bln_clim`.
 
+In aggregation, each indicator gets assigned a weight which depends on the height
+of the indicator's value. Lower values gain more weight than higher values (Figure \@ref(fig:indicatorWeight)).
+
+```{r indicatorWeight, fig.cap="Weight correction factor calculated with OBIC::cf_ind_importance from an indicator value.", fig.align='left', fig.width=7}
+dt <- data.table(`indicator value` = seq(0, 1, 0.005))
+dt[, weight := OBIC::cf_ind_importance(`indicator value`)]
+
+ggplot(data = dt,
+       mapping = aes(x = `indicator value`,
+                     y = weight)) +
+  geom_line() +
+  ylim(0, 5)
+
+```
+
+This weight is used to calculate a weighted average ecosystem service score for 
+each year. When data from multiple years has been used, the scores calculated for
+each year are further aggregated with a weighted average where recent years carry
+more weight (Figure \@ref(fig:yearWeight)). For this to work properly, the data put into
+`bln_field()` must be ordered such that the most recent years are first.
+
+```{r yearWeight, fig.cap="Weight correction factor for the recency of years.", fig.align='left', fig.width=7}
+dt <- data.table(year = seq(1, 10, 1))
+dt[, weight := log(12 - pmin(10,year)), by = year]
+
+ggplot(data = dt,
+       mapping = aes(x = year,
+                     y = weight)) +
+  geom_line() +
+  ylim(0, 3)
+
+```
 
 # Scenarios
 ## BAU (Business As Usual)
