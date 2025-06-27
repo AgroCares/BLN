@@ -100,7 +100,7 @@ tab <- data.table::data.table(
   `OM dose` = c(2584, 1615, 1292, 1077, 4000, 3333, 3000, 2667)
 )
 
-kableExtra::kable(tab)
+knitr::kable(tab)
 ```
 
 ```{r decompRate, fig.cap="Decomposition rate at a given soil organic matter content.", fig.align='left', fig.width=7}
