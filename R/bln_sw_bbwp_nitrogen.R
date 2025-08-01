@@ -122,11 +122,13 @@ bln_bbwp_nsw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GWL_CL
   # reclassify the groundwater table (gwt) into a numeric value
   dt[B_GWL_CLASS %in% c('I', 'Ia', 'Ic'), nsw_gwt := 1]
   dt[B_GWL_CLASS %in% c('II','III','V', 'IIa', 'IIIa', 'Va', 'Vao', 'Vad'), nsw_gwt := 0.9] # GHG <25
-  dt[B_GWL_CLASS %in% c('IIb','IIIb','Vb', 'Vbo', 'Vbd'), nsw_gwt := 0.8] # GHG 25-40
+  dt[B_GWL_CLASS %in% c('IIb','IIIb','Vb', 'Vbo', 'Vbd', 'sV', 'sVb'), nsw_gwt := 0.8] # GHG 25-40
   dt[B_GWL_CLASS %in% c('IIc','IV', 'IVu'), nsw_gwt := 0.7] # GHG 40-80
   dt[B_GWL_CLASS %in% c('VI', 'VIo', 'VId'), nsw_gwt := 0.6] # GHG 40-80
   dt[B_GWL_CLASS %in% c('IVc', 'VII', 'VIIo', 'VIId'), nsw_gwt := 0.5] # GHG 80-140
   dt[B_GWL_CLASS %in% c('VIII', 'VIIIo', 'VIIId'), nsw_gwt := 0.4] # GHG >140
+
+  checkmate::assert_numeric(dt$nsw_gwt, any.missing = FALSE)
 
   # rank the risk for surface runoff (van Hattum, 2011)
   # higher risk is associated to increased risks for N runoff

@@ -166,7 +166,7 @@ bln_bbwp_ngw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GWP,B_
   dt[,cfngw := fifelse(B_GWP, 1, 0.5)]
 
   # lower the regional target for nitrate leaching (compared to the general target 1)
-  dt[B_GWL_CLASS %in% c('I','II','III'), cfngw := cfngw * 0.5]
+  dt[B_GWL_CLASS %in% c('I', 'Ia', 'Ic','II', 'IIa', 'IIb', 'IIc','III', 'IIIa', 'IIIb'), cfngw := cfngw * 0.5]
   dt[B_SOILTYPE_AGR == 'veen', cfngw := cfngw * 0.1]
 
   # calculate the individual opportunity indexes
