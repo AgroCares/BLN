@@ -12,15 +12,14 @@
 
   # Unpack options
   for(this.code in bln_parms[enum == TRUE, code]){
-    if(grepl('_HELP$',this.code)){
-      bln_parms[code == this.code, choices := list(pandex::enum_opts('B_HELP_WENR'))]
-    } else {
+    if(grepl('GWL_CLASS$',this.code)){
       # omit '-' from choices
       bln_parms[code == this.code, choices := list(pandex::enum_opts("B_GWL_CLASS")[!pandex::enum_opts("B_GWL_CLASS") == '-'])]
+    } else {
+      bln_parms[code == this.code, choices := list(pandex::enum_opts(this.code))]
     }
 
   }
-  bln_parms[code == 'B_GWL_CLASS', choices := list(pandex::enum_opts("B_GWL_CLASS"))]
 
   # add id
   bln_parms[, id := 1:nrow(bln_parms)]
