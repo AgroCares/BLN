@@ -39,5 +39,6 @@ Suggests:
     knitr,
     rmarkdown,
     covr,
+    bookdown,
     sf
 VignetteBuilder: knitr
