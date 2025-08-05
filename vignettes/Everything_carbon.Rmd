@@ -161,7 +161,7 @@ ggplot(data = dt.peat,
   geom_line() +
   xlab("Summer groundwater level, (m-mv)") +
   ylab("Predicted soil organic matter\ncontent, (%)") +
-  scale_color_viridis_d() +
+  scale_colour_brewer(palette = 'Dark2') +
   theme(legend.position = 'bottom')
 
 ```
@@ -214,7 +214,7 @@ ggplot(data = dt,
   geom_point() +
   xlab("clay content, (%)") +
   ylab("maximum soil organic matter\ncontent, (%)") +
-  scale_color_viridis_d() +
+  scale_colour_brewer(palette = 'Dark2') +
   theme(legend.position = 'right')
 
 ```
@@ -261,7 +261,7 @@ ggplot(data = dt[!is.na(value)],
   geom_line() +
   xlab("Summer drainage level, (m-mv)") +
   ylab("CO2 emission, (kg/ha/year)") +
-  scale_color_viridis_d() +
+  scale_colour_brewer(palette = 'Dark2') +
   theme(legend.position = 'right')
 
 ```
