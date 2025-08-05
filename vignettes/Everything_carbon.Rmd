@@ -222,7 +222,7 @@ ggplot(data = dt,
 # Carbon on peat soils (SOMERS)
 Carbon fluxes on peat and peaty soils are modelled with the SOMERS (Subsurface 
 Organic Matter Emission Registration System) model [@Erkens2022]. SOMERS has been
-developed specially to CO~2~ emissions of peat soils with
+developed specially to predict CO~2~ emissions of peat soils with
 differing climatological and hydrological conditions.
 
 SOMERS can be used to estimate the effect of drainage measures on CO~2~ emissions and is
