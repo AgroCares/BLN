@@ -327,27 +327,44 @@ not left in the field and thus, do not contribute to the organic matter input.
 
 ## BAUIMPR (Business As Usual Improved)
 This scenario has modest tweaks compared to BAU. 
+
 * Instead of sowing green manure after maize and potato in October, it is sown in September.
 Other arable crops have a green manure sown in October. This increases the organic matter input from green manure compared to BAU.
+
 * Five percent of the cattle slurry that would be applied is replaced by compost.
 This increases the organic matter input from organic amendments compared to BAU.
-* 
+ 
 
 ## CLT
 In CLT it is assumed that farmers can shift to a much simplified and conservation 
-focussed rotation with intense residue management. All arable cultivations
-are replaced by winter wheat and all grassland is turned into permanent grassland. 
-This strongly increases the organic matter input from crops. Furthermore, green
-manure is sown even earlier, in August and all crop residues are incorporated in 
-the soil. Nothing changes with regards to the organic amendments compared to BAU.
+focussed rotation with intense residue management. 
+
+* All arable cultivations are replaced by winter wheat
+
+* All grassland is turned into permanent grassland. 
+
+* Green manure is sown in August
+
+* All crop residues are incorporated in the soil.
+
+* Nothing changes with regards to the organic amendments compared to BAU.
+
+The changes to the cultivations strongly increases the organic matter input from
+crops. The inputs from green manures and crop residues are also increased compared
+to BAU.
 
 ## ALL
 The ALL scenario represents the theoretical maximum carbon in built-up case, where
 it is assumed that farmers pull out all stops to store and maintain organic carbon.
+
 * Arable crop rotations are adjusted to included at least 40% cereals.
+
 * Green manures are sown as early as the main cultivation allows (if at all possible)
+
 * All crop residues are incorporated into the soil.
+
 * Organic amendments are applied to the fullest with 95% cattle slurry and 5% compost.
+
 * Yields are increased by 5%.
 
 # Further reading
