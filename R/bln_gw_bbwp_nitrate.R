@@ -26,7 +26,7 @@
 #' B_SC_WENR = 902,
 #' B_AER_CBS = 'LG14',
 #' B_GWP = FALSE,
-#' B_GWL_CLASS = 'GtVI',
+#' B_GWL_CLASS = 'VI',
 #' A_SOM_LOI = 7.92,
 #' A_N_RT = 2300,
 #' B_N_RT = NA_real_,
@@ -41,7 +41,7 @@ bln_bbwp_ngw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GWP,B_
 
   # add visual bindings
   bln_country = bln_crops = code = choices = value_min = value_max = . = crop_cat1 = bln_soil_cat1 = bln_soil_cat2 = ngw_scr = NULL
-  crop_cat1_nl = bln_soil_cat2_nl = leaching_to_set = bodem = gewas = B_GT = mf = ngw_lea = ngw_nlv =risk_cor = NULL
+  crop_cat1_nl = bln_soil_cat2_nl = leaching_to_set = bodem = gewas = mf = ngw_lea = ngw_nlv =risk_cor = NULL
   B_LSW_ID = group = risk = mcf= CROP_ID = cfngw = d_opi_ngw = ngw = crop_code = nf = NULL
 
   # load internal table
@@ -89,11 +89,6 @@ bln_bbwp_ngw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GWP,B_
                    B_N_RT = B_N_RT,
                    B_N_RT_SD = B_N_RT_SD)
 
-  # check on BBWP format Gt
-  cols <- c('GtI','GtII','GtIII','GtIV','GtV', 'GtVI','GtVII','GtVIII')
-  dt[!B_GWL_CLASS %in% cols & grepl('lg14|limburg',tolower(B_AER_CBS)), B_GWL_CLASS := 'GtVIII']
-  dt[!B_GWL_CLASS %in% cols & !grepl('lg14|limburg',tolower(B_AER_CBS)), B_GWL_CLASS := 'GtII']
-
   # replace missing LSW properties
   dt[is.na(B_N_RT), B_N_RT := dt.lsw$B_N_RT]
   dt[is.na(B_N_RT_SD), B_N_RT_SD := dt.lsw$B_N_RT_SD]
@@ -123,7 +118,7 @@ bln_bbwp_ngw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GWP,B_
   dt[bln_soil_cat2 == 'peat', bln_soil_cat2_nl := 'veen']
 
   # merge fraction of N leaching into 'dt', based on soil type x crop type x grondwatertrap
-  dt <- merge(dt, OBIC::nleach_table[leaching_to_set=='gw', list(bln_soil_cat2_nl = bodem, crop_cat1_nl = gewas, B_GWL_CLASS = B_GT, nf)],
+  dt <- merge(dt, OBIC::nleach_table[leaching_to_set=='gw', list(bln_soil_cat2_nl = bodem, crop_cat1_nl = gewas, B_GWL_CLASS = B_GWL_CLASS, nf)],
               by = c("bln_soil_cat2_nl", "crop_cat1_nl", "B_GWL_CLASS"), all.x = TRUE)
 
   # for situations that nf is unknown
@@ -171,7 +166,7 @@ bln_bbwp_ngw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_SC_WENR,B_AER_CBS,B_GWP,B_
   dt[,cfngw := fifelse(B_GWP, 1, 0.5)]
 
   # lower the regional target for nitrate leaching (compared to the general target 1)
-  dt[B_GWL_CLASS %in% c('GtI','GtII','GtIII'), cfngw := cfngw * 0.5]
+  dt[B_GWL_CLASS %in% c('I', 'Ia', 'Ic','II', 'IIa', 'IIb', 'IIc','III', 'IIIa', 'IIIb'), cfngw := cfngw * 0.5]
   dt[B_SOILTYPE_AGR == 'veen', cfngw := cfngw * 0.1]
 
   # calculate the individual opportunity indexes

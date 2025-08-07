@@ -46,7 +46,7 @@ bln_bbwp_bw(
 ID = 15,
 B_LU_BRP = c(233,259,2014,308),
 B_HELP_WENR = c('gMn53C', 'Mn25C','U0102nr108','nSn13A'),
-B_GWL_CLASS = rep('GtVI',4),
+B_GWL_CLASS = rep('VI',4),
 B_AREA_DROUGHT = rep(TRUE,4),
 A_CLAY_MI = rep(20,4),
 A_SAND_MI = rep(15,4),

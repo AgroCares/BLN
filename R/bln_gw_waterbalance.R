@@ -21,7 +21,7 @@
 #' ID = 15,
 #' B_LU_BRP = c(233,259,2014,308),
 #' B_HELP_WENR = c('gMn53C', 'Mn25C','U0102nr108','nSn13A'),
-#' B_GWL_CLASS = rep('GtVI',4),
+#' B_GWL_CLASS = rep('VI',4),
 #' B_AREA_DROUGHT = rep(TRUE,4),
 #' A_CLAY_MI = rep(20,4),
 #' A_SAND_MI = rep(15,4),
@@ -78,9 +78,6 @@ bln_bbwp_bw <- function(ID,B_LU_BRP,B_HELP_WENR,B_GWL_CLASS,B_AREA_DROUGHT,A_CLA
 
   # merge with crop category
   dt <- merge(dt,dt.crop[,.(crop_code,crop_cat1)],by.x='B_LU_BRP',by.y='crop_code',all.x = TRUE)
-
-  # Replace '-' with 'unknown'
-  dt[! B_GWL_CLASS %in% c('GtI','GtII','GtIII','GtIV','GtV', 'GtVI','GtVII','GtVIII'), B_GWL_CLASS := '-']
 
   # estimate field properties
 

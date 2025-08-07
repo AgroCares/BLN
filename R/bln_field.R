@@ -120,7 +120,7 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
   B_N_RT = B_N_RT_SD = i_gw_pest = i_gw_nret = i_gw_nlea = i_sw_nro = i_sw_nret = i_sw_nsw = i_sw_psw = NULL
   B_RO_R = B_RO_R_SD = B_P_CC = B_P_CC_SD = B_P_SG = B_P_SG_SD = B_AL_OX = B_AL_OX_SD = B_FE_OX = B_FE_OX_SD = NULL
   i_nut_n = i_nut_p = i_nut_k = i_nut_nue = . = crop_code = crop_category = value = indicator = NULL
-  cat1 = cat2 = crop_cat = weight = cf = value.w = ncat = cf_yr =  NULL
+  cat1 = cat2 = crop_cat = weight = cf = value.w = ncat = cf_yr = code = choices = NULL
 
   # make internal table
   dt <- data.table(ID = ID,
@@ -185,7 +185,7 @@ bln_field <- function(ID, B_LU_BRP,B_SC_WENR,B_GWL_CLASS,B_SOILTYPE_AGR,B_HELP_W
 
   # check formats B_SC_WENR and B_GWL_CLASS
   #dt[, B_SC_WENR := OBIC::format_soilcompaction(B_SC_WENR)]
-  dt[, B_GWL_CLASS := OBIC::format_gwt(B_GWL_CLASS)]
+  checkmate::assert_subset(B_GWL_CLASS, choices = unlist(BLN::bln_parms[code == "B_GWL_CLASS", choices]))
   dt[, B_AER_CBS := bln_format_aer(B_AER_CBS,type='name')]
 
   # estimate missing data

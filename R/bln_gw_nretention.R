@@ -19,7 +19,7 @@
 #' ID = 15,
 #' B_LU_BRP = c(233,259,2014,308),
 #' B_SOILTYPE_AGR = rep('rivierklei',4),
-#' B_GWL_CLASS = rep('GtIII',4),
+#' B_GWL_CLASS = rep('III',4),
 #' B_AER_CBS = rep('LG06',4),
 #' A_SOM_LOI = rep(3,4),
 #' A_N_RT = c(1000,2500,3500,9800),
@@ -69,7 +69,6 @@ bln_wat_nretention_gw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLA
                    value = NA_real_)
 
   ### format inputs for OBIC
-  dt[, B_GWL_CLASS := OBIC::format_gwt(B_GWL_CLASS)]
   dt[, B_AER_CBS := OBIC::format_aer(B_AER_CBS)]
 
   # add CN ratio

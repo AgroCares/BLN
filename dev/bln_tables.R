@@ -8,23 +8,28 @@
 
   # loaddata
   bln_parms <- fread('dev/bln_parameters.csv',encoding = 'UTF-8')
-
-  # remove prefix
-  setnames(bln_parms,gsub('bln_parm_','',colnames(bln_parms)))
+  bln_parms <- pandex::nmi_parameters[code %in% bln_parms$bln_parm_code]
 
   # Unpack options
   for(this.code in bln_parms[enum == TRUE, code]){
-    if(grepl('_HELP$',this.code)){
-      bln_parms[code == this.code, choices := list(pandex::enum_opts('B_HELP_WENR'))]
-    } else {
-      bln_parms[code == this.code, choices := list(pandex::enum_opts(this.code))]
-    }
-
+    bln_parms[code == this.code, choices := list(pandex::enum_opts(this.code))]
   }
-  bln_parms[code == 'B_GWL_CLASS', choices := list(paste0('Gt',pandex::enum_opts("B_GWL_CLASS")))]
+
+  # add id
+  bln_parms[, id := 1:nrow(bln_parms)]
+
+  # add type
+  bln_parms[, type := 'measurement']
+  bln_parms[grepl('_BCS$', code), type := 'visual soil assessment']
+  bln_parms[grepl('^B_', code), type := 'field property']
+
+  # select columns
+  setnames(bln_parms, 'parameter', 'description')
+  bln_parms <- bln_parms[,.(id, code , type, description, unit, value_min, value_max, data_type, enum, options, choices)]
 
   # save updated BLN parameter table
   usethis::use_data(bln_parms,overwrite = TRUE)
+  fwrite(bln_parms[,1:10], 'data-raw/bln_parms.csv')
 
 # make a table for all soil types available, being country dependent
 
@@ -67,6 +72,7 @@
   bln_crops[crop_cat1=='natuur', crop_cat1 := 'nature']
 
   # save updated crop table
+  fwrite(bln_crops, 'data-raw/bln_crops.csv')
   usethis::use_data(bln_crops,overwrite = TRUE)
 
 # make makkink table

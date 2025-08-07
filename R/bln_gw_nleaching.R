@@ -28,7 +28,7 @@
 #' ID = 15,
 #' B_LU_BRP = c(233,259,2014,308),
 #' B_SOILTYPE_AGR = rep('rivierklei',4),
-#' B_GWL_CLASS = rep('GtIII',4),
+#' B_GWL_CLASS = rep('III',4),
 #' B_AER_CBS = rep('LG06',4),
 #' B_SC_WENR = rep(902,4),
 #' B_FERT_NORM_FR = rep(1,4),
@@ -123,7 +123,6 @@ bln_wat_nrisk_gw <- function(ID,B_LU_BRP,B_SOILTYPE_AGR,B_AER_CBS,B_GWL_CLASS,B_
 
   ### format inputs for OBIC
   dt[, B_SC_WENR := OBIC::format_soilcompaction(B_SC_WENR)]
-  dt[, B_GWL_CLASS := OBIC::format_gwt(B_GWL_CLASS)]
   dt[, B_AER_CBS := OBIC::format_aer(B_AER_CBS)]
 
   # Calculate the crop rotation fraction

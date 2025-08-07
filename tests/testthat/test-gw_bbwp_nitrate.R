@@ -9,7 +9,7 @@ test_that("bln_bbwp_ngw works", {
       B_SC_WENR = 902,
       B_AER_CBS = 'LG14',
       B_GWP = FALSE,
-      B_GWL_CLASS = 'GtVI',
+      B_GWL_CLASS = 'VI',
       A_N_RT = 2300,
       B_N_RT = NA_real_,
       B_N_RT_SD = NA_real_,
@@ -28,7 +28,7 @@ test_that("bln_bbwp_ngw works", {
       B_SC_WENR = 902,
       B_AER_CBS = 'LG14',
       B_GWP = FALSE,
-      B_GWL_CLASS = 'GtII',
+      B_GWL_CLASS = 'II',
       A_N_RT = 8300,
       B_N_RT = NA_real_,
       B_N_RT_SD = NA_real_,
@@ -51,13 +51,13 @@ test_that("bln_bbwp_ngw works", {
       B_SC_WENR = rep(902,10),
       B_AER_CBS = rep('LG14',10),
       B_GWP = rep(TRUE,10),
-      B_GWL_CLASS = rep('GtII',10),
+      B_GWL_CLASS = rep('II',10),
       A_N_RT = seq(1000,9000,length.out = 10),
       B_N_RT = NA_real_,
       B_N_RT_SD = NA_real_,
       penalty = TRUE
     ),
-    expected = c(0.51,0.5,0.48,0.46,0.43,0.4,0.38,0.35,0.34,0.33),
+    expected = c(0.51,0.5,0.49,0.46,0.44,0.4,0.38,0.36,0.34,0.33),
     tolerance = 0.01
   )
 
@@ -70,13 +70,13 @@ test_that("bln_bbwp_ngw works", {
       B_SC_WENR = rep(902,10),
       B_AER_CBS = rep('LG14',10),
       B_GWP = rep(TRUE,10),
-      B_GWL_CLASS = c(rep('GtV',9),'GtII'),
+      B_GWL_CLASS = c(rep('V',9),'II'),
       A_N_RT = seq(1000,19000,length.out = 10),
       B_N_RT = NA_real_,
       B_N_RT_SD = NA_real_,
       penalty = TRUE
     ),
-    expected = c(0.28,0.25,0.19,0.13,0.09,0.08,0.08,0.08,0.08,0.52),
+    expected = c(0.32,0.28,0.21,0.14,0.10,0.08,0.08,0.08,0.08,0.52),
     tolerance = 0.01
   )
 

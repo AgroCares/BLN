@@ -434,7 +434,6 @@ dt.out[B_SLOPE_DEGREE > 30, B_SLOPE_DEGREE := 30]
 dt.out[is.na(B_SLOPE_DEGREE), B_SLOPE_DEGREE := 0.1]
 dt.out[,B_AREA_DROUGHT := TRUE]
 dt.out[, B_FERT_NORM_FR := 1]
-dt.out[,B_GWL_CLASS := OBIC::format_gwt(B_GWL_CLASS)]
 
 # add crop categories
 dt.out <- merge(dt.out,

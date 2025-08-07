@@ -5,7 +5,7 @@ test_that("bln_nut_nue works", {
     bln_nut_nue(
       B_LU_BRP = rep(3732,10),
       B_HELP_WENR = c('Mn15C','Mn15A','bMn15A','gMn85C','gMn83C','kMn63C',rep('Mn35A',4)),
-      B_GWL_CLASS = rep('GtII',10),
+      B_GWL_CLASS = rep('II',10),
       A_P_AL = c(35,54,rep(150,8)),
       A_P_CC = c(2.5,4.5,seq(5,60,length.out = 8)),
       A_P_WA = c(3.5,6.5,rep(45,8)),
@@ -23,7 +23,7 @@ test_that("bln_nut_nue works", {
     bln_nut_nue(
       B_LU_BRP = rep(265,10),
       B_HELP_WENR = c('Mn15C','Mn15A','bMn15A','gMn85C','gMn83C','kMn63C',rep('Mn35A',4)),
-      B_GWL_CLASS = rep('GtII',10),
+      B_GWL_CLASS = rep('II',10),
       A_P_AL = c(35,54,rep(150,8)),
       A_P_CC = c(2.5,4.5,seq(5,60,length.out = 8)),
       A_P_WA = c(3.5,6.5,rep(45,8)),
