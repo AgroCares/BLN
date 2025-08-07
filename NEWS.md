@@ -9,9 +9,13 @@ functions and recorded in BLN tables. Acceptable input values for B_GWL_CLASS ar
 what the most suitable groundwater class is. Fields with "-" are typically found 
 in locations with very variable or very deep groundwater levels such as flood plains
 or hills.
+* reclassified crop_cat1 for "sloot" from arable to nature
+* reclassified B_LU_WATERSTRESS_OBIC for "boomgroep" from boomteelt to natuur
 
 ## Added
 * function `bln_format_gtclass()` which can be used to determine a value for B_GWL_CLASS using B_GWL_GHG and B_GWL_GLG
+* Dutch crop codes from BRP 2025: "Riet in een subsidiabele sloot" (7135),
+"Riet in water, anders dan een subsidiabele sloot" (7134), "Bonen, overig" (7137), and "Palmkool" (7138)
 
 # BLN 0.9.3 2025-04-10
 ## Deprecated

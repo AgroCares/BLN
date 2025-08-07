@@ -42,7 +42,7 @@ crop_code,crop_name,crop_cat1,bln_country,B_LU,B_LU_EOM,B_LU_EOM_RESIDUE,B_LU_HC
 336,"grasland, natuurlijk. areaal met een natuurbeheertype dat overwegend voor landbouwactiviteiten-glb wordt gebruikt",grassland,NL,nl_336,1400,0,0.35,grasland zonder herinzaai,grasland
 337,"bufferstrook, rand (inclusief eventuele oevervegetatie)",nature,NL,nl_337,0,0,0.35,natuur,grasklaver
 338,"rand, liggend op bouwland en direct grenzend aan bos. geen landbouwproductie.",nature,NL,nl_338,500,0,0.81,natuur,natuurlijk grasland
-343,sloot,arable,NL,nl_343,0,0,0.35,natuur,overig
+343,sloot,nature,NL,nl_343,0,0,0.35,natuur,overig
 344,"rand, grenzend aan blijvend grasland of een blijvende teelt, hoofdzakelijk bestaand uit een ander gewas dan gras",nature,NL,nl_344,500,0,0.35,grasland met herinzaai,grasland
 345,"rand, grenzend aan bouwland, hoofdzakelijk bestaand uit een ander gewas dan gras",nature,NL,nl_345,500,0,0.35,natuur,grasland
 346,tagetes erecta (afrikaantje),arable,NL,nl_346,865,0,0.3,overig,bloembollen
@@ -274,7 +274,7 @@ crop_code,crop_name,crop_cat1,bln_country,B_LU,B_LU_EOM,B_LU_EOM_RESIDUE,B_LU_HC
 2326,frambozen,arable,NL,nl_2326,2850,0,0.81,klein fruit,fruit
 2327,bramen,arable,NL,nl_2327,0,0,0.81,klein fruit,fruit
 2328,"kersen, zoet",arable,NL,nl_2328,0,0,0.81,klein fruit,fruit
-2617,boomgroep,nature,NL,nl_2617,1175,0,0.81,boomteelt,bos
+2617,boomgroep,nature,NL,nl_2617,1175,0,0.35,natuur,bos
 2618,"windhaag, in een perceel fruitteelt",nature,NL,nl_2618,0,0,0.35,natuur,fruit
 2619,bossingel,nature,NL,nl_2619,0,0,0.81,natuur,bos
 2620,poel en klein historisch water,nature,NL,nl_2620,0,0,0.35,natuur,overig
@@ -520,3 +520,7 @@ crop_code,crop_name,crop_cat1,bln_country,B_LU,B_LU_EOM,B_LU_EOM_RESIDUE,B_LU_HC
 7129,"rogge, groenvoedergewas",arable,NL,nl_7129,1500,0,0.31,granen,wintertarwe
 7130,"rogge, korrelgewas",arable,NL,nl_7130,1500,0,0.31,granen,wintertarwe
 7131,"rogge, groenbemesting, vanggewas",arable,NL,nl_7131,850,0,0.31,granen,bladrammenas
+7134,"riet in water, anders dan een subsidiabele sloot",nature,NL,nl_7134,0,0,0.31,grasland met herinzaai,overig
+7135,riet in een subsidiabele sloot,nature,NL,nl_7135,0,0,0.31,grasland met herinzaai,overig
+7137,"bonen, overig",arable,NL,nl_7137,650,0,0.24,zomergroenten,tuinbonen
+7138,palmkool,arable,NL,nl_7138,850,0,0.32,zomergroenten,bloemkool

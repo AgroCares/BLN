@@ -72,6 +72,7 @@
   bln_crops[crop_cat1=='natuur', crop_cat1 := 'nature']
 
   # save updated crop table
+  fwrite(bln_crops, 'data-raw/bln_crops.csv')
   usethis::use_data(bln_crops,overwrite = TRUE)
 
 # make makkink table
