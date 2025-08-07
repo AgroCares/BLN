@@ -12,13 +12,7 @@
 
   # Unpack options
   for(this.code in bln_parms[enum == TRUE, code]){
-    if(grepl('GWL_CLASS$',this.code)){
-      # omit '-' from choices
-      bln_parms[code == this.code, choices := list(pandex::enum_opts("B_GWL_CLASS")[!pandex::enum_opts("B_GWL_CLASS") == '-'])]
-    } else {
-      bln_parms[code == this.code, choices := list(pandex::enum_opts(this.code))]
-    }
-
+    bln_parms[code == this.code, choices := list(pandex::enum_opts(this.code))]
   }
 
   # add id
@@ -35,6 +29,7 @@
 
   # save updated BLN parameter table
   usethis::use_data(bln_parms,overwrite = TRUE)
+  fwrite(bln_parms[,1:10], 'data-raw/bln_parms.csv')
 
 # make a table for all soil types available, being country dependent
 
