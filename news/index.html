@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">BLN</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,21 @@
       <small>Source: <a href="https://github.com/AgroCares/BLN/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.10.0" id="bln-0100-2025-xx-xx">BLN 0.10.0 2025-xx-xx<a class="anchor" aria-label="anchor" href="#bln-0100-2025-xx-xx"></a></h2>
+<div class="section level3">
+<h3 id="changed-0-10-0">Changed<a class="anchor" aria-label="anchor" href="#changed-0-10-0"></a></h3>
+<ul><li>the format of groundwater class values (B_GWL_CLASS) that are accepted by BLN functions and recorded in BLN tables. Acceptable input values for B_GWL_CLASS are now: “I”, “Ia”, “Ic”, “II”, “IIa”, “IIb”, “IIc”, “III”, “IIIa”, “IIIb”, “IV”, “IVc”, “IVu”, “sV”, “sVb”, “V”, “Va”, “Vad”, “Vao”, “Vb”, “Vbd”, “Vbo”, “VI”, “VId”, “VII”, “VIId”, “VIII”, “VIIId”, “VIIIo”, “VIIo”, “VIo”.</li>
+<li>BLN no longer supports B_GWL_CLASS value “-”. For fields with groundwater class “-”, the user is advised to use expert judgment on what the most suitable groundwater class is. Fields with “-” are typically found in locations with very variable or very deep groundwater levels such as flood plains or hills.</li>
+<li>reclassified crop_cat1 for “sloot” from arable to nature</li>
+<li>reclassified B_LU_WATERSTRESS_OBIC for “boomgroep” from boomteelt to natuur</li>
+</ul></div>
+<div class="section level3">
+<h3 id="added-0-10-0">Added<a class="anchor" aria-label="anchor" href="#added-0-10-0"></a></h3>
+<ul><li>function <code><a href="../reference/bln_format_gtclass.html">bln_format_gtclass()</a></code> which can be used to determine a value for B_GWL_CLASS using B_GWL_GHG and B_GWL_GLG</li>
+<li>Dutch crop codes from BRP 2025: “Riet in een subsidiabele sloot” (7135), “Riet in water, anders dan een subsidiabele sloot” (7134), “Bonen, overig” (7137), and “Palmkool” (7138)</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.3" id="bln-093-2025-04-10">BLN 0.9.3 2025-04-10<a class="anchor" aria-label="anchor" href="#bln-093-2025-04-10"></a></h2>
 <div class="section level3">
@@ -261,7 +276,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
