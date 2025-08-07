@@ -1,0 +1,522 @@
+crop_code,crop_name,crop_cat1,bln_country,B_LU,B_LU_EOM,B_LU_EOM_RESIDUE,B_LU_HC,B_LU_WATERSTRESS_OBIC,B_LU_MAKKINK
+172,tuinbouwzaden,arable,NL,nl_172,0,0,0.32,overig,overig
+174,bloemzaden open grond,arable,NL,nl_174,0,0,0.81,overig boomteelt,overig
+175,bloemkwekerijgewassen (inclusief bloemzaden),arable,NL,nl_175,0,0,0.81,overig boomteelt,overig
+176,bloembollen en - knollen,arable,NL,nl_176,0,0,0.24,bloembollen,bloembollen
+212,fruit,arable,NL,nl_212,0,0,0.81,groot fruit,fruit
+229,boomkwekerij en vaste planten,arable,NL,nl_229,1175,0,0.81,overig boomteelt,jong bos
+233,"tarwe, winter-",arable,NL,nl_233,1640,990,0.31,granen,wintertarwe
+234,"tarwe, zomer-",arable,NL,nl_234,1630,960,0.31,granen,graan
+235,"gerst, winter-",arable,NL,nl_235,1570,780,0.31,granen,wintertarwe
+236,"gerst, zomer-",arable,NL,nl_236,1310,0,0.31,granen,graan
+237,rogge (geen snijrogge),arable,NL,nl_237,1500,1020,0.31,granen,wintertarwe
+238,haver,arable,NL,nl_238,1570,900,0.31,granen,graan
+239,"erwten, groene, droog te oogsten (geen conserven)",arable,NL,nl_239,170,830,0.32,zomergroenten,tuinbonen
+240,schokkers,arable,NL,nl_240,0,0,0.24,overig,tuinbonen
+241,kapucijners (en grauwe erwten),arable,NL,nl_241,0,0,0.32,zomergroenten,tuinbonen
+242,"bonen, bruine-",arable,NL,nl_242,650,0,0.24,zomergroenten,tuinbonen
+243,"bonen, veld-(oa duive-, paarde-, wierbonen)(droog te oogsten",arable,NL,nl_243,650,0,0.24,zomergroenten,tuinbonen
+244,"erwten, groene/gele (groen te oogsten)",arable,NL,nl_244,170,830,0.32,zomergroenten,tuinbonen
+246,karwijzaad,arable,NL,nl_246,0,0,0.35,overig,overig
+247,blauwmaanzaad,arable,NL,nl_247,750,0,0.32,overig,overig
+249,"vlas, vezel- (niet voor zaaizaad)",arable,NL,nl_249,100,0,0.33,overig,graan
+256,"bieten, suiker-",arable,NL,nl_256,375,900,0.24,suikerbiet,bol en knolgewassen
+257,"bieten, voeder-",arable,NL,nl_257,375,900,0.24,suikerbiet,bol en knolgewassen
+258,luzerne,arable,NL,nl_258,1350,0,0.33,overig,overig
+259,"mais, snij-",maize,NL,nl_259,660,0,0.33,snijmais,snijmais
+262,"uien, zaai-",arable,NL,nl_262,300,0,0.24,zomergroenten,zaaiuien
+263,"uien, zilver-",arable,NL,nl_263,300,0,0.24,zomergroenten,zaaiuien
+265,"grasland, blijvend",grassland,NL,nl_265,3975,0,0.35,grasland zonder herinzaai,grasland
+266,"grasland, tijdelijk",grassland,NL,nl_266,1875,0,0.35,grasland met herinzaai,grasland
+294,"boomkwekerijgewassen en vaste planten, pot- en containerveld",arable,NL,nl_294,0,0,0.81,overig boomteelt,jong bos
+308,erwten (droog te oogsten),arable,NL,nl_308,170,830,0.32,zomergroenten,tuinbonen
+311,"bonen, veld- (onder andere duiven-, paarden-, wierbonen)",arable,NL,nl_311,650,0,0.24,zomergroenten,tuinbonen
+314,triticale,arable,NL,nl_314,1600,930,0.31,granen,graan
+316,"mais, korrel-",maize,NL,nl_316,1900,0,0.32,snijmais,snijmais
+317,"mais, corncob mix",maize,NL,nl_317,1900,0,0.32,snijmais,snijmais
+331,"grasland, natuurlijk. met landbouwactiviteiten.",grassland,NL,nl_331,1400,0,0.35,grasland zonder herinzaai,grasland
+332,"grasland, natuurlijk. hoofdfunctie natuur.",grassland,NL,nl_332,1400,0,0.35,grasland zonder herinzaai,grasland
+333,"rand, grenzend aan blijvend grasland of een blijvende teelt, hoofdzakelijk bestaand uit blijvend gras",nature,NL,nl_333,500,0,0.35,grasland met herinzaai,grasland
+334,"rand, grenzend aan bouwland, hoofdzakelijk bestaand uit blijvend gras",nature,NL,nl_334,500,0,0.35,natuur,grasland
+335,natuurterreinen (incl. heide),nature,NL,nl_335,0,0,0.32,natuur,bos
+336,"grasland, natuurlijk. areaal met een natuurbeheertype dat overwegend voor landbouwactiviteiten-glb wordt gebruikt",grassland,NL,nl_336,1400,0,0.35,grasland zonder herinzaai,grasland
+337,"bufferstrook, rand (inclusief eventuele oevervegetatie)",nature,NL,nl_337,0,0,0.35,natuur,grasklaver
+338,"rand, liggend op bouwland en direct grenzend aan bos. geen landbouwproductie.",nature,NL,nl_338,500,0,0.81,natuur,natuurlijk grasland
+343,sloot,arable,NL,nl_343,0,0,0.35,natuur,overig
+344,"rand, grenzend aan blijvend grasland of een blijvende teelt, hoofdzakelijk bestaand uit een ander gewas dan gras",nature,NL,nl_344,500,0,0.35,grasland met herinzaai,grasland
+345,"rand, grenzend aan bouwland, hoofdzakelijk bestaand uit een ander gewas dan gras",nature,NL,nl_345,500,0,0.35,natuur,grasland
+346,tagetes erecta (afrikaantje),arable,NL,nl_346,865,0,0.3,overig,bloembollen
+347,tagetes patula (afrikaantje),arable,NL,nl_347,865,0,0.3,overig,bloembollen
+370,"rand, grenzend aan blijvend grasland of een blijvende teelt, hoofdzakelijk bestaand uit tijdelijk gras",nature,NL,nl_370,500,0,0.35,grasland met herinzaai,grasland
+372,"rand, grenzend aan bouwland, hoofdzakelijk bestaand uit tijdelijk gras",nature,NL,nl_372,500,0,0.35,natuur,grasland
+375,hop,arable,NL,nl_375,0,0,0.31,overig,overig
+381,teff,arable,NL,nl_381,0,0,0.31,granen,graan
+382,spelt,arable,NL,nl_382,0,0,0.31,granen,graan
+383,graszaad,grassland,NL,nl_383,2300,0,0.32,grasland met herinzaai,grasland
+426,"overige groenbemesters, vlinderbloemige-",arable,NL,nl_426,800,0,0.24,overig,bladrammenas
+427,"overige groenbemesters, niet-vlinderbloemige-",arable,NL,nl_427,800,0,0.24,overig,bladrammenas
+428,gele mosterd,arable,NL,nl_428,875,0,0.81,overig boomteelt,overig
+511,cichorei,arable,NL,nl_511,700,0,0.81,overig boomteelt,bol en knolgewassen
+513,kanariezaad,arable,NL,nl_513,0,0,0.81,overig boomteelt,overig
+515,zonnebloemen,arable,NL,nl_515,0,0,0.81,overig boomteelt,bloembollen
+516,miscanthus (olifantsgras),arable,NL,nl_516,0,0,0.81,overig boomteelt,grasland
+636,saffloer,arable,NL,nl_636,0,0,0.81,overig boomteelt,overig
+637,vrouwenmantel,arable,NL,nl_637,0,0,0.2,natuur,overig
+652,meekrap,arable,NL,nl_652,0,0,0.81,overig boomteelt,overig
+653,teunisbloem,arable,NL,nl_653,700,0,0.81,overig boomteelt,bloembollen
+654,brandnetel,arable,NL,nl_654,0,0,0.2,natuur,overig
+655,zwarte mosterd,arable,NL,nl_655,850,0,0.81,overig boomteelt,overig
+656,zonnekroon,arable,NL,nl_656,0,0,0.2,overig,overig
+657,drachtplanten,nature,NL,nl_657,0,0,0.35,natuur,overig
+658,graansorgho,arable,NL,nl_658,0,0,0.31,granen,graan
+659,boekweit,arable,NL,nl_659,0,0,0.31,granen,graan
+660,gierst,arable,NL,nl_660,1310,0,0.31,granen,graan
+661,overige granen,arable,NL,nl_661,1600,0,0.31,granen,graan
+662,bos (sbl-regeling),nature,NL,nl_662,0,0,0.81,natuur,bos
+663,"lupinen, niet bittere",arable,NL,nl_663,0,0,0.2,overig,overig
+664,raapzaad,arable,NL,nl_664,0,0,0.32,overig,overig
+665,sojabonen,arable,NL,nl_665,0,0,0.24,zomergroenten,tuinbonen
+666,"vlas, olie-. lijnzaad niet van vezelvlas",arable,NL,nl_666,0,0,0.33,overig,graan
+669,zwaardherik (aaltjesvanggewas),arable,NL,nl_669,535,0,0.35,overig,overig
+670,japanse haver,arable,NL,nl_670,850,0,0.31,granen,graan
+671,raketblad (aaltjesvanggewas),arable,NL,nl_671,850,0,0.2,overig,overig
+672,groenten open grond (inclusief groentezaden),arable,NL,nl_672,0,0,0.32,zomergroenten,groenten
+794,woudbomen met korte omlooptijd (excl. wilgenhakhout),arable,NL,nl_794,0,0,0.81,boomteelt,jong bos
+795,wilgenhakhout,arable,NL,nl_795,0,0,0.81,overig boomteelt,jong bos
+796,kerstbomen,arable,NL,nl_796,0,0,0.81,boomteelt,jong bos
+799,"klaver, rode",arable,NL,nl_799,1200,0,0.81,overig boomteelt,grasklaver
+800,rolklaver,arable,NL,nl_800,0,0,0.81,overig boomteelt,grasklaver
+801,esparcette,arable,NL,nl_801,0,0,0.81,overig boomteelt,overig
+802,"wikke, bonte",arable,NL,nl_802,645,0,0.81,overig boomteelt,overig
+803,"wikke, voeder-",arable,NL,nl_803,650,0,0.81,overig boomteelt,overig
+804,klaverzaad,arable,NL,nl_804,1200,0,0.81,overig boomteelt,grasklaver
+814,"mais, suiker-",maize,NL,nl_814,660,0,0.32,snijmais,snijmais
+853,"bonen, tuin- (droog te oogsten) (geen consumptie)",arable,NL,nl_853,650,0,0.24,zomergroenten,tuinbonen
+854,"bonen, tuin- (groen te oogsten)",arable,NL,nl_854,650,0,0.24,zomergroenten,tuinbonen
+859,"aardappelen, zetmeel geleverd aan buitenland",arable,NL,nl_859,875,0,0.22,aardappel,aardappels
+863,bos zonder herplantplicht,nature,NL,nl_863,0,0,0.81,natuur,bos
+864,bos (set aside regeling),nature,NL,nl_864,0,0,0.81,natuur,bos
+944,"hennep, vezel-",arable,NL,nl_944,660,0,0.81,overig boomteelt,overig
+964,"dahlia, overige bloemkwekerijgewassen",arable,NL,nl_964,750,0,0.28,bloembollen,bloembollen
+965,"dahlia, droogbloemen",arable,NL,nl_965,750,0,0.28,bloembollen,bloembollen
+967,"gladiool, overige bloemkwekerijgewassen",arable,NL,nl_967,1000,0,0.24,bloembollen,bloembollen
+968,"gladiool, droogbloemen",arable,NL,nl_968,1000,0,0.24,bloembollen,bloembollen
+970,"hyacint, overige bloemkwekerijgewassen",arable,NL,nl_970,350,0,0.24,bloembollen,bol en knolgewassen
+971,"hyacint, droogbloemen",arable,NL,nl_971,350,0,0.24,bloembollen,bol en knolgewassen
+973,"iris, overige bloemkwekerijgewassen",arable,NL,nl_973,400,0,0.24,bloembollen,bloembollen
+974,"iris, droogbloemen",arable,NL,nl_974,400,0,0.24,bloembollen,bloembollen
+976,"krokus, overige bloemkwekerijgewassen",arable,NL,nl_976,150,0,0.24,bloembollen,bloembollen
+977,"krokus, droogbloemen",arable,NL,nl_977,150,0,0.24,bloembollen,bloembollen
+979,"lelie, overige bloemkwekerijgewassen",arable,NL,nl_979,450,0,0.24,bloembollen,bloembollen
+980,"lelie, droogbloemen",arable,NL,nl_980,450,0,0.24,bloembollen,bloembollen
+982,"narcis, overige bloemkwekerijgewassen",arable,NL,nl_982,500,0,0.24,bloembollen,bloembollen
+983,"narcis, droogbloemen",arable,NL,nl_983,500,0,0.24,bloembollen,bloembollen
+985,"tulp, overige bloemkwekerijgewassen",arable,NL,nl_985,500,0,0.24,bloembollen,bloembollen
+986,"tulp, droogbloemen",arable,NL,nl_986,500,0,0.24,bloembollen,bloembollen
+988,"zantedeschia, overige bloemkwekerijgewassen",arable,NL,nl_988,0,0,0.81,overig boomteelt,bloembollen
+989,"zantedeschia, droogbloemen",arable,NL,nl_989,0,0,0.81,overig boomteelt,bloembollen
+991,"overige bloemen, overige bloemkwekerijgewassen",arable,NL,nl_991,0,0,0.81,overig boomteelt,bloembollen
+992,"overige bloemen, droogbloemen",arable,NL,nl_992,0,0,0.81,overig boomteelt,bloembollen
+994,"amaryllis, overige bloemkwekerijgewassen",arable,NL,nl_994,0,0,0.81,overig boomteelt,bloembollen
+995,"amaryllis, droogbloemen",arable,NL,nl_995,0,0,0.81,overig boomteelt,bloembollen
+997,"dahlia, bloembollen en - knollen",arable,NL,nl_997,750,0,0.28,bloembollen,bloembollen
+998,"gladiool, bloembollen en - knollen",arable,NL,nl_998,1900,0,0.24,bloembollen,bloembollen
+999,"hyacint, bloembollen en - knollen",arable,NL,nl_999,350,0,0.24,bloembollen,bol en knolgewassen
+1000,"iris, bloembollen en -knollen",arable,NL,nl_1000,400,0,0.24,bloembollen,bloembollen
+1001,"krokus, bloembollen en - knollen",arable,NL,nl_1001,150,0,0.24,bloembollen,bloembollen
+1002,"lelie, bloembollen en -knollen",arable,NL,nl_1002,450,0,0.24,bloembollen,bloembollen
+1003,"narcis, bloembollen en -knollen",arable,NL,nl_1003,500,0,0.24,bloembollen,bloembollen
+1004,"tulp, bloembollen en -knollen",arable,NL,nl_1004,500,0,0.24,bloembollen,bloembollen
+1005,"zantedeschia, bloembollen en -knollen",arable,NL,nl_1005,0,0,0.24,bloembollen,bloembollen
+1006,"overige bloemen, bloembollen en -knollen",arable,NL,nl_1006,0,0,0.24,bloembollen,bloembollen
+1007,"amaryllis, bloembollen en -knollen",arable,NL,nl_1007,0,0,0.24,bloembollen,bloembollen
+1010,"sierui, overige bloemkwekerijgewassen",arable,NL,nl_1010,500,0,0.81,overig boomteelt,bloembollen
+1011,"sierui, droogbloemen",arable,NL,nl_1011,500,0,0.81,overig boomteelt,bloembollen
+1012,"sierui, bloembollen en -knollen",arable,NL,nl_1012,500,0,0.24,bloembollen,bloembollen
+1013,"blauw druifje, overige bloemkwekerijgewassen",arable,NL,nl_1013,0,0,0.81,overig boomteelt,bol en knolgewassen
+1014,"blauw druifje, droogbloemen",arable,NL,nl_1014,0,0,0.81,overig boomteelt,bol en knolgewassen
+1015,"blauw druifje, bloembollen en -knollen",arable,NL,nl_1015,0,0,0.24,bloembollen,bol en knolgewassen
+1016,"kuifhyacint, overige bloemkwekerijgewassen",arable,NL,nl_1016,350,0,0.81,overig boomteelt,bol en knolgewassen
+1017,"kuifhyacint, droogbloemen",arable,NL,nl_1017,350,0,0.81,overig boomteelt,bol en knolgewassen
+1018,"kuifhyacint, bloembollen en -knollen",arable,NL,nl_1018,350,0,0.81,overig boomteelt,bol en knolgewassen
+1019,"valeriaan, productie",arable,NL,nl_1019,0,0,0.81,overig boomteelt,overig
+1020,"valeriaan, zaden en opkweekmateriaal",arable,NL,nl_1020,0,0,0.81,overig boomteelt,overig
+1021,knoflook,arable,NL,nl_1021,300,0,0.24,zomergroenten,bol en knolgewassen
+1022,quinoa,arable,NL,nl_1022,0,0,0.31,zomergroenten,overig
+1023,"pastinaak, productie",arable,NL,nl_1023,0,0,0.24,zomergroenten,bol en knolgewassen
+1024,"pastinaak, zaden en opkweekmateriaal",arable,NL,nl_1024,0,0,0.32,zomergroenten,bol en knolgewassen
+1025,"pioenroos, overige bloemkwekerijgewassen",arable,NL,nl_1025,0,0,0.81,overig boomteelt,bloembollen
+1026,"pioenroos, droogbloemen",arable,NL,nl_1026,0,0,0.81,overig boomteelt,bloembollen
+1027,"pioenroos, bloembollen en -knollen",arable,NL,nl_1027,0,0,0.24,bloembollen,bloembollen
+1028,"lavas (maggiplant), productie",arable,NL,nl_1028,0,0,0.81,overig boomteelt,overig
+1029,"lavas (maggiplant), zaden en opkweekmateriaal",arable,NL,nl_1029,0,0,0.81,overig boomteelt,overig
+1030,"wilde marjolein (oregano), productie",arable,NL,nl_1030,0,0,0.81,overig boomteelt,overig
+1031,"wilde marjolein (oregano), zaden en opkweekmateriaal",arable,NL,nl_1031,0,0,0.81,overig boomteelt,overig
+1032,goudsbloem,arable,NL,nl_1032,0,0,0.81,overig boomteelt,bloembollen
+1033,igniscum candy,arable,NL,nl_1033,0,0,0.81,overig boomteelt,overig
+1034,kanariezaad,arable,NL,nl_1034,0,0,0.81,overig boomteelt,overig
+1035,naaldaar (setaria),arable,NL,nl_1035,0,0,0.81,overig boomteelt,overig
+1036,wortelpeterselie,arable,NL,nl_1036,250,0,0.2,zomergroenten,overig
+1037,"peterselie, productie",arable,NL,nl_1037,250,0,0.2,zomergroenten,overig
+1038,"peterselie, zaden en opkweekmateriaal",arable,NL,nl_1038,250,0,0.32,zomergroenten,overig
+1039,"chrysant, overige bloemkwekerijgewassen",arable,NL,nl_1039,0,0,0.81,overig boomteelt,overig
+1040,"chrysant, droogbloemen",arable,NL,nl_1040,750,0,0.81,overig boomteelt,bloembollen
+1042,"angelica, productie",arable,NL,nl_1042,0,0,0.81,overig boomteelt,overig
+1043,"angelica, zaden en opkweekmateriaal",arable,NL,nl_1043,0,0,0.81,overig boomteelt,overig
+1044,papaver (klaproos),arable,NL,nl_1044,0,0,0.81,overig boomteelt,overig
+1045,adonis,arable,NL,nl_1045,0,0,0.81,overig boomteelt,bloembollen
+1046,vergeet mij nietje,arable,NL,nl_1046,0,0,0.81,overig boomteelt,bloembollen
+1047,cranberry,arable,NL,nl_1047,0,0,0.81,overig boomteelt,fruit
+1048,"echinacea (zonnehoed), productie",arable,NL,nl_1048,0,0,0.81,overig boomteelt,bloembollen
+1049,"echinacea (zonnehoed), zaden en opkweekmateriaal",arable,NL,nl_1049,0,0,0.81,overig boomteelt,bloembollen
+1050,leeuwenbekjes,arable,NL,nl_1050,0,0,0.81,overig boomteelt,bloembollen
+1051,"iris, bolvormend",arable,NL,nl_1051,400,0,0.24,bloembollen,bloembollen
+1052,"iris, rhizoomvormend",arable,NL,nl_1052,400,0,0.24,bloembollen,bloembollen
+1053,"palmen, pot- en containervelden",arable,NL,nl_1053,0,0,0.81,boomteelt,overig
+1054,"pioenroos, vermeerdering",arable,NL,nl_1054,0,0,0.81,overig boomteelt,bloembollen
+1055,"chrysant, vermeerdering",arable,NL,nl_1055,750,0,0.81,overig boomteelt,overig
+1067,"bos- en haagplanten, open grond",arable,NL,nl_1067,0,0,0.81,overig boomteelt,jong bos
+1068,"buxus, open grond",arable,NL,nl_1068,0,0,0.81,overig boomteelt,jong bos
+1069,"ericaceae (zoals erica, calluna, rododendron, azalea), open grond",arable,NL,nl_1069,0,0,0.81,overig boomteelt,jong bos
+1070,"laanbomen/parkbomen, onderstammen, open grond",arable,NL,nl_1070,1175,0,0.81,boomteelt,jong bos
+1071,"laanbomen/parkbomen, opzetters, open grond",arable,NL,nl_1071,1175,0,0.81,boomteelt,jong bos
+1072,"laanbomen/parkbomen, spillen, open grond",arable,NL,nl_1072,1175,0,0.81,boomteelt,jong bos
+1073,"rozenstruiken (incl, zaailingen en onderstammen), open grond",arable,NL,nl_1073,0,0,0.81,overig boomteelt,jong bos
+1074,"sierconiferen, open grond",arable,NL,nl_1074,0,0,0.81,overig boomteelt,jong bos
+1075,"sierheesters en klimplanten, open grond",arable,NL,nl_1075,0,0,0.81,overig boomteelt,jong bos
+1076,"trek- en besheesters, open grond",arable,NL,nl_1076,0,0,0.81,overig boomteelt,jong bos
+1077,"vruchtbomen, moerbomen, open grond",arable,NL,nl_1077,1175,0,0.81,boomteelt,jong bos
+1078,"vruchtbomen, onderstammen, open grond",arable,NL,nl_1078,1175,0,0.81,boomteelt,jong bos
+1079,"vruchtbomen, overig, open grond",arable,NL,nl_1079,1175,0,0.81,boomteelt,jong bos
+1080,"vaste planten, open grond",arable,NL,nl_1080,0,0,0.81,overig boomteelt,jong bos
+1081,"bos- en haagplanten, pot- en containerveld",arable,NL,nl_1081,0,0,0.81,overig boomteelt,jong bos
+1082,"buxus, pot- en containerveld",arable,NL,nl_1082,0,0,0.81,overig boomteelt,jong bos
+1083,"ericaceae (zoals erica, calluna, rododendron, azalea), pot- en containerveld",arable,NL,nl_1083,0,0,0.81,overig boomteelt,jong bos
+1084,"laanbomen/parkbomen, onderstammen, pot- en containerveld",arable,NL,nl_1084,0,0,0.81,boomteelt,jong bos
+1085,"laanbomen/parkbomen, opzetters, pot- en containerveld",arable,NL,nl_1085,0,0,0.81,boomteelt,jong bos
+1086,"laanbomen/parkbomen, spillen, pot- en containerveld",arable,NL,nl_1086,0,0,0.81,boomteelt,jong bos
+1087,"rozenstruiken (incl, zaailingen en onderstammen), pot- en containerveld",arable,NL,nl_1087,0,0,0.81,overig boomteelt,jong bos
+1088,"sierconiferen, pot- en containerveld",arable,NL,nl_1088,0,0,0.81,overig boomteelt,jong bos
+1089,"sierheesters en klimplanten, pot- en containerveld",arable,NL,nl_1089,0,0,0.81,overig boomteelt,jong bos
+1090,"trek- en besheesters, pot- en containerveld",arable,NL,nl_1090,0,0,0.81,overig boomteelt,jong bos
+1091,"vruchtbomen, moerbomen, pot- en containerveld",arable,NL,nl_1091,0,0,0.81,boomteelt,jong bos
+1092,"vruchtbomen, onderstammen, pot- en containerveld",arable,NL,nl_1092,0,0,0.81,boomteelt,jong bos
+1093,"vruchtbomen, overig, pot- en containerveld",arable,NL,nl_1093,0,0,0.81,boomteelt,jong bos
+1094,"vaste planten, pot- en containerteelt",arable,NL,nl_1094,0,0,0.81,overig boomteelt,jong bos
+1095,appels. aangeplant lopende seizoen.,arable,NL,nl_1095,4600,0,0.81,groot fruit,fruit
+1096,appels. aangeplant voorafgaande aan lopende seizoen.,arable,NL,nl_1096,4600,0,0.81,groot fruit,fruit
+1097,peren. aangeplant lopende seizoen.,arable,NL,nl_1097,5700,0,0.81,groot fruit,fruit
+1098,peren. aangeplant voorafgaande aan lopende seizoen.,arable,NL,nl_1098,5700,0,0.81,groot fruit,fruit
+1099,wijndruiven,arable,NL,nl_1099,0,0,0.81,klein fruit,fruit
+1100,"overige pit- en steenvruchten (zoals perziken, tafeldruiven)",arable,NL,nl_1100,0,0,0.81,klein fruit,fruit
+1570,klaverzaad,arable,NL,nl_1570,1200,0,0.32,overig,grasklaver
+1574,definitief aan de landbouw onttrokken cultuurgrond,nature,NL,nl_1574,0,0,0.35,natuur,natuurlijk grasland
+1575,faunaranden,nature,NL,nl_1575,0,0,0.35,natuur,natuurlijk grasland
+1697,hazelnoten,arable,NL,nl_1697,0,0,0.35,overig,fruit
+1698,walnoten,arable,NL,nl_1698,0,0,0.35,overig,fruit
+1869,"bessen, blauwe",arable,NL,nl_1869,2850,0,0.81,klein fruit,fruit
+1870,pruimen,arable,NL,nl_1870,5600,0,0.81,groot fruit,fruit
+1872,"kersen, zuur (opbrengst bestemd voor verwerkende industrie)",arable,NL,nl_1872,0,0,0.81,klein fruit,fruit
+1873,"bessen, zwarte (opbrengst verwerkt voor verwerkende industrie)",arable,NL,nl_1873,2850,0,0.81,klein fruit,fruit
+1874,"overig kleinfruit (zoals kruisbessen, kiwi's)",arable,NL,nl_1874,0,0,0.81,klein fruit,fruit
+1876,snijgroen,arable,NL,nl_1876,0,0,0.35,bladgroenten,overig
+1909,"aardappelen, consumptie- op kleigrond",arable,NL,nl_1909,875,0,0.22,aardappel,aardappels
+1910,"aardappelen, consumptie- op zand-/veengrond",arable,NL,nl_1910,875,0,0.22,aardappel,aardappels
+1911,"aardappelen, cons. op kleigrond (vroeg, loofver voor 15-07)",arable,NL,nl_1911,875,0,0.22,aardappel,aardappels
+1912,"aardappelen, cons. op zand/veen (vroeg, loofver voor 15-07)",arable,NL,nl_1912,875,0,0.22,aardappel,aardappels
+1914,"graszaad, overig",grassland,NL,nl_1914,2300,0,0.32,grasland met herinzaai,grasland
+1915,"graszaad, rietzwenkgras",grassland,NL,nl_1915,2300,0,0.32,grasland met herinzaai,grasland
+1916,"graszaad, veldbeemd",grassland,NL,nl_1916,2300,0,0.32,grasland met herinzaai,grasland
+1917,"graszaad, roodzwenkgras, 1e jaar",grassland,NL,nl_1917,1175,0,0.32,grasland met herinzaai,grasland
+1918,"graszaad, roodzwenkgras, overjarig",grassland,NL,nl_1918,2300,0,0.32,grasland met herinzaai,grasland
+1919,"graszaad, westerwolds",grassland,NL,nl_1919,2300,0,0.32,grasland met herinzaai,grasland
+1920,"graszaad, italiaans",grassland,NL,nl_1920,2300,0,0.32,grasland met herinzaai,grasland
+1921,graszoden,grassland,NL,nl_1921,2300,0,0.35,grasland met herinzaai,grasland
+1922,"koolzaad, winter (incl. boterzaad)",arable,NL,nl_1922,975,0,0.32,zomergroenten,overig
+1923,"koolzaad, zomer (incl. boterzaad)",arable,NL,nl_1923,975,0,0.32,zomergroenten,bloemkool
+1925,overige akkerbouwgewassen,arable,NL,nl_1925,0,0,0.35,aardappel,overig
+1926,agrarisch natuurmengsel,nature,NL,nl_1926,0,0,0.35,natuur,natuurlijk grasland
+1927,overige akkerbouwgewassen,arable,NL,nl_1927,0,0,0.35,overig,overig
+1928,"aardappelrassen, poot- op kleigrond",arable,NL,nl_1928,875,0,0.22,aardappel,aardappels
+1929,"aardappelrassen, poot- op zand-/veengrond",arable,NL,nl_1929,875,0,0.22,aardappel,aardappels
+1930,"tagetes (zand, loss) (geen groene braak)",arable,NL,nl_1930,865,0,0.3,overig,braak
+1931,"uien, poot- en plant- (incl. sjalotten)",arable,NL,nl_1931,300,0,0.24,zomergroenten,zaaiuien
+1932,"uien, poot en plant, 1e jaars",arable,NL,nl_1932,300,0,0.24,zomergroenten,zaaiuien
+1933,"uien, poot en plant, 2e jaars",arable,NL,nl_1933,300,0,0.24,zomergroenten,zaaiuien
+1934,sjalotten,arable,NL,nl_1934,0,0,0.35,zomergroenten,overig
+1935,maiskolvensilage,maize,NL,nl_1935,0,0,0.32,snijmais,snijmais
+1936,"bos, blijvend, met herplantplicht",arable,NL,nl_1936,0,0,0.81,natuur,bos
+1940,voedselbos,arable,NL,nl_1940,0,0,0.81,boomteelt,overig
+1949,aardperen,arable,NL,nl_1949,375,900,0.35,overig,bol en knolgewassen
+1950,onbekend/gewas niet opgegeven,arable,NL,nl_1950,0,0,0.24,natuur,overig
+1959,dummycode voor dummypercelen,arable,NL,nl_1959,0,0,0.35,natuur,overig
+2014,"aardappelen, consumptie",arable,NL,nl_2014,875,0,0.22,aardappel,aardappels
+2015,"aardappelen, poot nak",arable,NL,nl_2015,875,0,0.22,aardappel,aardappels
+2016,"aardappelen, poot tbm",arable,NL,nl_2016,875,0,0.22,aardappel,aardappels
+2017,"aardappelen, zetmeel",arable,NL,nl_2017,875,0,0.22,aardappel,aardappels
+2025,"aardappelen, bestrijdingsmaatregel am",arable,NL,nl_2025,875,0,0.22,aardappel,aardappels
+2026,braak met bos (sbl-regeling na 28 juni 1995),nature,NL,nl_2026,0,0,0.81,natuur,braak
+2027,bos (sbl-regeling),nature,NL,nl_2027,0,0,0.81,natuur,bos
+2029,"braak, natuur-",nature,NL,nl_2029,0,0,0.35,natuur,braak
+2030,"graszaad, engels raai 1e jaar",grassland,NL,nl_2030,1175,0,0.32,grasland met herinzaai,grasland
+2031,"graszaad, engels raai overjarig",grassland,NL,nl_2031,2300,0,0.32,grasland met herinzaai,grasland
+2032,"mais, energie-",maize,NL,nl_2032,660,0,0.32,snijmais,snijmais
+2033,"onbeteelde grond, tijdelijk",arable,NL,nl_2033,0,0,0.35,natuur,braak
+2297,woudbomen met korte omlooptijd,arable,NL,nl_2297,0,0,0.81,boomteelt,jong bos
+2298,"groenbemesters, vlinderbloemige",arable,NL,nl_2298,0,0,0.24,overig,bladrammenas
+2299,"groenbemesters, niet-vlinderbloemige",arable,NL,nl_2299,0,0,0.24,overig,bladrammenas
+2300,onbeteelde grond vanwege een teeltverbod/ontheffing,arable,NL,nl_2300,0,0,0.35,natuur,braak
+2301,natuurlijk grasland met hoofdfunctie landbouw,grassland,NL,nl_2301,1155,0,0.35,grasland met herinzaai,grasland
+2302,natuurlijk grasland (begraasd) met beperkte landbouwact.,grassland,NL,nl_2302,1155,0,0.35,grasland met herinzaai,grasland
+2303,overige natuurterreinen,nature,NL,nl_2303,0,0,0.35,natuur,jong bos
+2304,"heide, begraasd",arable,NL,nl_2304,0,0,0.32,natuur,overig
+2325,"bessen, rode",arable,NL,nl_2325,5600,0,0.81,klein fruit,fruit
+2326,frambozen,arable,NL,nl_2326,2850,0,0.81,klein fruit,fruit
+2327,bramen,arable,NL,nl_2327,0,0,0.81,klein fruit,fruit
+2328,"kersen, zoet",arable,NL,nl_2328,0,0,0.81,klein fruit,fruit
+2617,boomgroep,nature,NL,nl_2617,1175,0,0.81,boomteelt,bos
+2618,"windhaag, in een perceel fruitteelt",nature,NL,nl_2618,0,0,0.35,natuur,fruit
+2619,bossingel,nature,NL,nl_2619,0,0,0.81,natuur,bos
+2620,poel en klein historisch water,nature,NL,nl_2620,0,0,0.35,natuur,overig
+2621,houtwal en houtsingel,nature,NL,nl_2621,0,0,0.35,natuur,overig
+2622,elzensingel,nature,NL,nl_2622,0,0,0.35,natuur,overig
+2624,knip- of scheerheg,nature,NL,nl_2624,0,0,0.35,natuur,overig
+2625,struweelhaag,nature,NL,nl_2625,0,0,0.35,natuur,overig
+2626,laan,nature,NL,nl_2626,0,0,0.35,natuur,overig
+2628,hoogstamboomgaard,arable,NL,nl_2628,1175,0,0.81,boomteelt,overig
+2629,struweelrand,nature,NL,nl_2629,0,0,0.35,natuur,overig
+2630,hakhoutbosje,nature,NL,nl_2630,0,0,0.81,natuur,overig
+2631,griendje,nature,NL,nl_2631,0,0,0.35,natuur,overig
+2633,rietzoom en klein rietperceel,nature,NL,nl_2633,0,0,0.31,grasland met herinzaai,bos
+2634,natuurvriendelijke oever,nature,NL,nl_2634,0,0,0.35,natuur,bos
+2635,wandelpad over boerenland,nature,NL,nl_2635,0,0,0.35,natuur,overig
+2636,leibomen,nature,NL,nl_2636,0,0,0.35,natuur,overig
+2637,schurvelingen en zandwallen,nature,NL,nl_2637,0,0,0.35,natuur,overig
+2638,"landschapselement, overig",nature,NL,nl_2638,0,0,0.35,natuur,overig
+2639,"water, overig",nature,NL,nl_2639,0,0,0.35,natuur,overig
+2640,geisoleerde boom (anders dan knotboom),nature,NL,nl_2640,0,0,0.35,natuur,overig
+2641,bomenrij (anders dan knotboom),nature,NL,nl_2641,0,0,0.35,natuur,overig
+2642,bosje,nature,NL,nl_2642,0,0,0.81,natuur,bos
+2643,"knotboom, bomen in rij",nature,NL,nl_2643,0,0,0.35,natuur,overig
+2644,"knotboom, geisloleerde boom",nature,NL,nl_2644,0,0,0.35,natuur,overig
+2645,notenbomen,arable,NL,nl_2645,0,0,0.81,boomteelt,fruit
+2650,erwten inclusief schokkers (droog te oogsten),arable,NL,nl_2650,170,830,0.32,zomergroenten,tuinbonen
+2651,"bieten, voeder- (inclusief aardperen)",arable,NL,nl_2651,375,900,0.35,suikerbiet,bol en knolgewassen
+2652,"granen, overig",arable,NL,nl_2652,1600,0,0.31,granen,graan
+2653,graszaad (inclusief klaverzaad),grassland,NL,nl_2653,2300,0,0.32,grasland met herinzaai,grasland
+2700,"aardbeien open grond, vermeerdering",arable,NL,nl_2700,300,0,0.81,klein fruit,fruit
+2701,"aardbeien open grond, wachtbed",arable,NL,nl_2701,300,0,0.81,klein fruit,fruit
+2702,"aardbeien open grond, productie",arable,NL,nl_2702,300,0,0.81,klein fruit,fruit
+2703,"aardbeien open grond, zaden en opkweekmateriaal",arable,NL,nl_2703,300,0,0.81,klein fruit,fruit
+2704,"aardbeien op stellingen, vermeerdering",arable,NL,nl_2704,300,0,0.81,klein fruit,fruit
+2705,"aardbeien op stellingen, wachtbed",arable,NL,nl_2705,300,0,0.81,klein fruit,fruit
+2706,"aardbeien op stellingen, productie",arable,NL,nl_2706,300,0,0.81,klein fruit,fruit
+2707,"aardbeien op stellingen, zaden en opkweekmateriaal",arable,NL,nl_2707,300,0,0.81,klein fruit,fruit
+2708,"andijvie, productie",arable,NL,nl_2708,450,0,0.2,bladgroenten,groenten
+2709,"andijvie, zaden en opkweekmateriaal",arable,NL,nl_2709,450,0,0.32,bladgroenten,groenten
+2710,"asperges, oppervlakte die productie oplevert",arable,NL,nl_2710,1000,0,0.35,zomergroenten,overig
+2711,"asperges, oppervlakte die nog geen productie oplevert",arable,NL,nl_2711,1000,0,0.35,zomergroenten,overig
+2712,"asperges, zaden en opkweekmateriaal",arable,NL,nl_2712,1000,0,0.35,zomergroenten,overig
+2713,"bloemkool, productie",arable,NL,nl_2713,1640.08,150,0.32,zomergroenten,bloemkool
+2714,"bloemkool, zaden en opkweekmateriaal",arable,NL,nl_2714,1000,150,0.32,zomergroenten,bloemkool
+2715,"boerenkool, productie",arable,NL,nl_2715,750,150,0.32,zomergroenten,bloemkool
+2716,"boerenkool, zaden en opkweekmateriaal",arable,NL,nl_2716,750,150,0.32,zomergroenten,bloemkool
+2717,"bospeen, productie",arable,NL,nl_2717,300,0,0.24,bladgroenten,peen
+2718,"bospeen, zaden en opkweekmateriaal",arable,NL,nl_2718,300,0,0.32,bladgroenten,peen
+2719,"broccoli, productie",arable,NL,nl_2719,1150,0,0.32,zomergroenten,bloemkool
+2720,"broccoli, zaden en opkweekmateriaal",arable,NL,nl_2720,1150,0,0.32,zomergroenten,bloemkool
+2721,"chinese kool, productie",arable,NL,nl_2721,1730.16,0,0.32,zomergroenten,spitskool
+2722,"chinese kool, zaden en opkweekmateriaal",arable,NL,nl_2722,450,0,0.32,zomergroenten,spitskool
+2723,"courgette, productie",arable,NL,nl_2723,250,0,0.28,zomergroenten,groenten
+2724,"courgette, zaden en opkweekmateriaal",arable,NL,nl_2724,250,0,0.32,zomergroenten,groenten
+2725,"knolselderij, productie",arable,NL,nl_2725,400,600,0.2,zomergroenten,selderij
+2726,"knolselderij, zaden en opkweekmateriaal",arable,NL,nl_2726,400,600,0.32,zomergroenten,selderij
+2727,"knolvenkel/venkel, productie",arable,NL,nl_2727,400,350,0.28,zomergroenten,bol en knolgewassen
+2728,"knolvenkel/venkel, zaden en opkweekmateriaal",arable,NL,nl_2728,950,0,0.32,zomergroenten,bol en knolgewassen
+2729,"komkommer, productie",arable,NL,nl_2729,0,0,0.28,zomergroenten,groenten
+2730,"komkommer, zaden en opkweekmateriaal",arable,NL,nl_2730,250,0,0.32,zomergroenten,groenten
+2731,"augurk, productie",arable,NL,nl_2731,250,0,0.28,zomergroenten,groenten
+2732,"augurk, zaden en opkweekmateriaal",arable,NL,nl_2732,250,0,0.32,zomergroenten,groenten
+2733,"meloen, productie",arable,NL,nl_2733,0,0,0.24,zomergroenten,groenten
+2734,"meloen, zaden en opkweekmateriaal",arable,NL,nl_2734,0,0,0.32,zomergroenten,groenten
+2735,"pompoen, productie",arable,NL,nl_2735,350,0,0.24,zomergroenten,groenten
+2736,"pompoen, zaden en opkweekmateriaal",arable,NL,nl_2736,350,0,0.32,zomergroenten,groenten
+2737,"koolraap, productie",arable,NL,nl_2737,550,600,0.32,zomergroenten,bol en knolgewassen
+2738,"koolraap, zaden en opkweekmateriaal",arable,NL,nl_2738,300,0,0.32,zomergroenten,bol en knolgewassen
+2739,"koolrabi, productie",arable,NL,nl_2739,300,250,0.32,zomergroenten,bol en knolgewassen
+2740,"koolrabi, zaden en opkweekmateriaal",arable,NL,nl_2740,300,0,0.32,zomergroenten,bol en knolgewassen
+2741,"kroten/rode bieten, productie",arable,NL,nl_2741,600,0,0.24,suikerbiet,bol en knolgewassen
+2742,"kroten/rode bieten, zaden en opkweekmateriaal",arable,NL,nl_2742,600,0,0.32,suikerbiet,bol en knolgewassen
+2743,"kruiden, productie",arable,NL,nl_2743,300,0,0.2,overig,overig
+2744,"kruiden, zaden en opkweekmateriaal",arable,NL,nl_2744,300,0,0.32,overig,overig
+2745,"paksoi, productie",arable,NL,nl_2745,450,0,0.24,zomergroenten,sla
+2746,"paksoi, zaden en opkweekmateriaal",arable,NL,nl_2746,450,0,0.32,zomergroenten,sla
+2747,"peulen, productie",arable,NL,nl_2747,170,0,0.24,zomergroenten,tuinbonen
+2748,"peulen, zaden en opkweekmateriaal",arable,NL,nl_2748,170,0,0.32,zomergroenten,tuinbonen
+2749,"prei, productie",arable,NL,nl_2749,100,350,0.2,wintergroenten,prei
+2750,"prei, zaden en opkweekmateriaal",arable,NL,nl_2750,100,350,0.32,wintergroenten,prei
+2751,"pronkbonen, productie",arable,NL,nl_2751,0,0,0.24,zomergroenten,tuinbonen
+2752,"pronkbonen, zaden en opkweekmateriaal",arable,NL,nl_2752,0,0,0.32,zomergroenten,tuinbonen
+2753,"raapstelen, productie",arable,NL,nl_2753,0,0,0.2,zomergroenten,overig
+2754,"raapstelen, zaden en opkweekmateriaal",arable,NL,nl_2754,0,0,0.32,zomergroenten,overig
+2755,"rabarber, productie",arable,NL,nl_2755,0,0,0.24,zomergroenten,overig
+2756,"rabarber, zaden en opkweekmateriaal",arable,NL,nl_2756,0,0,0.32,zomergroenten,overig
+2757,"radijs, productie",arable,NL,nl_2757,0,0,0.2,zomergroenten,overig
+2758,"radijs, zaden en opkweekmateriaal",arable,NL,nl_2758,0,0,0.32,zomergroenten,overig
+2759,"rodekool, productie",arable,NL,nl_2759,1000,150,0.32,zomergroenten,bloemkool
+2760,"rodekool, zaden en opkweekmateriaal",arable,NL,nl_2760,1000,150,0.32,zomergroenten,bloemkool
+2761,"savooiekool, productie",arable,NL,nl_2761,1000,440,0.32,zomergroenten,bloemkool
+2762,"savooiekool, zaden en opkweekmateriaal",arable,NL,nl_2762,1000,440,0.32,zomergroenten,bloemkool
+2763,"schorseneren, productie",arable,NL,nl_2763,600,0,0.24,zomergroenten,overig
+2764,"schorseneren, zaden en opkweekmateriaal",arable,NL,nl_2764,600,0,0.32,zomergroenten,overig
+2765,"selderij, bleek- en groen-, productie",arable,NL,nl_2765,3266,0,0.2,zomergroenten,selderij
+2766,"selderij, bleek- en groen-, zaden en opkweekmateriaal",arable,NL,nl_2766,450,0,0.32,zomergroenten,selderij
+2767,"sla, ijsberg-, productie",arable,NL,nl_2767,450,0,0.2,bladgroenten,sla
+2768,"sla, ijsberg-, zaden en opkweekmateriaal",arable,NL,nl_2768,300,0,0.32,bladgroenten,sla
+2769,"sla, radicchio rosso, productie",arable,NL,nl_2769,300,0,0.2,bladgroenten,sla
+2770,"sla; radicchio rosso, zaden en opkweekmateriaal",arable,NL,nl_2770,300,0,0.32,bladgroenten,sla
+2771,"sla, overig, productie",arable,NL,nl_2771,350,0,0.2,bladgroenten,sla
+2772,"sla, overig, zaden en opkweekmateriaal",arable,NL,nl_2772,300,0,0.32,bladgroenten,sla
+2773,"spinazie, productie",arable,NL,nl_2773,300,0,0.2,bladgroenten,groenten
+2774,"spinazie, zaden en opkweekmateriaal",arable,NL,nl_2774,300,0,0.32,bladgroenten,groenten
+2775,"spitskool, productie",arable,NL,nl_2775,750,150,0.32,zomergroenten,bloemkool
+2776,"spitskool, zaden en opkweekmateriaal",arable,NL,nl_2776,500,150,0.32,zomergroenten,bloemkool
+2777,"spruitkool/spruitjes, productie",arable,NL,nl_2777,1300,700,0.32,wintergroenten,bloemkool
+2778,"spruitkool/spruitjes, zaden en opkweekmateriaal",arable,NL,nl_2778,1300,700,0.32,wintergroenten,bloemkool
+2779,"stamsperziebonen (=stamslabonen), productie",arable,NL,nl_2779,170,480,0.24,zomergroenten,tuinbonen
+2780,"stamsperziebonen (=stamslabonen), zaden en opkweekmateriaal",arable,NL,nl_2780,170,480,0.32,zomergroenten,tuinbonen
+2781,"stoksnijbonen en stokslabonen, productie",arable,NL,nl_2781,170,480,0.24,zomergroenten,tuinbonen
+2782,"stoksnijbonen en stokslabonen, zaden en opkweekmateriaal",arable,NL,nl_2782,170,480,0.32,zomergroenten,tuinbonen
+2783,"waspeen, productie",arable,NL,nl_2783,700,0,0.24,bladgroenten,peen
+2784,"waspeen, zaden en opkweekmateriaal",arable,NL,nl_2784,700,0,0.32,bladgroenten,peen
+2785,"winterpeen, productie",arable,NL,nl_2785,700,0,0.24,bladgroenten,peen
+2786,"winterpeen, zaden en opkweekmateriaal",arable,NL,nl_2786,700,0,0.32,bladgroenten,peen
+2787,"witlofwortel, productie",arable,NL,nl_2787,600,0,0.24,zomergroenten,spitskool
+2788,"witlofwortel, zaden en opkweekmateriaal",arable,NL,nl_2788,600,0,0.32,zomergroenten,spitskool
+2789,"witte kool, productie",arable,NL,nl_2789,1000,150,0.32,zomergroenten,bloemkool
+2790,"witte kool, zaden en opkweekmateriaal",arable,NL,nl_2790,1000,150,0.32,zomergroenten,bloemkool
+2791,"overige niet genoemde bladgewassen, productie",arable,NL,nl_2791,300,0,0.35,bladgroenten,groenten
+2792,"overige niet genoemde bladgewassen, zaden en opkweekmateriaal",arable,NL,nl_2792,300,0,0.32,bladgroenten,groenten
+2793,"overige niet genoemde groenten, productie",arable,NL,nl_2793,0,0,0.22,zomergroenten,groenten
+2794,"overige niet genoemde groenten, zaden en opkweekmateriaal",arable,NL,nl_2794,0,0,0.32,zomergroenten,groenten
+2795,"bloemkool, winter, productie",arable,NL,nl_2795,1640.08,150,0.32,wintergroenten,overig
+2796,"bloemkool, winter, zaden en opkweekmateriaal",arable,NL,nl_2796,1640.08,150,0.32,wintergroenten,overig
+2797,"bloemkool, zomer, productie",arable,NL,nl_2797,1640.08,150,0.32,zomergroenten,bloemkool
+2798,"bloemkool, zomer, zaden en opkweekmateriaal",arable,NL,nl_2798,1000,150,0.32,zomergroenten,bloemkool
+2799,"prei, winter, productie",arable,NL,nl_2799,100,350,0.2,wintergroenten,overig
+2800,"prei, winter, zaden en opkweekmateriaal",arable,NL,nl_2800,100,350,0.32,wintergroenten,overig
+2801,"prei, zomer, productie",arable,NL,nl_2801,100,350,0.2,zomergroenten,prei
+2802,"prei, zomer, zaden en opkweekmateriaal",arable,NL,nl_2802,100,350,0.32,zomergroenten,prei
+2951,"aardappelen, consumptie op klei/loessgrond",arable,NL,nl_2951,875,0,0.22,aardappel,aardappels
+3055,lisdodde,nature,NL,nl_3055,0,0,0.2,natuur,overig
+3500,"klaver, alexandrijnse",arable,NL,nl_3500,1200,0,0.3,overig,grasklaver
+3501,beemdlangbloem,arable,NL,nl_3501,0,0,0.81,overig boomteelt,bloembollen
+3502,bladkool,arable,NL,nl_3502,850,0,0.32,zomergroenten,bloemkool
+3503,bladraap,arable,NL,nl_3503,875,0,0.2,bladgroenten,bladrammenas
+3504,bladrammenas,arable,NL,nl_3504,850,0,0.2,overig,bladrammenas
+3505,deder,arable,NL,nl_3505,0,0,0.2,overig,overig
+3506,engels raaigras,arable,NL,nl_3506,980,0,0.24,grasland zonder herinzaai,grasland
+3507,ethiopische mosterd,arable,NL,nl_3507,850,0,0.24,overig,overig
+3508,facelia,arable,NL,nl_3508,650,0,0.2,overig,overig
+3509,festulolium,arable,NL,nl_3509,0,0,0.35,overig,grasland
+3510,boekweit,arable,NL,nl_3510,0,0,0.31,overig,graan
+3511,"klaver, incarnaat",arable,NL,nl_3511,1200,0,0.3,overig,grasklaver
+3512,italiaans raaigras,grassland,NL,nl_3512,1255,0,0.24,grasland zonder herinzaai,grasland
+3513,westerwolds raaigras,grassland,NL,nl_3513,980,0,0.24,grasland zonder herinzaai,grasland
+3514,niger,nature,NL,nl_3514,0,0,0.2,natuur,overig
+3515,"klaver, perzische",arable,NL,nl_3515,1200,0,0.3,overig,grasklaver
+3516,rietzwenkgras,grassland,NL,nl_3516,980,0,0.31,grasland met herinzaai,grasland
+3517,sarepta mosterd/caliente,arable,NL,nl_3517,0,0,0.24,overig,overig
+3518,seradelle,arable,NL,nl_3518,0,0,0.2,overig,overig
+3519,soedangras/sorghum,grassland,NL,nl_3519,850,0,0.31,overig,grasland
+3520,spurrie,arable,NL,nl_3520,650,0,0.2,overig,overig
+3521,stoppelknollen,arable,NL,nl_3521,830,0,0.24,overig,bol en knolgewassen
+3522,timothee,arable,NL,nl_3522,700,0,0.33,grasland zonder herinzaai,grasland
+3523,veldbeemdgras,grassland,NL,nl_3523,980,0,0.33,grasland zonder herinzaai,grasland
+3524,"klaver, witte",arable,NL,nl_3524,1200,0,0.3,overig,grasklaver
+3718,"grasland, natuurlijk",grassland,NL,nl_3718,1400,0,0.35,grasland zonder herinzaai,grasland
+3719,heide,nature,NL,nl_3719,0,0,0.32,natuur,overig
+3720,"faunaranden, grasland",nature,NL,nl_3720,0,0,0.35,grasland met herinzaai,natuurlijk grasland
+3721,"faunaranden, bouwland",nature,NL,nl_3721,0,0,0.35,natuur,natuurlijk grasland
+3722,overige natuurterreinen,nature,NL,nl_3722,0,0,0.35,natuur,jong bos
+3730,"aardappelen, poot op klei/loessgrond (nak)",arable,NL,nl_3730,875,0,0.22,aardappel,aardappels
+3731,"aardappelen, poot op zand/veengrond (nak)",arable,NL,nl_3731,875,0,0.22,aardappel,aardappels
+3732,"aardappelen, zetmeel (incl. tbm-pootgoed)",arable,NL,nl_3732,875,0,0.22,aardappel,aardappels
+3736,"vlas, vezel-",arable,NL,nl_3736,100,0,0.33,overig,graan
+3792,"aardappelen, consumptie op zand/veengrond",arable,NL,nl_3792,875,0,0.22,aardappel,aardappels
+3801,"tijdelijk onbeteelde grond, i.v.m. publieke werken",arable,NL,nl_3801,0,0,0.35,natuur,braak
+3802,"tijdelijk onbeteelde grond, anders dan voor publieke werken",arable,NL,nl_3802,0,0,0.35,natuur,braak
+3803,"rand, grenzend aan bouwland, hoofdzakelijk bestaand uit een ander gewas dan gras. (ea: beheer)",nature,NL,nl_3803,500,0,0.35,natuur,grasland
+3804,"rand, grenzend aan bouwland, hoofdzakelijk bestaand uit een ander gewas dan gras. (ea: onbeheerd)",nature,NL,nl_3804,500,0,0.35,natuur,grasland
+3805,"rietzwenkgras, industriegras",grassland,NL,nl_3805,980,0,0.31,grasland met herinzaai,grasland
+3806,"boomkwekerijgewassen en vaste planten, open grond",arable,NL,nl_3806,1175,0,0.81,overig boomteelt,jong bos
+3807,"rietzwenkgras, anders dan voor industriegras",grassland,NL,nl_3807,980,0,0.31,grasland met herinzaai,grasland
+3808,roodzwenkgras,grassland,NL,nl_3808,0,0,0.3,grasland zonder herinzaai,grasland
+6520,azolla,nature,NL,nl_6520,0,0,0.31,natuur,overig
+6521,wilde rijst,arable,NL,nl_6521,0,0,0.81,overig boomteelt,graan
+6522,riet,nature,NL,nl_6522,0,0,0.31,grasland met herinzaai,overig
+6632,zoete aardappelen,arable,NL,nl_6632,0,0,0.22,zomergroenten,overig
+6636,naakte haver,arable,NL,nl_6636,0,0,0.31,granen,overig
+6660,"uien, gele zaai-",arable,NL,nl_6660,300,0,0.24,zomergroenten,zaaiuien
+6664,"uien, rode zaai-",arable,NL,nl_6664,300,0,0.24,zomergroenten,zaaiuien
+6746,"beemdlangbloem, graszaad",grassland,NL,nl_6746,2300,0,0.33,grasland met herinzaai,grasland
+6748,"beemdlangbloem, groenbemesting, vanggewas",grassland,NL,nl_6748,850,0,0.33,grasland met herinzaai,bladrammenas
+6749,bieslook,arable,NL,nl_6749,300,0,0.35,bladgroenten,overig
+6750,"engels raaigras, graszaad",grassland,NL,nl_6750,2300,0,0.32,grasland met herinzaai,grasland
+6751,"engels raaigras, groenbemesting, vanggewas",grassland,NL,nl_6751,1150,0,0.24,grasland met herinzaai,bladrammenas
+6752,"festulolium, graszaad",grassland,NL,nl_6752,2300,0,0.35,grasland met herinzaai,grasland
+6753,"festulolium, groenbemesting, vanggewas",grassland,NL,nl_6753,850,0,0.35,grasland met herinzaai,bladrammenas
+6754,"italiaans raaigras, graszaad",grassland,NL,nl_6754,2300,0,0.32,grasland met herinzaai,grasland
+6755,"italiaans raaigras, groenbemesting, vanggewas",grassland,NL,nl_6755,1100,0,0.24,grasland met herinzaai,bladrammenas
+6756,"klaver, alexandrijnse, groenbemesting, vanggewas",arable,NL,nl_6756,600,0,0.3,overig,bladrammenas
+6757,"klaver, alexandrijnse, klaverzaad",arable,NL,nl_6757,1200,0,0.32,overig,grasklaver
+6758,"klaver, incarnaat, groenbemesting, vanggewas",arable,NL,nl_6758,1100,0,0.3,overig,bladrammenas
+6759,"klaver, incarnaat, klaverzaad",arable,NL,nl_6759,1200,0,0.32,overig,grasklaver
+6760,"klaver, perzische, groenbemesting, vanggewas",arable,NL,nl_6760,600,0,0.3,overig,bladrammenas
+6761,"klaver, perzische, klaverzaad",arable,NL,nl_6761,1200,0,0.32,overig,grasklaver
+6762,"klaver, rode, groenbemesting, vanggewas",arable,NL,nl_6762,1100,0,0.3,overig,bladrammenas
+6763,"klaver, rode, klaverzaad",arable,NL,nl_6763,1165,0,0.32,overig,grasklaver
+6764,"klaver, witte, groenbemesting, vanggewas",arable,NL,nl_6764,850,0,0.3,overig,bladrammenas
+6765,"klaver, witte, klaverzaad",arable,NL,nl_6765,850,0,0.32,overig,grasklaver
+6766,lamsoor,nature,NL,nl_6766,0,0,0.35,grasland met herinzaai,overig
+6767,linzen,arable,NL,nl_6767,0,0,0.35,zomergroenten,tuinbonen
+6768,overig graszaad,grassland,NL,nl_6768,2300,0,0.32,grasland met herinzaai,grasland
+6769,overig klaverzaad,arable,NL,nl_6769,1200,0,0.32,overig,grasklaver
+6782,"rietzwenkgras, graszaad",grassland,NL,nl_6782,2300,0,0.32,grasland met herinzaai,grasland
+6783,"rietzwenkgras, groenbemesting, vanggewas",grassland,NL,nl_6783,1050,0,0.31,grasland met herinzaai,bladrammenas
+6784,"roodzwenkgras, graszaad",grassland,NL,nl_6784,2300,0,0.32,grasland met herinzaai,grasland
+6785,"roodzwenkgras, groenbemesting, vanggewas",grassland,NL,nl_6785,850,0,0.3,grasland met herinzaai,bladrammenas
+6786,"timothee, graszaad",grassland,NL,nl_6786,2300,0,0.33,grasland met herinzaai,grasland
+6787,"timothee, groenbemesting, vanggewas",grassland,NL,nl_6787,850,0,0.33,grasland met herinzaai,bladrammenas
+6788,"veldbeemdgras, graszaad",grassland,NL,nl_6788,2300,0,0.33,grasland met herinzaai,grasland
+6789,"veldbeemdgras, groenbemesting, vanggewas",grassland,NL,nl_6789,850,0,0.33,grasland met herinzaai,bladrammenas
+6790,"westerwolds raaigras, graszaad",grassland,NL,nl_6790,2300,0,0.32,grasland met herinzaai,grasland
+6791,"westerwolds raaigras, groenbemesting, vanggewas",grassland,NL,nl_6791,1050,0,0.24,grasland met herinzaai,bladrammenas
+6792,zeekraal,nature,NL,nl_6792,0,0,0.35,grasland met herinzaai,overig
+6793,graften,nature,NL,nl_6793,0,0,0.35,natuur,jong bos
+6794,"groene braak, spontane opkomst",nature,NL,nl_6794,0,0,0.35,overig,braak
+6795,"liatris, bloembollen en -knollen",arable,NL,nl_6795,0,0,0.24,bloembollen,bloembollen
+6796,"liatris, droogbloemen",arable,NL,nl_6796,0,0,0.35,bloembollen,bloembollen
+6797,"liatris, overige bloemkwekerijgewassen",arable,NL,nl_6797,0,0,0.24,bloembollen,bloembollen
+6798,perceel bedekt met gewasresten (mulching),arable,NL,nl_6798,0,0,0.35,overig,overig
+6799,rijst,arable,NL,nl_6799,0,0,0.31,grasland met herinzaai,graan
+6800,ruigtes op landbouwpercelen,nature,NL,nl_6800,0,0,0.35,natuur,jong bos
+6801,schouwpad,nature,NL,nl_6801,0,0,0.35,natuur,overig
+6802,sedum,nature,NL,nl_6802,0,0,0.35,overig,overig
+6803,"sneeuwklokje, bloembollen en -knollen",arable,NL,nl_6803,500,0,0.24,bloembollen,bloembollen
+6804,"sneeuwklokje, droogbloemen",arable,NL,nl_6804,500,0,0.35,bloembollen,bloembollen
+6805,"sneeuwklokje, overige bloemkwekerijgewassen",arable,NL,nl_6805,500,0,0.24,bloembollen,bloembollen
+6806,snijrogge,arable,NL,nl_6806,1500,0,0.31,granen,wintertarwe
+6807,stroken wild gras,nature,NL,nl_6807,0,0,0.35,natuur,grasland
+6808,tuunwallen,nature,NL,nl_6808,0,0,0.35,natuur,jong bos
+6809,voederhaag,nature,NL,nl_6809,0,0,0.35,natuur,jong bos
+7121,"bonen, witte-",arable,NL,nl_7121,650,0,0.24,zomergroenten,tuinbonen
+7122,yacon,arable,NL,nl_7122,0,0,0.35,zomergroenten,overig
+7124,"raapzaad, winter",arable,NL,nl_7124,975,0,0.32,overig,overig
+7125,"overige groenbemesters, niet-vlinderbloemige-, niet zijnde gras",nature,NL,nl_7125,800,0,0.24,overig,bladrammenas
+7126,"overige gras, groenbemesting, vanggewas",nature,NL,nl_7126,0,0,0.35,grasland met herinzaai,bladrammenas
+7127,rietland,nature,NL,nl_7127,0,0,0.31,grasland met herinzaai,overig
+7128,rietkraag/rietzoom,nature,NL,nl_7128,0,0,0.31,grasland met herinzaai,bos
+7129,"rogge, groenvoedergewas",arable,NL,nl_7129,1500,0,0.31,granen,wintertarwe
+7130,"rogge, korrelgewas",arable,NL,nl_7130,1500,0,0.31,granen,wintertarwe
+7131,"rogge, groenbemesting, vanggewas",arable,NL,nl_7131,850,0,0.31,granen,bladrammenas
